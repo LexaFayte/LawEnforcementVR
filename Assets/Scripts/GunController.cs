@@ -39,10 +39,6 @@ public class GunController : MonoBehaviour {
         controller.Gripped += GripPressed;
         trackedObj = controllerRight.GetComponent<SteamVR_TrackedObject>();
     }
- //   // Use this for initialization
- //   void Start () {
-
-	//}
 	
     private void TriggerPressed(object sender, ClickedEventArgs e)
     {
@@ -81,6 +77,7 @@ public class GunController : MonoBehaviour {
                     GameObject Bullet_Mark = Instantiate(bullet_mark, hit.point, Quaternion.LookRotation(hit.normal)) as GameObject;
                     Bullet_Mark.transform.Rotate(new Vector3(180, 0, 0));
                     Bullet_Mark.transform.Translate(new Vector3(0, 0, -0.005f));
+                    Bullet_Mark.transform.SetParent(hit.rigidbody.gameObject.transform);
                 }
             }
 
