@@ -12,50 +12,16 @@ public class TargetController : MonoBehaviour {
     private SteamVR_Controller.Device device;
     private SteamVR_TrackedController controller;
 
-    [SerializeField]
-    private string[] keyWords;
-    private KeywordRecognizer recognizer;
-
     private bool running = false;
 
     // Use this for initialization
     void Awake () {
         controller = controllerRight.GetComponent<SteamVR_TrackedController>();
         controller.MenuButtonClicked += MenuPressed;
-        //trackedObj = controllerRight.GetComponent<SteamVR_TrackedObject>();
-
-        //set up voice recognition
-        keyWords = new string[4];
-        keyWords[0] = "Start";
-        keyWords[1] = "Stop";
-        keyWords[2] = "Reset";
-        keyWords[3] = "Exit";
-        recognizer = new KeywordRecognizer(keyWords);
-        recognizer.OnPhraseRecognized += onRecognition;
-        recognizer.Start();
-
-    }
-	
-    private void onRecognition(PhraseRecognizedEventArgs e)
-    {
-        switch(e.text)
-        {
-            case "Start":
-                startTargetSequence();
-                break;
-            case "Stop":
-                stopTargetSequence();
-                break;
-            case "Reset":
-                resetTargetSequence();
-                break;
-            case "Exit":
-                break;
-        }
     }
 
     //start the targets
-    private void startTargetSequence()
+    public void startTargetSequence()
     {
         if (!running)
         {
@@ -68,7 +34,7 @@ public class TargetController : MonoBehaviour {
     }
 
     //stop the targets
-    private void stopTargetSequence()
+    public void stopTargetSequence()
     {
         if (running)
         {
@@ -81,7 +47,7 @@ public class TargetController : MonoBehaviour {
         }
     }
 
-    private void resetTargetSequence()
+    public void resetTargetSequence()
     {
 
         for (int i = 0; i < Targets.Length; ++i)

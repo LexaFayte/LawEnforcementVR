@@ -11,6 +11,7 @@ public class GunController : MonoBehaviour {
     public AudioSource GunEmptySource;
     public GameObject bullet_mark;
     public Animation GunAnims;
+    public GameObject CameraContainer;
 
     [Range(1,17)]
     public int MagSize;
@@ -22,6 +23,12 @@ public class GunController : MonoBehaviour {
 
     private int currentBullets;
 
+    public int Bullets
+    {
+        get { return Bullets; }
+        set { Bullets = value; }
+    }
+
 
     private void Awake()
     {
@@ -32,26 +39,28 @@ public class GunController : MonoBehaviour {
 
         currentBullets = MagSize;
 
-        
-
         controller = controllerRight.GetComponent<SteamVR_TrackedController>();
         controller.TriggerClicked += TriggerPressed;
         controller.Gripped += GripPressed;
         trackedObj = controllerRight.GetComponent<SteamVR_TrackedObject>();
     }
 	
+    //events
     private void TriggerPressed(object sender, ClickedEventArgs e)
     {
-        
-
-        Shoot();
+        if(CameraContainer.GetComponent<PauseController>().IsPaused == false)   
+            Shoot();
     }
 
     private void GripPressed(object sender, ClickedEventArgs e)
     {
-        Reload();
+        if (CameraContainer.GetComponent<PauseController>().IsPaused == false)
+            Reload();
     }
 
+    
+
+    //functions
     public void Shoot()
     {
         if (currentBullets != 0)
