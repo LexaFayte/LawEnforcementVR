@@ -8,10 +8,13 @@ public class PauseController : MonoBehaviour {
     public GameObject controllerRight;
     public GameObject GunOBJ;
     public GameObject ViveControllerModel;
+    public GameObject PauseButton;
+    public GameObject ExitButton;
 
     private SteamVR_TrackedObject trackedObj;
     private SteamVR_Controller.Device device;
     private SteamVR_TrackedController controller;
+    private SteamVR_FirstPersonController laser;
 
     private bool paused = false;
 
@@ -23,7 +26,9 @@ public class PauseController : MonoBehaviour {
     private void Awake()
     {
         controller = controllerRight.GetComponent<SteamVR_TrackedController>();
+        laser = controllerRight.GetComponent<SteamVR_FirstPersonController>();
         controller.MenuButtonClicked += MenuPressed;
+        controller.TriggerUnclicked += triggerConfirm;
         Invoke("controllerRenderOff", 0.25f);
         
     }
@@ -31,6 +36,15 @@ public class PauseController : MonoBehaviour {
     private void controllerRenderOff()
     {
         ViveControllerModel.gameObject.SetActive(false);
+    }
+
+    public void triggerConfirm(object sender, ClickedEventArgs e)
+    {
+        //RaycastHit hit = new RaycastHit();
+        //Ray ray = new Ray(controllerRight.transform.position, controllerRight.transform.forward);
+     
+
+
     }
 
     //deal with menu button press
@@ -48,7 +62,9 @@ public class PauseController : MonoBehaviour {
                 child.GetComponent<MeshRenderer>().enabled = false;
             }
 
-            ViveControllerModel.gameObject.SetActive(true);           
+            ViveControllerModel.gameObject.SetActive(true);
+            laser.TogglePointer(true);
+            
         }
         else
         {
@@ -63,10 +79,11 @@ public class PauseController : MonoBehaviour {
             }
 
             ViveControllerModel.gameObject.SetActive(false);
-
+            laser.TogglePointer(false);
         }
     }
 
+    //menu was called using the voice command
     public void MenuCalled(bool activate)
     {
 
@@ -85,6 +102,7 @@ public class PauseController : MonoBehaviour {
                 }
 
                 ViveControllerModel.gameObject.SetActive(true);
+                laser.TogglePointer(true);
             }
         }
         else
@@ -102,6 +120,7 @@ public class PauseController : MonoBehaviour {
                 }
 
                 ViveControllerModel.gameObject.SetActive(false);
+                laser.TogglePointer(false);
             }
         }
     }
