@@ -8,8 +8,8 @@ public class PauseController : MonoBehaviour {
     public GameObject controllerRight;
     public GameObject GunOBJ;
     public GameObject ViveControllerModel;
-    public GameObject PauseButton;
-    public GameObject ExitButton;
+    public GameObject Button;
+    
 
     private SteamVR_TrackedObject trackedObj;
     private SteamVR_Controller.Device device;
@@ -17,6 +17,7 @@ public class PauseController : MonoBehaviour {
     private SteamVR_FirstPersonController laser;
 
     private bool paused = false;
+    private bool once;
 
     public bool IsPaused
     {
@@ -33,24 +34,49 @@ public class PauseController : MonoBehaviour {
         
     }
 
+    /// <summary>
+    /// turn the rendering for the Vive controller off
+    /// (this model is only needed in the pause menu)
+    /// </summary>
     private void controllerRenderOff()
     {
         ViveControllerModel.gameObject.SetActive(false);
     }
 
+
     public void triggerConfirm(object sender, ClickedEventArgs e)
     {
-        //RaycastHit hit = new RaycastHit();
-        //Ray ray = new Ray(controllerRight.transform.position, controllerRight.transform.forward);
-     
+        if(Button != null)
+        {
+            switch(Button.GetComponent<ButtonInteraction>().BID)
+            {
+                case ButtonInteraction.buttonID.PAUSE:
+                    PauseAndResume();
+                    Button = null;
+                    break;
+                case ButtonInteraction.buttonID.EXIT:
 
-
+                    break;
+            }        
+        }
     }
 
-    //deal with menu button press
-    private void MenuPressed(object sender, ClickedEventArgs e)
+    /// <summary>
+    /// assign the button currently being targeted by the VR controller laser
+    /// </summary>
+    /// <param name="b">button being targeted; passed by reference</param>
+    public void AssignButton(ref GameObject b)
     {
-        if(PauseCanvas.gameObject.activeInHierarchy == false)
+        Button = b;
+    }
+
+    /// <summary>
+    /// controller specific.
+    /// Toggles the pause menu.
+    /// </summary>
+    private void PauseAndResume()
+    {
+        if (PauseCanvas.gameObject.activeInHierarchy == false)
         {
             PauseCanvas.gameObject.SetActive(true);
             Time.timeScale = 0;
@@ -64,7 +90,7 @@ public class PauseController : MonoBehaviour {
 
             ViveControllerModel.gameObject.SetActive(true);
             laser.TogglePointer(true);
-            
+
         }
         else
         {
@@ -83,7 +109,21 @@ public class PauseController : MonoBehaviour {
         }
     }
 
-    //menu was called using the voice command
+
+    /// <summary>
+    /// deal with menu button press
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MenuPressed(object sender, ClickedEventArgs e)
+    {
+        PauseAndResume();
+    }
+
+    /// <summary>
+    /// Toggle menu when called by Voice Command
+    /// </summary>
+    /// <param name="activate">boolean representing if menu should be activated.</param>
     public void MenuCalled(bool activate)
     {
 

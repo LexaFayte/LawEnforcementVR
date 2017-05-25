@@ -23,6 +23,13 @@ public class SteamVR_FirstPersonController : MonoBehaviour
         ZAxis
     }
 
+    //MY STUFF (Buttons)
+
+    private bool once = false;
+    GameObject Button;
+
+    //MY STUFF (Buttons)
+
     public GameObject CameraContainer;
     public Color pointerColor;
     public float pointerThickness = 0.002f;
@@ -206,201 +213,214 @@ public class SteamVR_FirstPersonController : MonoBehaviour
             float pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
             SetPointerTransform(pointerBeamLength, pointerThickness);
 
+            //check for buttons (deals with button targetting for menus)
             if(rayHit)
             {
                 checkButton(pointerCollidedWith);
             }
-        }
-    }
-
-    private bool once = false;
-    GameObject PauseButton;
-    private void checkButton(RaycastHit hit)
-    {
-        switch(hit.collider.tag)
-        {
-            case "PauseButton":
-                if (!once)
+            else
+            {
+                //only update once
+                if(Button != null && once)
                 {
-                    PauseButton = hit.collider.gameObject;
-                    PauseButton.GetComponent<UnityEngine.UI.Image>().color = Color.red;
-                    PauseButton.GetComponent<RectTransform>().transform.Translate(0, -0.012f, -0.1f);
-                    once = true;
-                }
-                break;
-            default:
-                if(PauseButton && once)
-                {
-                    PauseButton.GetComponent<UnityEngine.UI.Image>().color = Color.white;
-                    PauseButton.GetComponent<RectTransform>().transform.Translate(0, 0.012f, 0.1f);
+                    Button.GetComponent<ButtonInteraction>().OffButton();
+                    Button = null;
+                    CameraContainer.GetComponent<PauseController>().AssignButton(ref Button);
                     once = false;
                 }
-                
-                break;
+            }
         }
     }
 
-
-    void SnapCanGrabObjectToController(GameObject obj)
+    /// <summary>
+    /// checks if the raycast hit a button object and deals accordingly
+    /// </summary>
+    /// <param name="hit">pointer raycast results</param>
+    private void checkButton(RaycastHit hit)
     {
-        obj.transform.position = controllerAttachPoint.transform.position;
-
-        controllerAttachJoint = obj.AddComponent<FixedJoint>();
-        controllerAttachJoint.connectedBody = controllerAttachPoint;
-        ToggleGrabbableObjectHighlight(false);
-    }
-
-    Rigidbody ReleaseGrabbedObjectFromController()
-    {
-        var jointGameObject = controllerAttachJoint.gameObject;
-        var rigidbody = jointGameObject.GetComponent<Rigidbody>();
-        Object.DestroyImmediate(controllerAttachJoint);
-        controllerAttachJoint = null;
-
-        return rigidbody;
-    }
-
-    void ThrowReleasedObject(Rigidbody rb)
-    {
-        var origin = trackedController.origin ? trackedController.origin : trackedController.transform.parent;
-        if (origin != null)
+        if (hit.collider.tag == "Button")
         {
-            rb.velocity = origin.TransformVector(device.velocity);
-            rb.angularVelocity = origin.TransformVector(device.angularVelocity);
+            if (!once)
+            {
+                Button = hit.collider.gameObject;
+                Button.GetComponent<ButtonInteraction>().OnButton();
+                CameraContainer.GetComponent<PauseController>().AssignButton(ref Button);
+                once = true;
+            }
         }
         else
         {
-            rb.velocity = device.velocity;
-            rb.angularVelocity = device.angularVelocity;
-        }
-
-        rb.maxAngularVelocity = rb.angularVelocity.magnitude;
-    }
-
-    void RecallPreviousGrabbedObject()
-    {
-        if (previousGrabbedObject != null && device.GetTouchDown(SteamVR_Controller.ButtonMask.ApplicationMenu))
-        {
-            previousGrabbedObject.transform.position = controllerAttachPoint.transform.position;
-            previousGrabbedObject.transform.rotation = controllerAttachPoint.transform.rotation;
-            var rb = previousGrabbedObject.GetComponent<Rigidbody>();
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            rb.maxAngularVelocity = 0f;
-        }
-    }
-
-    void UpdateGrabbableObjects()
-    {
-        if (canGrabObject != null)
-        {
-            if (controllerAttachJoint == null && device.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))
+            if (Button != null && once)
             {
-                previousGrabbedObject = canGrabObject;
-                SnapCanGrabObjectToController(canGrabObject);
-            }
-            else if (controllerAttachJoint != null && device.GetTouchUp(SteamVR_Controller.ButtonMask.Trigger))
-            {
-                Rigidbody releasedObjectRigidBody = ReleaseGrabbedObjectFromController();
-                ThrowReleasedObject(releasedObjectRigidBody);
+                Button.GetComponent<ButtonInteraction>().OffButton();
+                Button = null;
+                CameraContainer.GetComponent<PauseController>().AssignButton(ref Button);
+                once = false;
             }
         }
     }
 
-    Renderer[] GetObjectRendererArray(GameObject obj)
-    {
-        return (obj.GetComponents<Renderer>().Length > 0 ? obj.GetComponents<Renderer>() : obj.GetComponentsInChildren<Renderer>());
-    }
 
-    Color[] BuildObjectColorArray(GameObject obj, Color defaultColor)
-    {
-        Renderer[] rendererArray = GetObjectRendererArray(obj);
+    //void SnapCanGrabObjectToController(GameObject obj)
+    //{
+    //    obj.transform.position = controllerAttachPoint.transform.position;
 
-        int length = rendererArray.Length;
+    //    controllerAttachJoint = obj.AddComponent<FixedJoint>();
+    //    controllerAttachJoint.connectedBody = controllerAttachPoint;
+    //    ToggleGrabbableObjectHighlight(false);
+    //}
 
-        Color[] colors = new Color[length];
-        for (int i = 0; i < length; i++)
-        {
-            colors[i] = defaultColor;
-        }
-        return colors;
-    }
+    //Rigidbody ReleaseGrabbedObjectFromController()
+    //{
+    //    var jointGameObject = controllerAttachJoint.gameObject;
+    //    var rigidbody = jointGameObject.GetComponent<Rigidbody>();
+    //    Object.DestroyImmediate(controllerAttachJoint);
+    //    controllerAttachJoint = null;
 
-    Color[] StoreObjectOriginalColors(GameObject obj)
-    {
-        Renderer[] rendererArray = GetObjectRendererArray(obj);
+    //    return rigidbody;
+    //}
 
-        int length = rendererArray.Length;
-        Color[] colors = new Color[length];
+    //void ThrowReleasedObject(Rigidbody rb)
+    //{
+    //    var origin = trackedController.origin ? trackedController.origin : trackedController.transform.parent;
+    //    if (origin != null)
+    //    {
+    //        rb.velocity = origin.TransformVector(device.velocity);
+    //        rb.angularVelocity = origin.TransformVector(device.angularVelocity);
+    //    }
+    //    else
+    //    {
+    //        rb.velocity = device.velocity;
+    //        rb.angularVelocity = device.angularVelocity;
+    //    }
 
-        for (int i = 0; i < length; i++)
-        {
-            var renderer = rendererArray[i];
-            colors[i] = renderer.material.color;
-        }
+    //    rb.maxAngularVelocity = rb.angularVelocity.magnitude;
+    //}
 
-        return colors;
-    }
+    //void RecallPreviousGrabbedObject()
+    //{
+    //    if (previousGrabbedObject != null && device.GetTouchDown(SteamVR_Controller.ButtonMask.ApplicationMenu))
+    //    {
+    //        previousGrabbedObject.transform.position = controllerAttachPoint.transform.position;
+    //        previousGrabbedObject.transform.rotation = controllerAttachPoint.transform.rotation;
+    //        var rb = previousGrabbedObject.GetComponent<Rigidbody>();
+    //        rb.velocity = Vector3.zero;
+    //        rb.angularVelocity = Vector3.zero;
+    //        rb.maxAngularVelocity = 0f;
+    //    }
+    //}
 
-    void ChangeObjectColor(GameObject obj, Color[] colors)
-    {
-        Renderer[] rendererArray = GetObjectRendererArray(obj);
-        int i = 0;
-        foreach (Renderer renderer in rendererArray)
-        {
-            renderer.material.color = colors[i];
-            i++;
-        }
-    }
+    //void UpdateGrabbableObjects()
+    //{
+    //    if (canGrabObject != null)
+    //    {
+    //        if (controllerAttachJoint == null && device.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))
+    //        {
+    //            previousGrabbedObject = canGrabObject;
+    //            SnapCanGrabObjectToController(canGrabObject);
+    //        }
+    //        else if (controllerAttachJoint != null && device.GetTouchUp(SteamVR_Controller.ButtonMask.Trigger))
+    //        {
+    //            Rigidbody releasedObjectRigidBody = ReleaseGrabbedObjectFromController();
+    //            ThrowReleasedObject(releasedObjectRigidBody);
+    //        }
+    //    }
+    //}
 
-    void ToggleGrabbableObjectHighlight(bool highlightObject)
-    {
-        if (highlightGrabbableObject && canGrabObject != null)
-        {            
-            if (highlightObject)
-            {
-                var colorArray = BuildObjectColorArray(canGrabObject, grabObjectHightlightColor);
-                ChangeObjectColor(canGrabObject, colorArray);
-            }
-            else
-            {
-                ChangeObjectColor(canGrabObject, canGrabObjectOriginalColors);
-            }
-        }
-    }
+    //Renderer[] GetObjectRendererArray(GameObject obj)
+    //{
+    //    return (obj.GetComponents<Renderer>().Length > 0 ? obj.GetComponents<Renderer>() : obj.GetComponentsInChildren<Renderer>());
+    //}
 
-    void FixedUpdate()
-    {
-        device = SteamVR_Controller.Input((int)trackedController.index);
+    //Color[] BuildObjectColorArray(GameObject obj, Color defaultColor)
+    //{
+    //    Renderer[] rendererArray = GetObjectRendererArray(obj);
 
-        RecallPreviousGrabbedObject();
-        UpdateGrabbableObjects();
-    }
+    //    int length = rendererArray.Length;
+
+    //    Color[] colors = new Color[length];
+    //    for (int i = 0; i < length; i++)
+    //    {
+    //        colors[i] = defaultColor;
+    //    }
+    //    return colors;
+    //}
+
+    //Color[] StoreObjectOriginalColors(GameObject obj)
+    //{
+    //    Renderer[] rendererArray = GetObjectRendererArray(obj);
+
+    //    int length = rendererArray.Length;
+    //    Color[] colors = new Color[length];
+
+    //    for (int i = 0; i < length; i++)
+    //    {
+    //        var renderer = rendererArray[i];
+    //        colors[i] = renderer.material.color;
+    //    }
+
+    //    return colors;
+    //}
+
+    //void ChangeObjectColor(GameObject obj, Color[] colors)
+    //{
+    //    Renderer[] rendererArray = GetObjectRendererArray(obj);
+    //    int i = 0;
+    //    foreach (Renderer renderer in rendererArray)
+    //    {
+    //        renderer.material.color = colors[i];
+    //        i++;
+    //    }
+    //}
+
+    //void ToggleGrabbableObjectHighlight(bool highlightObject)
+    //{
+    //    if (highlightGrabbableObject && canGrabObject != null)
+    //    {            
+    //        if (highlightObject)
+    //        {
+    //            var colorArray = BuildObjectColorArray(canGrabObject, grabObjectHightlightColor);
+    //            ChangeObjectColor(canGrabObject, colorArray);
+    //        }
+    //        else
+    //        {
+    //            ChangeObjectColor(canGrabObject, canGrabObjectOriginalColors);
+    //        }
+    //    }
+    //}
+
+    //void FixedUpdate()
+    //{
+    //    device = SteamVR_Controller.Input((int)trackedController.index);
+
+    //    RecallPreviousGrabbedObject();
+    //    UpdateGrabbableObjects();
+    //}
 
     void Update()
     {
         UpdatePointer();
     }
 
-    void OnTriggerEnter(Collider collider)
-    {
-        if (collider.tag == "Grabbable")
-        {
-            if (canGrabObject == null)
-            {
-                canGrabObjectOriginalColors = StoreObjectOriginalColors(collider.gameObject);
-            }
-            canGrabObject = collider.gameObject;
-            ToggleGrabbableObjectHighlight(true);
-        }
-    }
+    //void OnTriggerEnter(Collider collider)
+    //{
+    //    if (collider.tag == "Grabbable")
+    //    {
+    //        if (canGrabObject == null)
+    //        {
+    //            canGrabObjectOriginalColors = StoreObjectOriginalColors(collider.gameObject);
+    //        }
+    //        canGrabObject = collider.gameObject;
+    //        ToggleGrabbableObjectHighlight(true);
+    //    }
+    //}
 
-    void OnTriggerExit(Collider collider)
-    {
-        if (collider.tag == "Grabbable")
-        {
-            ToggleGrabbableObjectHighlight(false);
-            canGrabObject = null;
-        }
-    }
+    //void OnTriggerExit(Collider collider)
+    //{
+    //    if (collider.tag == "Grabbable")
+    //    {
+    //        ToggleGrabbableObjectHighlight(false);
+    //        canGrabObject = null;
+    //    }
+    //}
 }
