@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainMenusController : MonoBehaviour {
     public Transform MainCanvas;
@@ -14,14 +15,16 @@ public class MainMenusController : MonoBehaviour {
     private SteamVR_TrackedController controller;
     private SteamVR_FirstPersonController_MainMenu laser;
 
-
-    private bool once;
-
     private void Awake()
     {
         controller = controllerRight.GetComponent<SteamVR_TrackedController>();
-        laser = controllerRight.GetComponent<SteamVR_FirstPersonController_MainMenu>();
         controller.TriggerUnclicked += triggerConfirm;
+    }
+
+    public void SetLaser()
+    {
+        laser = controllerRight.GetComponent<SteamVR_FirstPersonController_MainMenu>();
+        laser.TogglePointer(true);
     }
 
     /// <summary>
@@ -45,9 +48,14 @@ public class MainMenusController : MonoBehaviour {
                     break;
                 case ButtonInteraction.buttonID.RANGE:
                     Button = null;
+                    LoadRange();
                     break;
                 case ButtonInteraction.buttonID.QUIT:
-                    Button = null;
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+#else
+         Application.Quit();
+#endif
                     break;
             }        
         }
@@ -55,6 +63,6 @@ public class MainMenusController : MonoBehaviour {
 
     public void LoadRange()
     {
-
+        SceneManager.LoadScene(1);//the target range
     }
 }

@@ -16,7 +16,7 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
         keyWords[0] = "Scenarios";
         keyWords[1] = "Target range";
         keyWords[2] = "Quit";
-        keyWords[3] = "Scenario one";
+        keyWords[3] = "case one";
         recognizer = new KeywordRecognizer(keyWords);
         recognizer.OnPhraseRecognized += onRecognition;
         recognizer.Start();
@@ -36,9 +36,13 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
                 break;
             case "Quit":
                 //Quit the appplication
-                Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+         Application.Quit();
+#endif
                 break;
-            case "Scenario one":
+            case "case one":
                 break;
         }
     }

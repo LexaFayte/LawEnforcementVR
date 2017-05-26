@@ -71,14 +71,14 @@ public class SteamVR_FirstPersonController_MainMenu : MonoBehaviour
 
     void Start()
     {
-        InitController();
+        //InitController();
         InitPointer();
         InitHeadsetReferencePoint();
     }
 
     void InitController()
     {
-        controllerAttachPoint = transform.GetChild(0).Find("tip").GetChild(0).GetComponent<Rigidbody>();
+        //controllerAttachPoint = transform.GetChild(0).Find("tip").GetChild(0).GetComponent<Rigidbody>();
 
         BoxCollider collider = this.gameObject.AddComponent<BoxCollider>();
         collider.size = new Vector3(0.1f, 0.1f, 0.2f);
@@ -112,7 +112,7 @@ public class SteamVR_FirstPersonController_MainMenu : MonoBehaviour
         pointerTip.layer = 2;
 
         SetPointerTransform(pointerLength, pointerThickness);
-        TogglePointer(false);
+        CameraContainer_MM.GetComponent<MainMenusController>().SetLaser();
     }
 
     void InitHeadsetReferencePoint()

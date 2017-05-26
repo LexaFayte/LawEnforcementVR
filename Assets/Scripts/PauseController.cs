@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PauseController : MonoBehaviour {
 
@@ -17,7 +18,6 @@ public class PauseController : MonoBehaviour {
     private SteamVR_FirstPersonController laser;
 
     private bool paused = false;
-    private bool once;
 
     public bool IsPaused
     {
@@ -55,10 +55,15 @@ public class PauseController : MonoBehaviour {
                     Button = null;
                     break;
                 case ButtonInteraction.buttonID.EXIT:
-
+                    LoadMainMenu();
                     break;
             }        
         }
+    }
+
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 
     /// <summary>
