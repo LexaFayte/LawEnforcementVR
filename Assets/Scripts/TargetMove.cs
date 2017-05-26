@@ -21,9 +21,9 @@ public class TargetMove : MonoBehaviour {
     public Vector3 stopPos;
 
     private Coroutine coUp;
-    private Coroutine coDown;
-    private Coroutine coDownHit;
-    private Coroutine Display;
+    //private Coroutine coDown;
+    //private Coroutine coDownHit;
+    //private Coroutine Display;
 
     private void Awake()
     {
@@ -143,7 +143,7 @@ public class TargetMove : MonoBehaviour {
             {
                 StopCoroutine(coUp);
                 moving = false;
-                coDownHit = StartCoroutine(moveTarget(transform.position, finishDown, LERP_TIME / 3));
+                StartCoroutine(moveTarget(transform.position, finishDown, LERP_TIME / 3));
                 up = false;
 
                 timer = 0f;
@@ -154,7 +154,7 @@ public class TargetMove : MonoBehaviour {
                 if (up)//if moving up
                     coUp = StartCoroutine(moveTarget(transform.position, finishUp, LERP_TIME));
                 else//else moving down
-                    coDown = StartCoroutine(moveTarget(transform.position, finishDown, LERP_TIME));
+                    StartCoroutine(moveTarget(transform.position, finishDown, LERP_TIME));
 
                 timer = 0f;//reset timer
             }
@@ -164,12 +164,12 @@ public class TargetMove : MonoBehaviour {
         {
             if(stop)
             {
-                Display = StartCoroutine(DisplayTargets(transform.position, stopPos, LERP_TIME / 3));
+                StartCoroutine(DisplayTargets(transform.position, stopPos, LERP_TIME / 3));
             }
 
             if(reset)
             {
-                coDown = StartCoroutine(ResetTargets(transform.position, finishDown, LERP_TIME));
+                StartCoroutine(ResetTargets(transform.position, finishDown, LERP_TIME));
             }
         }
 	}

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ButtonInteraction : MonoBehaviour {
 
-    public enum buttonID { PAUSE, EXIT,};
+    public enum buttonID { PAUSE, EXIT, SCENARIOS, RANGE, QUIT};
 
     public buttonID BID;
 
