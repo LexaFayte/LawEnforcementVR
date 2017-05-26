@@ -48,7 +48,7 @@ public class VoiceRecognizer : MonoBehaviour {
                 GetComponent<PauseController>().MenuCalled(false);
                 break;
             case "Exit":
-                GetComponent<PauseController>().LoadMainMenu();
+                GetComponent<PauseController>().ExitCalled();          
                 break;
         }
     }

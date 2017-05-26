@@ -18,6 +18,8 @@ public class PauseController : MonoBehaviour {
     private SteamVR_FirstPersonController laser;
 
     private bool paused = false;
+    private bool load = false;
+    float timer = 0f;
 
     public bool IsPaused
     {
@@ -26,12 +28,19 @@ public class PauseController : MonoBehaviour {
 
     private void Awake()
     {
+       
         controller = controllerRight.GetComponent<SteamVR_TrackedController>();
         laser = controllerRight.GetComponent<SteamVR_FirstPersonController>();
         controller.MenuButtonClicked += MenuPressed;
         controller.TriggerUnclicked += triggerConfirm;
         Invoke("controllerRenderOff", 0.25f);
-        
+        SceneManager.sceneLoaded += sceneLoad;
+    }
+
+
+    public void sceneLoad(Scene scene, LoadSceneMode lsm)
+    {
+        SteamVR_Fade.View(Color.clear, 2f);
     }
 
     /// <summary>
@@ -55,12 +64,27 @@ public class PauseController : MonoBehaviour {
                     Button = null;
                     break;
                 case ButtonInteraction.buttonID.EXIT:
-                    LoadMainMenu();
+                    SteamVR_Fade.View(Color.black, 1.25f);
+                    Time.timeScale = 1;
+                    Invoke("LoadMainMenu", 1.5f);
                     break;
             }        
         }
     }
 
+    /// <summary>
+    /// Exit voice command triggered, load the main menu
+    /// </summary>
+    public void ExitCalled()
+    {
+        SteamVR_Fade.View(Color.black, 1.25f);
+        Time.timeScale = 1;
+        Invoke("LoadMainMenu", 1.5f);
+    }
+
+    /// <summary>
+    /// loads into the main menu
+    /// </summary>
     public void LoadMainMenu()
     {
         SceneManager.LoadScene(0);

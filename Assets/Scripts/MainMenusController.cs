@@ -19,6 +19,12 @@ public class MainMenusController : MonoBehaviour {
     {
         controller = controllerRight.GetComponent<SteamVR_TrackedController>();
         controller.TriggerUnclicked += triggerConfirm;
+        SceneManager.sceneLoaded += sceneLoad;
+    }
+
+    public void sceneLoad(Scene scene, LoadSceneMode lsm)
+    {
+        SteamVR_Fade.View(Color.clear, 2f);
     }
 
     public void SetLaser()
@@ -48,7 +54,9 @@ public class MainMenusController : MonoBehaviour {
                     break;
                 case ButtonInteraction.buttonID.RANGE:
                     Button = null;
-                    LoadRange();
+                    SteamVR_Fade.View(Color.black, 1.25f);
+                    Invoke("LoadRange", 1f);
+                    //LoadRange();
                     break;
                 case ButtonInteraction.buttonID.QUIT:
 #if UNITY_EDITOR
@@ -61,6 +69,9 @@ public class MainMenusController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// loads into the Range
+    /// </summary>
     public void LoadRange()
     {
         SceneManager.LoadScene(1);//the target range
