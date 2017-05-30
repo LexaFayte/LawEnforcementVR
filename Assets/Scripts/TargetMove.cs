@@ -41,7 +41,13 @@ public class TargetMove : MonoBehaviour {
 
     //coroutines
 
-    //move target up and down
+    /// <summary>
+    /// coroutine for moving the target up and down
+    /// </summary>
+    /// <param name="start">start position</param>
+    /// <param name="finish">end position</param>
+    /// <param name="time">how long to lerp from start pos to end pos</param>
+    /// <returns></returns>
     IEnumerator moveTarget(Vector3 start, Vector3 finish, float time)
     {
         if (!moving)
@@ -63,7 +69,13 @@ public class TargetMove : MonoBehaviour {
         }
     }
 
-    //move target forward for display after finished shooting
+    /// <summary>
+    /// coroutine for moving the target forward for display when finished shooting
+    /// </summary>
+    /// <param name="start">start position</param>
+    /// <param name="finish">end position</param>
+    /// <param name="time">how long to lerp from start pos to end pos</param>
+    /// <returns></returns>
     IEnumerator DisplayTargets(Vector3 start, Vector3 finish, float time)
     {
         if (!moving)
@@ -82,6 +94,13 @@ public class TargetMove : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// coroutine for resetting the target and removing all bullet marks
+    /// </summary>
+    /// <param name="start">start position</param>
+    /// <param name="finish">end position</param>
+    /// <param name="time">how long to lerp from start pos to end pos</param>
+    /// <returns></returns>
     IEnumerator ResetTargets(Vector3 start, Vector3 finish, float time)
     {
         if (!moving)
@@ -110,11 +129,18 @@ public class TargetMove : MonoBehaviour {
 
 
     //functions
+
+    /// <summary>
+    /// sets the move flag to true
+    /// </summary>
     public void Move()
     {
         move = true;
     }
 
+    /// <summary>
+    /// sets the move flag to flase and stops all target motion
+    /// </summary>
     public void StopMove()
     {
         move = false;
@@ -123,6 +149,9 @@ public class TargetMove : MonoBehaviour {
         stop = true;
     }
 
+    /// <summary>
+    /// resets the target
+    /// </summary>
     public void Reset()
     {
         move = false;

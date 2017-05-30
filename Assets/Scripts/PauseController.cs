@@ -11,7 +11,7 @@ public class PauseController : MonoBehaviour {
     public GameObject ViveControllerModel;
     public GameObject Button;
     
-
+    //SteamVR
     private SteamVR_TrackedObject trackedObj;
     private SteamVR_Controller.Device device;
     private SteamVR_TrackedController controller;
@@ -21,11 +21,14 @@ public class PauseController : MonoBehaviour {
     private bool load = false;
     float timer = 0f;
 
+    //properties
     public bool IsPaused
     {
         get { return paused; }
     }
 
+
+    //initialization
     private void Awake()
     {
        
@@ -37,7 +40,11 @@ public class PauseController : MonoBehaviour {
         SceneManager.sceneLoaded += sceneLoad;
     }
 
-
+    /// <summary>
+    /// things to do upon scene loading
+    /// </summary>
+    /// <param name="scene"></param>
+    /// <param name="lsm"></param>
     public void sceneLoad(Scene scene, LoadSceneMode lsm)
     {
         SteamVR_Fade.View(Color.clear, 2f);

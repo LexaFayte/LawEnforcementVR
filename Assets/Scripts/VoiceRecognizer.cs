@@ -24,6 +24,10 @@ public class VoiceRecognizer : MonoBehaviour {
         recognizer.Start();
     }
 
+    /// <summary>
+    /// event for when a phrase or word is recognized
+    /// </summary>
+    /// <param name="e"></param>
     private void onRecognition(PhraseRecognizedEventArgs e)
     {
 

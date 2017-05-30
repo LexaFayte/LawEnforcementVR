@@ -16,6 +16,7 @@ public class GunController : MonoBehaviour {
     [Range(1,17)]
     public int MagSize;
 
+    //SteamVR
     private SteamVR_TrackedObject trackedObj;
     private SteamVR_Controller.Device device;
     private SteamVR_TrackedController controller;
@@ -23,13 +24,14 @@ public class GunController : MonoBehaviour {
 
     private int currentBullets;
 
+    //properties
     public int Bullets
     {
         get { return Bullets; }
         set { Bullets = value; }
     }
 
-
+    //initialization
     private void Awake()
     {
         if(MagSize == 0)
@@ -61,6 +63,10 @@ public class GunController : MonoBehaviour {
     
 
     //functions
+
+    /// <summary>
+    /// deals with shooting logic
+    /// </summary>
     public void Shoot()
     {
         if (currentBullets != 0)
@@ -106,6 +112,9 @@ public class GunController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// reloads the gun (plays animation, sound clip, and resets bullet count)
+    /// </summary>
     public void Reload()
     {
         //play reload sound
