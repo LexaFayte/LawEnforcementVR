@@ -6,13 +6,15 @@ using UnityEngine;
 
 public class ButtonInteraction : MonoBehaviour {
 
-    public enum buttonID { PAUSE, EXIT, SCENARIOS, RANGE, QUIT, BACK};
+    public enum buttonID { PAUSE, EXIT, SCENARIOS, RANGE, QUIT, BACK, START, STOP, RESET};
 
     public buttonID BID;
     public Color highlight = Color.green;
+    public float popDepth = 0.1f;
     public bool scenario = false;
     private int scenarioID = -1;
     public GameObject MMContainerController;
+    private bool buttonActive = false;
 
     private void Start()
     {
@@ -23,15 +25,21 @@ public class ButtonInteraction : MonoBehaviour {
     public void OnButton()
     {
         GetComponent<UnityEngine.UI.Image>().color = highlight;
-        GetComponent<RectTransform>().transform.transform.Translate(0, 0, -0.1f);
+        GetComponent<RectTransform>().transform.transform.Translate(0, 0, -popDepth);
         transform.localScale += new Vector3(0.05f, 0, 0.1f);
-    } 
+        buttonActive = true;
+    }
 
     public void OffButton()
     {
-        GetComponent<UnityEngine.UI.Image>().color = Color.white;
-        GetComponent<RectTransform>().transform.transform.Translate(0, 0, 0.1f);
-        transform.localScale -= new Vector3(0.05f, 0, 0.1f);
+
+        if (buttonActive)
+        {
+            GetComponent<UnityEngine.UI.Image>().color = Color.white;
+            GetComponent<RectTransform>().transform.transform.Translate(0, 0, popDepth);
+            transform.localScale -= new Vector3(0.05f, 0, 0.1f);
+            buttonActive = false;
+        }
     }
 
 }

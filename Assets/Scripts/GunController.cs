@@ -50,13 +50,15 @@ public class GunController : MonoBehaviour {
     //events
     private void TriggerPressed(object sender, ClickedEventArgs e)
     {
-        if(CameraContainer.GetComponent<PauseController>().IsPaused == false)   
+        if(CameraContainer.GetComponent<PauseController>().IsPaused == false
+            && CameraContainer.GetComponent<PauseController>().ViveController == false)   
             Shoot();
     }
 
     private void GripPressed(object sender, ClickedEventArgs e)
     {
-        if (CameraContainer.GetComponent<PauseController>().IsPaused == false)
+        if (CameraContainer.GetComponent<PauseController>().IsPaused == false
+        && CameraContainer.GetComponent<PauseController>().ViveController == false)
             Reload();
     }
 

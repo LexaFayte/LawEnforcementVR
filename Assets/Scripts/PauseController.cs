@@ -10,6 +10,7 @@ public class PauseController : MonoBehaviour {
     public GameObject GunOBJ;
     public GameObject ViveControllerModel;
     public GameObject Button;
+    public UnityEngine.UI.Text statusText;
     
     //SteamVR
     private SteamVR_TrackedObject trackedObj;
@@ -18,6 +19,7 @@ public class PauseController : MonoBehaviour {
     private SteamVR_FirstPersonController laser;
 
     private bool paused = false;
+    private bool controllerToggle = false;
     private bool load = false;
     float timer = 0f;
 
@@ -25,6 +27,11 @@ public class PauseController : MonoBehaviour {
     public bool IsPaused
     {
         get { return paused; }
+    }
+
+    public bool ViveController
+    {
+        get { return controllerToggle; }
     }
 
 
@@ -36,6 +43,8 @@ public class PauseController : MonoBehaviour {
         laser = controllerRight.GetComponent<SteamVR_FirstPersonController>();
         controller.MenuButtonClicked += MenuPressed;
         controller.TriggerUnclicked += triggerConfirm;
+        controller.PadClicked += PadPressed;
+        controller.PadUnclicked += PadReleased;
         Invoke("controllerRenderOff", 0.25f);
         SceneManager.sceneLoaded += sceneLoad;
     }
@@ -59,7 +68,11 @@ public class PauseController : MonoBehaviour {
         ViveControllerModel.gameObject.SetActive(false);
     }
 
-
+    /// <summary>
+    /// event for trigger being pulled
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public void triggerConfirm(object sender, ClickedEventArgs e)
     {
         if(Button != null)
@@ -75,9 +88,41 @@ public class PauseController : MonoBehaviour {
                     Time.timeScale = 1;
                     Invoke("LoadMainMenu", 1.5f);
                     break;
+                case ButtonInteraction.buttonID.START:
+                    statusText.text = "Targets started";
+                    GetComponent<TargetController>().startTargetSequence();
+                    break;
+                case ButtonInteraction.buttonID.STOP:
+                    GetComponent<TargetController>().stopTargetSequence();
+                    statusText.text = "Targets stopped";
+                    break;
+                case ButtonInteraction.buttonID.RESET:
+                    GetComponent<TargetController>().resetTargetSequence();
+                    statusText.text = "Targets reset";
+                    break;
             }        
         }
     }
+
+    public void PadPressed(object sender, ClickedEventArgs e)
+    {
+        if (!paused)
+        {
+            controllerToggle = true;
+            ToggleViveController(true);
+        }
+    }
+
+    public void PadReleased(object sender, ClickedEventArgs e)
+    {
+        if (!paused)
+        {
+            controllerToggle = false;
+            ToggleViveController(false);
+            if (Button != null)
+                Button.GetComponent<ButtonInteraction>().OffButton();
+        }
+    }   
 
     /// <summary>
     /// Exit voice command triggered, load the main menu
@@ -107,6 +152,23 @@ public class PauseController : MonoBehaviour {
     }
 
     /// <summary>
+    /// swaps the active controller model and functionality; Vive controller model, and Gun model
+    /// </summary>
+    /// <param name="active">the active state of the vive controller model</param>
+    private void ToggleViveController(bool active)
+    {
+
+        GunOBJ.GetComponent<MeshRenderer>().enabled = !active;
+        foreach (Transform child in GunOBJ.transform)
+        {
+            child.GetComponent<MeshRenderer>().enabled = !active;
+        }
+        
+        laser.TogglePointer(active);
+        ViveControllerModel.gameObject.SetActive(active);
+    }
+
+    /// <summary>
     /// controller specific.
     /// Toggles the pause menu.
     /// </summary>
@@ -118,14 +180,7 @@ public class PauseController : MonoBehaviour {
             Time.timeScale = 0;
             paused = true;
 
-            GunOBJ.GetComponent<MeshRenderer>().enabled = false;
-            foreach (Transform child in GunOBJ.transform)
-            {
-                child.GetComponent<MeshRenderer>().enabled = false;
-            }
-
-            ViveControllerModel.gameObject.SetActive(true);
-            laser.TogglePointer(true);
+            ToggleViveController(true);
 
         }
         else
@@ -134,14 +189,7 @@ public class PauseController : MonoBehaviour {
             Time.timeScale = 1;
             paused = false;
 
-            GunOBJ.GetComponent<MeshRenderer>().enabled = true;
-            foreach (Transform child in GunOBJ.transform)
-            {
-                child.GetComponent<MeshRenderer>().enabled = true;
-            }
-
-            ViveControllerModel.gameObject.SetActive(false);
-            laser.TogglePointer(false);
+            ToggleViveController(false);
         }
     }
 
@@ -171,14 +219,7 @@ public class PauseController : MonoBehaviour {
                 Time.timeScale = 0;
                 paused = true;
 
-                GunOBJ.GetComponent<MeshRenderer>().enabled = false;
-                foreach (Transform child in GunOBJ.transform)
-                {
-                    child.GetComponent<MeshRenderer>().enabled = false;
-                }
-
-                ViveControllerModel.gameObject.SetActive(true);
-                laser.TogglePointer(true);
+                ToggleViveController(true);
             }
         }
         else
@@ -189,14 +230,7 @@ public class PauseController : MonoBehaviour {
                 Time.timeScale = 1;
                 paused = false;
 
-                GunOBJ.GetComponent<MeshRenderer>().enabled = true;
-                foreach (Transform child in GunOBJ.transform)
-                {
-                    child.GetComponent<MeshRenderer>().enabled = true;
-                }
-
-                ViveControllerModel.gameObject.SetActive(false);
-                laser.TogglePointer(false);
+                ToggleViveController(false);
             }
         }
     }
