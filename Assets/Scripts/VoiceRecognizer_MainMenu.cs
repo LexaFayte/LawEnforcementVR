@@ -90,7 +90,7 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
 #else
-         Application.Invoke("Quit", 1.5f);
+         Application.Quit();
 #endif
                 break;
             case "Back":

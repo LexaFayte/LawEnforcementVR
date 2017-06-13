@@ -87,7 +87,7 @@ public class VoiceRecognizer : MonoBehaviour {
                 }
                 break;
             case "Reset":
-                if (!GetComponent<PauseController>().IsPaused)
+                if (!GetComponent<PauseController>().IsPaused && !GetComponent<TargetController>().IsRunning)
                 {
                     HUDtext.text = "Reset";
                     StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));

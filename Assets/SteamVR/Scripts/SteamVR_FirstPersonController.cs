@@ -42,6 +42,8 @@ public class SteamVR_FirstPersonController : MonoBehaviour
     public bool highlightGrabbableObject = true;
     public Color grabObjectHightlightColor;
 
+    public Shader laserShader;
+
     private SteamVR_TrackedObject trackedController;
     private SteamVR_Controller.Device device;
 
@@ -87,7 +89,7 @@ public class SteamVR_FirstPersonController : MonoBehaviour
 
     void InitPointer()
     {
-        Material newMaterial = new Material(Shader.Find("Unlit/Color"));
+        Material newMaterial = new Material(laserShader);
         newMaterial.SetColor("_Color", pointerColor);
 
         pointerHolder = new GameObject();

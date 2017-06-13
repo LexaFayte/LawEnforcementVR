@@ -97,8 +97,11 @@ public class PauseController : MonoBehaviour {
                     statusText.text = "Targets stopped";
                     break;
                 case ButtonInteraction.buttonID.RESET:
-                    GetComponent<TargetController>().resetTargetSequence();
-                    statusText.text = "Targets reset";
+                    if (!GetComponent<TargetController>().IsRunning)
+                    {
+                        GetComponent<TargetController>().resetTargetSequence();
+                        statusText.text = "Targets reset";
+                    }
                     break;
             }        
         }

@@ -14,6 +14,11 @@ public class TargetController : MonoBehaviour {
 
     private bool running = false;
 
+    public bool IsRunning
+    {
+        get { return running; }
+    }
+
     // Use this for initialization
     void Awake () {
         controller = controllerRight.GetComponent<SteamVR_TrackedController>();
