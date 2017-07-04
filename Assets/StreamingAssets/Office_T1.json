@@ -1,0 +1,40 @@
+{
+	"items":
+	[
+		{"key":"escalate--calmDown","value":"5"},
+		{"key":"escalate--quiet","value":"5"},
+		{"key":"escalate--insult","value":"5"},
+		{"key":"escalate--curse","value":"5"},
+		
+		{"key":"warning--repeatThreat","value":"1.5"},
+		{"key":"warning--NoRepeatThreat","value":"1.5"},
+		
+		{"key":"aggressive--handsUp","value":"0.5"},
+		{"key":"aggressive--handsLOS","value":"0.25"},
+		{"key":"aggressive--ground","value":"1.75"},
+		
+		{"key":"question--situation","value":"-1.5"},
+		{"key":"question--name","value":"-.75"},
+		
+		{"key":"title--formal","value":"-.5"},
+		{"key":"title--fname","value":"-.75"},
+		{"key":"title--lname","value":"-.75"},
+		{"key":"title--rude","value":"1.25"},
+		
+		{"key":"purpose--help","value":".5"},
+		{"key":"purpose--listen","value":".75"},
+		{"key":"purpose--convince","value":".75"},
+		
+		{"key":"losPass--deny","value":"0"},
+		{"key":"losPass--partner","value":"0"},
+		
+		{"key":"losFail--allow","value":"0"},
+		
+		{"key":"coax--stepOut","value":"-.25"},		
+		{"key":"coax--andTalk","value":"-.75"},
+		{"key":"coax--talk","value":"-.5"},
+		{"key":"coax--talkOutside","value":"-.75"},
+		{"key":"coax--outside","value":"-.25"},
+		{"key":"coax--command","value":"-.1"}
+	]
+}

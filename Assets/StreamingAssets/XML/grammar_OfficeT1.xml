@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<grammar version="1.0" xml:lang="en-US" root="topLevel"
+ xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
+ 
+ <rule id="topLevel">
+	<one-of>
+		<item><ruleref uri="#a"/></item>
+		<item><ruleref uri="#b"/></item>
+		<item><ruleref uri="#c"/></item>
+		<item><ruleref uri="#d"/></item>
+		<item><ruleref uri="#e"/></item>
+		<item><ruleref uri="#f"/></item>
+	</one-of>
+ </rule>
+ 
+ <rule id="a">
+	<ruleref uri="#autoEscalate"/>
+ </rule>
+ 
+ <rule id="autoEscalate">
+   <one-of>
+		<item> calm down <tag> out+="_escalate--calmDown" </tag></item>
+		<item> shut up <tag> out+="_escalate--quiet" </tag></item>
+    <item> <tag>out+="_escalate--insult"</tag>
+      <one-of>
+        <item> ass hole </item>
+        <item> retard </item>
+		    <item> dip shit </item>
+		    <item> scum </item>
+      </one-of>
+    </item>
+		<item> <tag> out+="_escalate--curse" </tag>
+			<one-of>
+				<item> bitch </item>
+				<item> fuck </item>
+				<item> fucker </item>
+				<item> mother fucker </item>
+				<item> cunt </item>
+				<item> dick </item>
+			</one-of>
+		</item>
+	</one-of>
+ </rule>
+ 
+ <rule id="b">
+	<item repeat="0-1"><ruleref uri="#aggressiveArrestAttempt"/></item>
+	<item repeat="0-1">I said<tag>out+="_warning--repeatThreat"</tag></item>
+  <item repeat="0-1">I won't say it again <tag>out+="_warning--noRepeatThreat"</tag></item>
+	<item repeat="0-1"><ruleref uri="#aggressiveArrestAttempt"/><tag>out+=rules.latest()</tag></item>
+ </rule>
+ 
+ <rule id="aggressiveArrestAttempt">
+	<item>
+		<one-of>
+			<item> hands up <tag> out+="_aggressive--handsUp" </tag></item>
+			<item> hands where I can see them <tag> out+="_aggresive--handsLOS" </tag></item>
+			<item> get on the ground <tag> out+="_aggresive--ground" </tag></item>
+		</one-of>
+	</item>
+	<item repeat="0-1">
+		<ruleref uri="#autoEscalate"/> <tag> out+=rules.latest() </tag>
+	</item>
+ </rule>
+ 
+ <rule id="c">
+		<item repeat="0-1"><ruleref uri="#title"/> <tag> out+=rules.latest() </tag></item>
+		<ruleref uri="#question"/>
+   <tag> out+=rules.latest() </tag>
+		<item repeat="0-1"><ruleref uri="#title"/>
+      <tag> out+=rules.latest() </tag>
+    </item>
+ </rule>
+ 
+ <rule id="question">
+	<one-of> 
+		<item> what seems to be </item>
+		<item> what's </item>
+		<item> what is </item>
+	</one-of>
+	
+	<one-of>
+		<item> going on <tag> out+="_question--situation" </tag></item>
+		<item> happening <tag> out+="_question--situation" </tag></item>
+		<item> the problem <tag> out+="_question--situation" </tag></item>
+		<item> the issue <tag> out+="_question--situation" </tag></item>
+		<item> your name <tag> out+="_question--name" </tag></item>
+	</one-of>
+ </rule>
+ 
+ <rule id="title">
+	<one-of>
+		<item> sir <tag>out+="_title--formal"</tag></item>
+		<item> dave <tag>out+="_title--fname"</tag></item>
+		<item> Mr.Fox <tag>out+="_title--lname"</tag></item>
+		<item> Hey you <tag>out+="_title--rude"</tag> </item>
+	</one-of>
+ </rule> 
+ 
+  <rule id="d">
+	<item repeat="0-1"><ruleref uri="#title"/> <tag> out+=rules.latest() </tag></item>
+	<ruleref uri="#purpose"/> <tag> out+=rules.latest() </tag>
+  </rule>
+  
+  <rule id="purpose">
+	<item> I'm here to </item>
+	<one-of>
+		<item> help <tag>out+="_purpose--help"</tag></item>
+		<item> listen <tag>out+="_purpose--listen"</tag></item>
+	</one-of>
+	<item repeat="0-1">
+    <tag>out+="_purpose--convince"</tag>
+		<item>but I</item>
+		<one-of>
+			<item>need you to</item>
+			<item>can only do that</item>
+			<item>can't do that</item>
+		</one-of>
+		<one-of>
+			<item>let me</item>
+			<item>with your help</item>
+			<item>with your assistance</item>
+			<item>if you help</item>
+			<item>if you let me</item>
+			<item>if you work with me</item>
+			<item>without your assistance</item>
+			<item>without your help</item>
+			<item>if you don't comply</item>
+			<item>if you won't let me</item>
+		</one-of>
+	</item>
+  </rule>
+ 
+ <rule id="e">
+	 <one-of>
+		<item><ruleref uri="#losPass"/><tag>out+=rules.latest()</tag></item>
+		<item><ruleref uri="#losFail"/><tag>out+=rules.latest()</tag></item>
+	 </one-of>	
+	 <item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
+ </rule>
+ 
+ <rule id="losPass">
+	<one-of>
+		<item> no <tag>out+="_losPass--deny"</tag></item>
+		<item> later <tag>out+="_losPass--deny"</tag></item>
+		<item> <tag>out+="_losPass--partner"</tag>
+			my partner
+			<one-of>
+				<item> can </item>
+				<item> will </item>
+			</one-of>
+			<one-of>
+				<item>get it</item>
+				<item>grab it</item>
+			</one-of>
+			<item repeat="0-1"> for you </item>
+		</item>
+	</one-of>
+ </rule>
+ 
+ <rule id="losFail">
+	<one-of>
+		<item> sure <tag>out+="_losFail--allow"</tag></item>
+		<item> okay <tag>out+="_losFail--allow"</tag></item>
+		<item> yes <tag>out+="_losFail--allow"</tag></item>
+		<item> yeah <tag>out+="_losFail--allow"</tag></item>
+	</one-of>
+ </rule>
+ 
+ <rule id="f">
+	<item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
+	<ruleref uri="#coax"/><tag>out+=rules.latest()</tag>
+	<item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
+ </rule>
+ 
+ <rule id="coax">
+	<one-of>
+		<item>
+			why don't
+			<one-of>
+				<item>you</item>
+				<item>we</item>
+			</one-of>
+			
+			<one-of>
+				<item>step out<tag>out+="_coax--stepOut"</tag></item>
+				<item>step outside<tag>out+="_coax--stepOut"</tag></item>
+			</one-of>
+			<item repeat="0-1">and talk<tag>out+="_coax--andTalk"</tag></item>
+			<item repeat="0-1">and we can talk<tag>out+="_coax--andTalk"</tag></item>
+			<item repeat="0-1">and we'll talk<tag>out+="_coax--andTalk"</tag></item>
+		</item>
+		
+		<item>
+			lets talk
+			<one-of>
+				<item>about this<tag>out+="_coax--talk"</tag></item>
+				<item>outside<tag>out+="_coax--talkOutside"</tag></item>
+				<item>about this outside<tag>out+="_coax--talkOutside"</tag></item>
+			</one-of>
+		</item>
+		
+		<item>
+		outside<tag>out+="_coax--outside"</tag>
+		</item>
+		
+		<item repeat="0-1"><tag>out+="_coax--command"</tag>
+			<one-of>
+				<item>lets go</item>
+				<item>come on</item>
+				<item>follow me</item>
+			</one-of>
+		</item>
+	</one-of>
+	
+	<item repeat="0-1"><tag>out+="_coax--command"</tag>
+		<one-of>
+			<item>lets go</item>
+			<item>come on</item>
+			<item>follow me</item>
+		</one-of>
+	</item>
+	
+ </rule>
+ 
+ </grammar>
