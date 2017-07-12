@@ -47,6 +47,7 @@
 	<item repeat="0-1"><ruleref uri="#aggressiveArrestAttempt"/></item>
 	<item repeat="0-1">I said<tag>out+="_warning--repeatThreat"</tag></item>
   <item repeat="0-1">I won't say it again <tag>out+="_warning--noRepeatThreat"</tag></item>
+  <item repeat="0-1">I'm not going to say it again <tag>out+="_warning--noRepeatThreat"</tag></item>
 	<item repeat="0-1"><ruleref uri="#aggressiveArrestAttempt"/><tag>out+=rules.latest()</tag></item>
  </rule>
  
@@ -54,8 +55,8 @@
 	<item>
 		<one-of>
 			<item> hands up <tag> out+="_aggressive--handsUp" </tag></item>
-			<item> hands where I can see them <tag> out+="_aggresive--handsLOS" </tag></item>
-			<item> get on the ground <tag> out+="_aggresive--ground" </tag></item>
+			<item> hands where I can see them <tag> out+="_aggressive--handsLOS" </tag></item>
+			<item> get on the ground <tag> out+="_aggressive--ground" </tag></item>
 		</one-of>
 	</item>
 	<item repeat="0-1">
@@ -91,8 +92,13 @@
  <rule id="title">
 	<one-of>
 		<item> sir <tag>out+="_title--formal"</tag></item>
-		<item> dave <tag>out+="_title--fname"</tag></item>
-		<item> Mr.Fox <tag>out+="_title--lname"</tag></item>
+		<item> <tag>out+="_title--fname"</tag>
+      <one-of>
+        <item>Jim</item>
+        <item>Jimmy</item>
+      </one-of>
+    </item>
+		<item> Mr.Smith <tag>out+="_title--lname"</tag></item>
 		<item> Hey you <tag>out+="_title--rude"</tag> </item>
 	</one-of>
  </rule> 
@@ -141,7 +147,7 @@
  
  <rule id="losPass">
 	<one-of>
-		<item> no <tag>out+="_losPass--deny"</tag></item>
+		<item repeat="1-3"> no <tag>out+="_losPass--deny"</tag></item>
 		<item> later <tag>out+="_losPass--deny"</tag></item>
 		<item> <tag>out+="_losPass--partner"</tag>
 			my partner
@@ -164,6 +170,7 @@
 		<item> okay <tag>out+="_losFail--allow"</tag></item>
 		<item> yes <tag>out+="_losFail--allow"</tag></item>
 		<item> yeah <tag>out+="_losFail--allow"</tag></item>
+		<item> alright <tag>out+="_losFail--allow"</tag></item>
 	</one-of>
  </rule>
  
@@ -185,13 +192,30 @@
 			<one-of>
 				<item>step out<tag>out+="_coax--stepOut"</tag></item>
 				<item>step outside<tag>out+="_coax--stepOut"</tag></item>
+				<item>talk about it<tag>out+="_coax--talk"</tag></item>
+				<item>talk about this<tag>out+="_coax--talk"</tag></item>
 			</one-of>
 			<item repeat="0-1">and talk<tag>out+="_coax--andTalk"</tag></item>
 			<item repeat="0-1">and we can talk<tag>out+="_coax--andTalk"</tag></item>
 			<item repeat="0-1">and we'll talk<tag>out+="_coax--andTalk"</tag></item>
 		</item>
-		
-		<item>
+
+    <item>
+      I'm going to
+      <one-of>
+        <item>need you to</item>
+        <item>have to ask you to</item>
+        <item>ask you to </item>
+      </one-of>
+
+      <one-of>
+        <item>step out<tag>out+="_coax--stepOut"</tag></item>
+        <item>step outside<tag>out+="_coax--stepOut"</tag></item>
+      </one-of>
+      <item repeat="0-1"> with me </item>
+    </item>
+
+    <item>
 			lets talk
 			<one-of>
 				<item>about this<tag>out+="_coax--talk"</tag></item>
@@ -220,6 +244,12 @@
 			<item>follow me</item>
 		</one-of>
 	</item>
+	
+
+	<item repeat="0-1">so we can talk<tag>out+="_coax--talkReason"</tag></item>
+	<item repeat="0-1">to talk<tag>out+="_coax--talkReason"</tag></item>
+	<item repeat="0-1">just want to talk<tag>out+="_coax--talkReason"</tag></item>
+
 	
  </rule>
  

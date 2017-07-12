@@ -20,6 +20,7 @@ public static class SemanticsParser {
         string[] splits = toParse.Split('_');
         semantics = splits.ToList();
         semantics.Remove("");
+        semantics = semantics.Distinct().ToList();
     }
 
     /// <summary>
@@ -32,5 +33,7 @@ public static class SemanticsParser {
         string final = s.Replace("[object Object]", "");
         return final;
     }
+
+
 
 }

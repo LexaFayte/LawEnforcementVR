@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
+using UnityEngine.UI;
 
 public class GrammarRecognizerScript : MonoBehaviour {
 
     GrammarRecognizer grammarRec;
+    public GameObject target;
+    public Text feedbackUI;
+    private float dialogueScore;
 
     private void Start()
     {
@@ -20,7 +24,7 @@ public class GrammarRecognizerScript : MonoBehaviour {
     {
         List<string> semantics = new List<string>();
         string tokens = "";
-        float dialogueScore = 0;
+        dialogueScore = 0;
 
         Debug.Log("Phrase recognized: " + args.text);
 
@@ -39,6 +43,10 @@ public class GrammarRecognizerScript : MonoBehaviour {
             SemanticsParser.parse(tokens, ref semantics);
             dialogueScore = this.GetComponent<DialogueManager>().evaluateDialogue(semantics);
             Debug.Log("Dialogue Score: " + dialogueScore);
+            target.GetComponent<SuspectControllerFSM>().UpdateFSM(dialogueScore, semantics);
+            float overallScore = target.GetComponent<SuspectControllerFSM>().getAggroScore();
+            feedbackUI.text = args.text + "\nscore: " + dialogueScore + "\nCurrent Aggro: " + overallScore;
+            
         }
 
         //int a = 0;

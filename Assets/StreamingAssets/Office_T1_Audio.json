@@ -1,0 +1,41 @@
+{
+	"items":
+	[
+		{"key":"escalate--calmDown","value":"CalmDown"},
+		{"key":"escalate--quiet","value":"Insult"},
+		{"key":"escalate--insult","value":"Insult"},
+		{"key":"escalate--curse","value":"Insult"},
+		
+		{"key":"warning--repeatThreat","value":"NONE"},
+		{"key":"warning--noRepeatThreat","value":"Resist"},
+		
+		{"key":"aggressive--handsUp","value":"Resist"},
+		{"key":"aggressive--handsLOS","value":"Resist"},
+		{"key":"aggressive--ground","value":"Resist"},
+		
+		{"key":"question--situation","value":"Question"},
+		{"key":"question--name","value":"Name"},
+		
+		{"key":"title--formal","value":"NONE"},
+		{"key":"title--fname","value":"NONE"},
+		{"key":"title--lname","value":"NONE"},
+		{"key":"title--rude","value":"HeyYou"},
+		
+		{"key":"purpose--help","value":"Purpose"},
+		{"key":"purpose--listen","value":"Purpose"},
+		{"key":"purpose--convince","value":"Purpose"},
+		
+		{"key":"losPass--deny","value":"LosPass"},
+		{"key":"losPass--partner","value":"LosPass"},
+		
+		{"key":"losFail--allow","value":"NONE"},
+		
+		{"key":"coax--stepOut","value":"StepOut"},		
+		{"key":"coax--andTalk","value":"TalkReason"},
+		{"key":"coax--talk","value":"talk"},
+		{"key":"coax--talkReason","value":"TalkReason"},
+		{"key":"coax--talkOutside","value":"TalkReason"},
+		{"key":"coax--outside","value":"TalkReason"},
+		{"key":"coax--command","value":"NONE"}
+	]
+}

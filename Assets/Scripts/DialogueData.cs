@@ -14,3 +14,17 @@ public class DialogueItem
     public string key;
     public float value;
 }
+
+[System.Serializable]
+public class ResponseData
+{
+
+    public ResponseItem[] items;
+}
+
+[System.Serializable]
+public class ResponseItem
+{
+    public string key;
+    public string value;
+}
