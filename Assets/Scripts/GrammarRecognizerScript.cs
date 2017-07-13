@@ -48,7 +48,5 @@ public class GrammarRecognizerScript : MonoBehaviour {
             feedbackUI.text = args.text + "\nscore: " + dialogueScore + "\nCurrent Aggro: " + overallScore;
             
         }
-
-        //int a = 0;
     }
 }

@@ -125,6 +125,10 @@ public class StateLowAggro : StateBase
                 AS.clip = clips[audioIndex];
                 transitionA2 = true;
                 break;
+            case "Approach":
+                audioIndex = UnityEngine.Random.Range(RangeConstants.approach_A1, RangeConstants.approach_A2);
+                AS.clip = clips[audioIndex];
+                break;
         }
     }
 

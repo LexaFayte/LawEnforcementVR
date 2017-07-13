@@ -13,7 +13,6 @@ public class DialogueManager : MonoBehaviour {
     void Awake () {
         loadDialogueText("Office_T1.json");
         loadResponses("Office_T1_Audio.json");
-        //loadSuspectDialogue();
         loadResponsesAudio("Office_T1_ClipData.json");
 	}
 	
@@ -110,26 +109,6 @@ public class DialogueManager : MonoBehaviour {
             }
         }
         return result;
-    }
-
-    /// <summary>
-    /// loads all suspect response audio clips into a List data structure
-    /// </summary>
-    public void loadSuspectDialogue()
-    {
-        suspectDialogue = new Dictionary<string, AudioClip[]>();
-
-        suspectDialogue.Add("Intro", Resources.LoadAll<AudioClip>("Dialogue/Intro"));
-        suspectDialogue.Add("Name", Resources.LoadAll<AudioClip>("Dialogue/Name"));
-        suspectDialogue.Add("CopsHere", Resources.LoadAll<AudioClip>("Dialogue/CopsHere"));
-        suspectDialogue.Add("HeyYou", Resources.LoadAll<AudioClip>("Dialogue/HeyYou"));
-        suspectDialogue.Add("Insult", Resources.LoadAll<AudioClip>("Dialogue/Insult"));
-        suspectDialogue.Add("CalmDown", Resources.LoadAll<AudioClip>("Dialogue/CalmDown"));
-        suspectDialogue.Add("Question", Resources.LoadAll<AudioClip>("Dialogue/Question"));
-        suspectDialogue.Add("TalkGun", Resources.LoadAll<AudioClip>("Dialogue/TalkGun"));
-        suspectDialogue.Add("PointGun", Resources.LoadAll<AudioClip>("Dialogue/PointGun"));
-        suspectDialogue.Add("Leave", Resources.LoadAll<AudioClip>("Dialogue/Leave"));
-        suspectDialogue.Add("Resist", Resources.LoadAll<AudioClip>("Dialogue/Resist"));
     }
 
     /// <summary>

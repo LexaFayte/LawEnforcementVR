@@ -36,6 +36,8 @@
 		{"key":"coax--talkReason","value":"TalkReason"},
 		{"key":"coax--talkOutside","value":"TalkReason"},
 		{"key":"coax--outside","value":"TalkReason"},
-		{"key":"coax--command","value":"NONE"}
+		{"key":"coax--command","value":"NONE"},
+		
+		{"key":"approach--introduce","value":"Approach"}
 	]
 }

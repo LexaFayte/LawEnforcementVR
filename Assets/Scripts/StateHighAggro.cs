@@ -130,6 +130,10 @@ public class StateHighAggro : StateBase
                 audioIndex = UnityEngine.Random.Range(RangeConstants.talkReason_A3, clips.Length);
                 AS.clip = clips[audioIndex];
                 break;
+            case "Approach":
+                audioIndex = UnityEngine.Random.Range(RangeConstants.approach_A3, clips.Length);
+                AS.clip = clips[audioIndex];
+                break;
 
         }
     }

@@ -52,6 +52,11 @@ public static class RangeConstants
     public static int talkReason_A2 = 1;
     public static int talkReason_A3 = 3;
 
+    //Approach index range
+    public static int approach_A1 = 0;
+    public static int approach_A2 = 2;
+    public static int approach_A3 = 4;
+
     //Leave count
     public static int leave_count = 3;
 
@@ -151,6 +156,26 @@ public class SuspectControllerFSM : MonoBehaviour {
     /// <param name="newScore">the score to add-on</param>
     public void setAggroScore(float newScore)
     {
+        //modify values slighty based on current state
+        switch(currentState.getStateID())
+        {
+            case STATE.LOW_AGGRO:
+                if (newScore > 0)
+                    newScore *= 0.25f;
+                else
+                    newScore *= 0.75f;
+                break;
+            case STATE.MED_AGGRO:
+                newScore *= 0.5f;
+                break;
+            case STATE.HIGH_AGGRO:
+                if (newScore > 0)
+                    newScore *= 0.75f;
+                else
+                    newScore *= 0.25f;
+                break;
+        }
+        Debug.Log("Modified score: " + newScore);
         aggroScore += newScore;
 
         if (aggroScore > 10)

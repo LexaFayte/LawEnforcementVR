@@ -11,6 +11,7 @@
 		<item><ruleref uri="#d"/></item>
 		<item><ruleref uri="#e"/></item>
 		<item><ruleref uri="#f"/></item>
+		<item><ruleref uri="#g"/></item>
 	</one-of>
  </rule>
  
@@ -36,7 +37,6 @@
 				<item> fuck </item>
 				<item> fucker </item>
 				<item> mother fucker </item>
-				<item> cunt </item>
 				<item> dick </item>
 			</one-of>
 		</item>
@@ -250,7 +250,19 @@
 	<item repeat="0-1">to talk<tag>out+="_coax--talkReason"</tag></item>
 	<item repeat="0-1">just want to talk<tag>out+="_coax--talkReason"</tag></item>
 
-	
  </rule>
+
+  <rule id="g">
+    <item><ruleref uri="#approach"/><tag>out+=rules.latest()</tag></item>
+    <item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
+  </rule>
+
+  <rule id="approach">
+    <one-of>
+      <item>excuse me<tag>out+="_approach--introduce"</tag></item>
+      <item>hi there<tag>out+="_approach--introduce"</tag></item>
+      <item>hello there<tag>out+="_approach--introduce"</tag></item>
+    </one-of>
+  </rule>
  
  </grammar>
