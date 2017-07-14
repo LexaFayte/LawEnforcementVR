@@ -161,6 +161,15 @@
 			</one-of>
 			<item repeat="0-1"> for you </item>
 		</item>
+		
+		<item> <tag>out+="_losPass--deny"</tag>
+			you can
+			<one-of>
+				<item>get it</item>
+				<item>grab it</item>
+			</one-of>
+			later
+		</item>
 	</one-of>
  </rule>
  
@@ -264,5 +273,6 @@
       <item>hello there<tag>out+="_approach--introduce"</tag></item>
     </one-of>
   </rule>
+ 
  
  </grammar>

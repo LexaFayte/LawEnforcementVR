@@ -1,6 +1,9 @@
 {
 	"items":
 	[
+		{"key":"Intro","value":"Intro"},
+		{"key":"CopsHere","value":"CopsHere"},
+		
 		{"key":"escalate--calmDown","value":"CalmDown"},
 		{"key":"escalate--quiet","value":"Insult"},
 		{"key":"escalate--insult","value":"Insult"},

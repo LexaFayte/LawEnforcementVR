@@ -87,7 +87,7 @@ public class DialogueManager : MonoBehaviour {
                 suspectDialogue.Add(data.items[i].key, Resources.LoadAll<AudioClip>(data.items[i].value));
             }
 
-            Debug.Log("Json responses loaded");
+            Debug.Log("Json responses audio loaded");
         }
     }
 

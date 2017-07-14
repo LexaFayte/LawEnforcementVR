@@ -5,6 +5,7 @@ using System.Linq;
 using Assets.Scripts;
 
 public enum STATE { LOW_AGGRO, MED_AGGRO, HIGH_AGGRO};
+public enum TRIGGER { INTRO, COPS };
 
 public static class RangeConstants
 {
@@ -224,6 +225,23 @@ public class SuspectControllerFSM : MonoBehaviour {
             StopCoroutine(co_audio);
     }
 
+    public void triggerHit(TRIGGER t)
+    {
+        if (co_audio != null)
+            StopCoroutine(co_audio);
+
+        switch(t)
+        {
+            case TRIGGER.INTRO:
+                co_audio = StartCoroutine(PlaySingleAudio(CC.GetComponent<DialogueManager>().getSingleClips("Intro"), false));
+                break;
+            case TRIGGER.COPS:
+                co_audio = StartCoroutine(PlaySingleAudio(CC.GetComponent<DialogueManager>().getSingleClips("CopsHere"), true));
+                break;
+        }
+        
+    }
+
     /// <summary>
     /// transition to the second tier of the scenario
     /// </summary>
@@ -286,6 +304,7 @@ public class SuspectControllerFSM : MonoBehaviour {
             {
                 lastTag = Tags[i];
                 currentState.selectAudio(Tags[i], audioClips[i]);
+                currentState.AS.volume = 1f;
                 currentState.AS.PlayDelayed(delay);
                 delay += 0.5f;
                 while (currentState.AS.isPlaying)
@@ -307,6 +326,25 @@ public class SuspectControllerFSM : MonoBehaviour {
     }
 
     /// <summary>
+    /// play an audio clip from a single array source
+    /// </summary>
+    /// <param name="audioClips">array of clips to randomly choose from</param>
+    /// <returns>void</returns>
+    IEnumerator PlaySingleAudio(AudioClip[] audioClips, bool grumble)
+    {
+        dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, audioClips.Length)];
+        dialogueSource.volume = 1f;
+        dialogueSource.Play();
+        while(dialogueSource.isPlaying)
+        {
+            yield return 0;
+        }
+
+        if (grumble)
+            StartCoGrumbles();
+    }
+
+    /// <summary>
     /// have a random grumbling/muttering clip play
     /// </summary>
     /// <returns></returns>
@@ -318,6 +356,7 @@ public class SuspectControllerFSM : MonoBehaviour {
         //choose random grumble, tag: "Grumbles"
         List<AudioClip> grumbles = Helper.YatesShuffle(CC.GetComponent<DialogueManager>().getSingleClips("Grumbles"));
         dialogueSource.clip = grumbles.Last<AudioClip>();
+        dialogueSource.volume = 0.5f;
         timer = delay;
         if(grumble)
             dialogueSource.PlayDelayed(1.5f);
@@ -340,7 +379,7 @@ public class SuspectControllerFSM : MonoBehaviour {
                     }
 
                     dialogueSource.Play();
-                    timer = UnityEngine.Random.Range(2.5f, 4.5f);
+                    timer = UnityEngine.Random.Range(3.5f, 4.5f);
                 }
             }
 
