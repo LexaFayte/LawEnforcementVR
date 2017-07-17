@@ -35,12 +35,17 @@
 		
 		{"key":"coax--stepOut","value":"StepOut"},		
 		{"key":"coax--andTalk","value":"TalkReason"},
-		{"key":"coax--talk","value":"talk"},
+		{"key":"coax--talk","value":"Talk"},
 		{"key":"coax--talkReason","value":"TalkReason"},
 		{"key":"coax--talkOutside","value":"TalkReason"},
 		{"key":"coax--outside","value":"TalkReason"},
 		{"key":"coax--command","value":"NONE"},
 		
-		{"key":"approach--introduce","value":"Approach"}
+		{"key":"approach--introduce","value":"Approach"},
+		
+		{"key":"compassion--understand","value":"NONE"},
+		
+		{"key":"remove--persist","value":"RemovePersist"},
+		{"key":"remove--leave","value":"Remove"}
 	]
 }

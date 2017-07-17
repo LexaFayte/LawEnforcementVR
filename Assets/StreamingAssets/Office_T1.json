@@ -38,6 +38,10 @@
 		{"key":"coax--outside","value":"-.25"},
 		{"key":"coax--command","value":"0"},
 		
-		{"key":"approach--introduce","value":"0"}
+		{"key":"approach--introduce","value":"0"},
+		
+		{"key":"compassion--understand","value":"-0.25"},
+		{"key":"remove--persist","value":"0.5"},
+		{"key":"remove--leave","value":"0.5"}
 	]
 }

@@ -63,6 +63,15 @@ public static class RangeConstants
 
     //LosPass count
     public static int losPass_count = 7;
+
+    //Talk count
+    public static int talk_count = 3;
+
+    //Remove count
+    public static int remove_count = 3;
+
+    //Remove Persist count
+    public static int removePersist_count = 3;
 }
 
 public class SuspectControllerFSM : MonoBehaviour {
@@ -71,7 +80,6 @@ public class SuspectControllerFSM : MonoBehaviour {
     private Coroutine co_grumbles;
     private Coroutine co_wait;
     private Dictionary<STATE, StateBase> states;
-    private Dictionary<string, string> responses;
     private StateBase currentState;
     private float aggroScore;
     private bool grumble;
@@ -112,15 +120,6 @@ public class SuspectControllerFSM : MonoBehaviour {
         states.Add(STATE.LOW_AGGRO, new StateLowAggro(this));
         states.Add(STATE.MED_AGGRO, new StateMedAggro(this));
         states.Add(STATE.HIGH_AGGRO, new StateHighAggro(this));
-    }
-
-    /// <summary>
-    /// initialize the response dictionary.
-    /// </summary>
-    private void initResponses()
-    {
-        responses = new Dictionary<string, string>();
-
     }
 
     /// <summary>

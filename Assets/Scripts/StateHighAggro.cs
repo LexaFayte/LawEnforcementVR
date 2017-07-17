@@ -130,9 +130,39 @@ public class StateHighAggro : StateBase
                 audioIndex = UnityEngine.Random.Range(RangeConstants.talkReason_A3, clips.Length);
                 AS.clip = clips[audioIndex];
                 break;
+            case "Talk":
+                audioIndex = UnityEngine.Random.Range(0, RangeConstants.talk_count);
+                AS.clip = clips[audioIndex];
+                break;
             case "Approach":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.approach_A3, clips.Length);
                 AS.clip = clips[audioIndex];
+                break;
+            case "Remove":
+                if (aggroScore < 10)
+                {
+                    audioIndex = UnityEngine.Random.Range(0, RangeConstants.remove_count);
+                    AS.clip = clips[audioIndex];
+                }
+                else
+                {
+                    audioIndex = UnityEngine.Random.Range(0, RangeConstants.leave_count);
+                    AS.clip = scFSM.CC.GetComponent<DialogueManager>().getSingleClips("Leave")[audioIndex];
+                    transitionA2 = true;
+                }
+                break;
+            case "RemovePersist":
+                if (aggroScore < 10)
+                {
+                    audioIndex = UnityEngine.Random.Range(0, RangeConstants.removePersist_count);
+                    AS.clip = clips[audioIndex];
+                }
+                else
+                {
+                    audioIndex = UnityEngine.Random.Range(0, RangeConstants.leave_count);
+                    AS.clip = scFSM.CC.GetComponent<DialogueManager>().getSingleClips("Leave")[audioIndex];
+                    transitionA2 = true;
+                }
                 break;
 
         }

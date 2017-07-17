@@ -12,6 +12,7 @@
 		<item><ruleref uri="#e"/></item>
 		<item><ruleref uri="#f"/></item>
 		<item><ruleref uri="#g"/></item>
+		<item><ruleref uri="#h"/></item>
 	</one-of>
  </rule>
  
@@ -209,22 +210,26 @@
 			<item repeat="0-1">and we'll talk<tag>out+="_coax--andTalk"</tag></item>
 		</item>
 
-    <item>
-      I'm going to
-      <one-of>
-        <item>need you to</item>
-        <item>have to ask you to</item>
-        <item>ask you to </item>
-      </one-of>
+	
+		<item>
+			<one-of>
+				<item>I'm gonna</item>
+				<item>I'm going to</item>
+			</one-of>
+		
+			<one-of>
+				<item>need you to</item>
+				<item>ask you to </item>
+			</one-of>
 
-      <one-of>
-        <item>step out<tag>out+="_coax--stepOut"</tag></item>
-        <item>step outside<tag>out+="_coax--stepOut"</tag></item>
-      </one-of>
-      <item repeat="0-1"> with me </item>
-    </item>
+		  <one-of>
+			<item>step out<tag>out+="_coax--stepOut"</tag></item>
+			<item>step outside<tag>out+="_coax--stepOut"</tag></item>
+		  </one-of>
+		  <item repeat="0-1"> with me </item>
+		</item>
 
-    <item>
+		<item>
 			lets talk
 			<one-of>
 				<item>about this<tag>out+="_coax--talk"</tag></item>
@@ -258,6 +263,7 @@
 	<item repeat="0-1">so we can talk<tag>out+="_coax--talkReason"</tag></item>
 	<item repeat="0-1">to talk<tag>out+="_coax--talkReason"</tag></item>
 	<item repeat="0-1">just want to talk<tag>out+="_coax--talkReason"</tag></item>
+	<item repeat="0-1">just wanna to talk<tag>out+="_coax--talkReason"</tag></item>
 
  </rule>
 
@@ -273,6 +279,54 @@
       <item>hello there<tag>out+="_approach--introduce"</tag></item>
     </one-of>
   </rule>
- 
- 
+  
+    <rule id="h">
+	<item repeat="0-1"><ruleref uri="#compassion"/><tag>out+=rules.latest()</tag></item>
+    <item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
+	<item><ruleref uri="#remove"/><tag>out+=rules.latest()</tag></item>
+	<item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
+  </rule>
+  
+   <rule id="remove">		
+		<item repeat="0-1">but</item>
+
+		<one-of>
+			<item>I'm </item>
+			<item>I am</item>
+			<item> you are </item>
+			<item> you're </item>
+		</one-of>
+		
+		<item repeat="0-1">still <tag>out+="_remove--persist"</tag></item>
+		
+		<one-of>
+			<item>going to have to ask you to</item>
+			<item>gonna have to ask you to</item>
+			<item>going to have to</item>
+			<item>gonna have to</item>
+		</one-of>
+		
+		<item><tag>out+="_remove--leave"</tag>
+			<one-of>
+				<item>leave</item>
+				<item>leave the premesis</item>
+				<item>leave the building</item>
+				<item>exit the building</item>
+				<item>come with me</item>
+			</one-of>
+		</item>
+
+ </rule>
+  
+  <rule id="compassion">
+	<item><tag>out+="_compassion--understand"</tag>
+		<one-of> 
+			<item>I understand</item>
+			<item>I understand that</item>
+			<item>I hear you</item>
+			<item>I get that</item>
+		</one-of>
+	</item>
+  </rule>
+
  </grammar>

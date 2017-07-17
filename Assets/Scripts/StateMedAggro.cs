@@ -148,8 +148,20 @@ public class StateMedAggro : StateBase
                     AS.clip = scFSM.CC.GetComponent<DialogueManager>().getSingleClips("Resist")[audioIndex];
                 }
                 break;
+            case "Talk":
+                audioIndex = UnityEngine.Random.Range(0, RangeConstants.talk_count);
+                AS.clip = clips[audioIndex];
+                break;
             case "Approach":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.approach_A2, RangeConstants.approach_A3);
+                AS.clip = clips[audioIndex];
+                break;
+            case "Remove":
+                audioIndex = UnityEngine.Random.Range(0, RangeConstants.remove_count);
+                AS.clip = clips[audioIndex];
+                break;
+            case "RemovePersist":
+                audioIndex = UnityEngine.Random.Range(0, RangeConstants.removePersist_count);
                 AS.clip = clips[audioIndex];
                 break;
 

@@ -9,6 +9,7 @@
 		{"key":"CalmDown","value":"Dialogue/CalmDown"},
 		{"key":"Question","value":"Dialogue/Question"},
 		{"key":"TalkGun","value":"Dialogue/TalkGun"},
+		{"key":"Talk","value":"Dialogue/Talk"},
 		{"key":"TalkReason","value":"Dialogue/TalkReason"},
 		{"key":"PointGun","value":"Dialogue/PointGun"},
 		{"key":"Leave","value":"Dialogue/Leave"},
@@ -17,6 +18,8 @@
 		{"key":"LosPass","value":"Dialogue/LosPass"},
 		{"key":"StepOut","value":"Dialogue/StepOut"},
 		{"key":"Approach","value":"Dialogue/Approach"},
+		{"key":"Remove","value":"Dialogue/Remove"},
+		{"key":"RemovePersist","value":"Dialogue/RemovePersist"},
 		{"key":"Grumbles","value":"Dialogue/Grumbles"}
 	]
 }

@@ -13,7 +13,7 @@ public class GrammarRecognizerScript : MonoBehaviour {
 
     private void Start()
     {
-        grammarRec = new GrammarRecognizer(Application.streamingAssetsPath + "/XML/grammar_OfficeT1.xml");
+        grammarRec = new GrammarRecognizer(Application.streamingAssetsPath + "/XML/grammar_OfficeT1.xml", ConfidenceLevel.High);
         grammarRec.OnPhraseRecognized += OnGrammerRecognized;
         grammarRec.Start();       
         

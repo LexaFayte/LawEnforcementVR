@@ -131,6 +131,12 @@ public class DialogueManager : MonoBehaviour {
                     ++i;
                 else if (responseMap[s[i]] == "HeyYou" && (responseMap[s[i + 1]] == "CalmDown" || responseMap[s[i + 1]] == "Insult"))
                     ++i;
+                else if(responseMap[s[i]] == "RemovePersist" && responseMap[s[i+1]] == "Remove")
+                {
+                    responseTags.Add(responseMap[s[i]]);
+                    ++i;
+                    continue;
+                }
                 else if (responseMap[s[i]] == "Resist" && responseMap[s[i + 1]] == "Insult")
                 {
                     responseTags.Add(responseMap[s[i]]);

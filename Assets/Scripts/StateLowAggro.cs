@@ -125,8 +125,20 @@ public class StateLowAggro : StateBase
                 AS.clip = clips[audioIndex];
                 transitionA2 = true;
                 break;
+            case "Talk":
+                audioIndex = UnityEngine.Random.Range(0, RangeConstants.talk_count);
+                AS.clip = clips[audioIndex];
+                break;
             case "Approach":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.approach_A1, RangeConstants.approach_A2);
+                AS.clip = clips[audioIndex];
+                break;
+            case "Remove":
+                audioIndex = UnityEngine.Random.Range(0, RangeConstants.remove_count);
+                AS.clip = clips[audioIndex];
+                break;
+            case "RemovePersist":
+                audioIndex = UnityEngine.Random.Range(0, RangeConstants.removePersist_count);
                 AS.clip = clips[audioIndex];
                 break;
         }
