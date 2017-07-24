@@ -37,11 +37,13 @@ public static class RangeConstants
     public static int purpose_A1 = 0;
     public static int purpose_A2 = 1;
     public static int purpose_A3 = 3;
+    public static int[] longClipPurpose = { 2 };
 
     //Resist index range
     public static int resist_A1 = 0;
     public static int resist_A2 = 3;
     public static int resist_A3 = 6;
+    public static int[] longClipResist = { 3,4,7,8 };
 
     //StepOut index range
     public static int stepOut_A1 = 0;
@@ -60,9 +62,11 @@ public static class RangeConstants
 
     //Leave count
     public static int leave_count = 3;
+    public static int[] longClipLeave = { 0, 1 };
 
     //LosPass count
-    public static int losPass_count = 7;
+    public static int losPass_count = 6;
+    public static int[] longClipLosPass = { 2, 3, 4, 5 };
 
     //Talk count
     public static int talk_count = 3;
@@ -72,6 +76,7 @@ public static class RangeConstants
 
     //Remove Persist count
     public static int removePersist_count = 3;
+
 }
 
 public class SuspectControllerFSM : MonoBehaviour {
@@ -85,6 +90,7 @@ public class SuspectControllerFSM : MonoBehaviour {
     private bool grumble;
     private bool losTest;
     private bool wait;
+    private bool copsAnim;
 
     public GameObject suspect;
     public AudioSource dialogueSource;
@@ -109,6 +115,7 @@ public class SuspectControllerFSM : MonoBehaviour {
         grumble = false;
         losTest = false;
         wait = false;
+        copsAnim = false;
     }
 
     /// <summary>
@@ -232,9 +239,16 @@ public class SuspectControllerFSM : MonoBehaviour {
         switch(t)
         {
             case TRIGGER.INTRO:
+                //trigger animation
+                suspect.GetComponent<AnimController_Jim>().triggerIntroRant();
+                //trigger audio
                 co_audio = StartCoroutine(PlaySingleAudio(CC.GetComponent<DialogueManager>().getSingleClips("Intro"), false));
                 break;
             case TRIGGER.COPS:
+                //trigger animation
+                copsAnim = true;
+                suspect.GetComponent<AnimController_Jim>().triggerIntroCops();
+                //trigger audio
                 co_audio = StartCoroutine(PlaySingleAudio(CC.GetComponent<DialogueManager>().getSingleClips("CopsHere"), true));
                 break;
         }
@@ -256,7 +270,7 @@ public class SuspectControllerFSM : MonoBehaviour {
             else
                 c = Color.black;
 
-            suspect.GetComponent<Renderer>().material.color = c;
+            //suspect.GetComponent<Renderer>().material.color = c;
             Debug.Log("Starting T2 Boss Office");
         }
         else
@@ -266,7 +280,7 @@ public class SuspectControllerFSM : MonoBehaviour {
                 c = Color.cyan;
             else
                 c = Color.white;
-            suspect.GetComponent<Renderer>().material.color = c;
+            //suspect.GetComponent<Renderer>().material.color = c;
             Debug.Log("Starting T2 Outside");
         }
 
@@ -295,10 +309,12 @@ public class SuspectControllerFSM : MonoBehaviour {
     /// <returns>nothing</returns>
     IEnumerator PlayAudio(List<string> Tags, List<AudioClip[]> audioClips)
     {
+        //float timer;
         string lastTag = "";
         float delay = 0;
         for (int i = 0; i < Tags.Count; i++)
         {
+            //timer = 0;
             if (Tags[i] != lastTag)
             {
                 lastTag = Tags[i];
@@ -306,10 +322,18 @@ public class SuspectControllerFSM : MonoBehaviour {
                 currentState.AS.volume = 1f;
                 currentState.AS.PlayDelayed(delay);
                 delay += 0.5f;
+                
                 while (currentState.AS.isPlaying)
                 {
+                    //timer += Time.deltaTime;
+
+                    //if(timer > 0.25f)
+                    //{
+                    //    suspect.GetComponent<AnimController_Jim>().deselectTrigger(Tags[i]);
+                    //}
                     yield return 0;
                 }
+                
             }
         }
 
@@ -334,9 +358,16 @@ public class SuspectControllerFSM : MonoBehaviour {
         dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, audioClips.Length)];
         dialogueSource.volume = 1f;
         dialogueSource.Play();
-        while(dialogueSource.isPlaying)
+
+        while (dialogueSource.isPlaying)
         {
             yield return 0;
+        }
+
+        if (copsAnim)
+        {
+            suspect.GetComponent<AnimController_Jim>().stopRant();
+            copsAnim = false;
         }
 
         if (grumble)

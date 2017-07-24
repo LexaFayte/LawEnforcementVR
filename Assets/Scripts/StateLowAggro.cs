@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class StateLowAggro : StateBase
 {
@@ -17,7 +18,7 @@ public class StateLowAggro : StateBase
     {
         scFSM.suspect.GetComponent<SuspectControllerFSM>().setCurrentState(this);
         aggroScore = scFSM.suspect.GetComponent<SuspectControllerFSM>().getAggroScore();
-        scFSM.suspect.GetComponent<Renderer>().material.color = Color.green;
+        //scFSM.suspect.GetComponent<Renderer>().material.color = Color.green;
         if (semantics != null)
             response(semantics);
     }
@@ -72,28 +73,34 @@ public class StateLowAggro : StateBase
 
     public override void selectAudio(string tag, AudioClip[] clips)
     {
+        bool longclip = false;
         int audioIndex = 0;
         switch (tag)
         {
             case "Name":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.name_A1, RangeConstants.name_A2);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "HeyYou":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.heyYou_A1, RangeConstants.heyYou_A2);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "Insult":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.insult_A1, RangeConstants.insult_A2);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);//
                 break;
             case "CalmDown":
                 audioIndex = UnityEngine.Random.Range(0, clips.Length);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "Question":
                 audioIndex = UnityEngine.Random.Range(0, clips.Length);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "TalkGun":
                 audioIndex = UnityEngine.Random.Range(0, clips.Length);
@@ -106,40 +113,51 @@ public class StateLowAggro : StateBase
             case "Resist":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.resist_A1, RangeConstants.resist_A2);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "Purpose":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.purpose_A1, RangeConstants.purpose_A2);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "LosPass":
                 audioIndex = UnityEngine.Random.Range(0, RangeConstants.losPass_count);
                 AS.clip = clips[audioIndex];
                 scFSM.LosTest = true;
+                if (RangeConstants.longClipLosPass.Contains(audioIndex))
+                    longclip = true;
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "StepOut":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.stepOut_A1, RangeConstants.stepOut_A2);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "TalkReason":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.talkReason_A1, RangeConstants.talkReason_A2);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 transitionA2 = true;
                 break;
             case "Talk":
                 audioIndex = UnityEngine.Random.Range(0, RangeConstants.talk_count);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "Approach":
                 audioIndex = UnityEngine.Random.Range(RangeConstants.approach_A1, RangeConstants.approach_A2);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "Remove":
                 audioIndex = UnityEngine.Random.Range(0, RangeConstants.remove_count);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
             case "RemovePersist":
                 audioIndex = UnityEngine.Random.Range(0, RangeConstants.removePersist_count);
                 AS.clip = clips[audioIndex];
+                scFSM.suspect.GetComponent<AnimController_Jim>().triggerAnswer(aggroScore, tag, longclip);
                 break;
         }
     }
