@@ -87,11 +87,12 @@ public class CameraMove : MonoBehaviour {
             elapsedTime = 0f;
             if (waypoints[i].transform.eulerAngles.y != 0)
             {
-                Quaternion rot = Quaternion.Euler(transform.rotation.x, waypoints[i].transform.eulerAngles.y, transform.rotation.z);
+                Quaternion rot = Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z);
                 while (elapsedTime < ROT_LERP_TIME)
                 {
                     elapsedTime += Time.deltaTime;
-                    transform.rotation = Quaternion.Slerp(originalRot, rot, (elapsedTime / ROT_LERP_TIME));
+                    this.transform.rotation = Quaternion.Slerp(originalRot, rot, (elapsedTime / ROT_LERP_TIME));
+                    //transform.RotateAround(transform.position, Vector3.up, 90*Time.deltaTime);
                     yield return EOF;
                 }
             }
