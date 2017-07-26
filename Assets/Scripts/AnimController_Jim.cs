@@ -6,15 +6,14 @@ public class AnimController_Jim : MonoBehaviour {
 
     private Animator animator;
     private Transform jimTransform;
-    private Quaternion ogRotation;
     private float timer;
     private float initiateQuirk;
+    public GameObject CC;
 
     private void Awake()
     {
-        animator = GetComponentInChildren<Animator>();
-        jimTransform = GetComponentInChildren<Transform>();
-        ogRotation = jimTransform.rotation;
+        animator = gameObject.GetComponent<Animator>();
+        jimTransform = gameObject.transform;
         timer = 0f;
         initiateQuirk = 3.5f;
     }
@@ -28,7 +27,6 @@ public class AnimController_Jim : MonoBehaviour {
         {
             if (timer >= initiateQuirk)
             {
-                recenter();
                 animator.SetInteger("QuirkID", UnityEngine.Random.Range(0, 3));
                 animator.SetBool("Quirk", true);
                 timer = 0f;
@@ -45,11 +43,6 @@ public class AnimController_Jim : MonoBehaviour {
         }
 
 
-    }
-
-    void recenter()
-    {
-        jimTransform.rotation = ogRotation;
     }
 
     void OnAnimatorIK()

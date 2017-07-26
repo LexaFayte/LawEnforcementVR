@@ -91,10 +91,12 @@ public class SuspectControllerFSM : MonoBehaviour {
     private bool losTest;
     private bool wait;
     private bool copsAnim;
+    private ScenarioController SC;
+    private GameObject suspect;
 
-    public GameObject suspect;
     public AudioSource dialogueSource;
     public GameObject CC;
+    
 
     /// <summary>
     /// LosTest property, for Line-Of-Sight (LOS) test pass or fail status
@@ -105,11 +107,16 @@ public class SuspectControllerFSM : MonoBehaviour {
         set { losTest = value; }
     }
 
+    public GameObject Suspect
+    {
+        get { return suspect; }
+    }
+
 	// Use this for initialization
 	void Awake () {
-
+        suspect = gameObject;
         aggroScore = 5;
-        dialogueSource = this.gameObject.AddComponent<AudioSource>();
+        //dialogueSource = this.gameObject.AddComponent<AudioSource>();
         initStates();
         states[STATE.MED_AGGRO].Enter(null);
         grumble = false;
@@ -127,6 +134,11 @@ public class SuspectControllerFSM : MonoBehaviour {
         states.Add(STATE.LOW_AGGRO, new StateLowAggro(this));
         states.Add(STATE.MED_AGGRO, new StateMedAggro(this));
         states.Add(STATE.HIGH_AGGRO, new StateHighAggro(this));
+    }
+
+    public void setScenarioController(ScenarioController sc)
+    {
+        SC = sc;
     }
 
     /// <summary>
@@ -270,6 +282,8 @@ public class SuspectControllerFSM : MonoBehaviour {
             else
                 c = Color.black;
 
+            SC.initializeT2(T2.OFFICE);
+
             //suspect.GetComponent<Renderer>().material.color = c;
             Debug.Log("Starting T2 Boss Office");
         }
@@ -280,6 +294,8 @@ public class SuspectControllerFSM : MonoBehaviour {
                 c = Color.cyan;
             else
                 c = Color.white;
+
+            SC.initializeT2(T2.OUTSIDE);
             //suspect.GetComponent<Renderer>().material.color = c;
             Debug.Log("Starting T2 Outside");
         }

@@ -92,7 +92,6 @@ public class CameraMove : MonoBehaviour {
                 {
                     elapsedTime += Time.deltaTime;
                     this.transform.rotation = Quaternion.Slerp(originalRot, rot, (elapsedTime / ROT_LERP_TIME));
-                    //transform.RotateAround(transform.position, Vector3.up, 90*Time.deltaTime);
                     yield return EOF;
                 }
             }
