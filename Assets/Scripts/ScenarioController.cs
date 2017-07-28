@@ -9,12 +9,16 @@ public class ScenarioController : MonoBehaviour {
     public GameObject CC;//Camera Container
     public GameObject suspect;
     public GameObject boss;
+    public GameObject car;
     public GameObject[] T2Waypoints;
+    public Light OutsideSun;
 
     private SuspectControllerFSM scFSM;
     private float timer;
     private Coroutine initT2;
     private bool transitioning;
+    private GrammarRecognizerScript GRS;
+    private DialogueManager DM;
 
     
     //
@@ -28,6 +32,8 @@ public class ScenarioController : MonoBehaviour {
         scFSM.setScenarioController(this);
         timer = 0f;
         transitioning = false;
+        GRS = CC.GetComponent<GrammarRecognizerScript>();
+        DM = CC.GetComponent<DialogueManager>();
     }
     // Use this for initialization
     void Start () {
@@ -43,6 +49,10 @@ public class ScenarioController : MonoBehaviour {
         }
 	}
 
+    /// <summary>
+    /// set up T2
+    /// </summary>
+    /// <param name="scene">enum indicating which T2 scene to set up</param>
     public void initializeT2(T2 scene)
     {
         initT2 = StartCoroutine(coInitT2(scene));
@@ -60,17 +70,20 @@ public class ScenarioController : MonoBehaviour {
 
         Vector3 ccPos;
         Vector3 suspectPos;
-        SteamVR_Fade.View(Color.black, 2f);
+       
 
         if (scene == T2.OFFICE)
         {
            
-            
+            SteamVR_Fade.View(Color.black, 2f);
             while (transitioning)
             {
                 timer += Time.deltaTime;
                 if (timer > 2.5f)
                 {
+                    DM.initT2Dialogue();
+                    GRS.initGrammarT2();
+                    scFSM.setStatesT2();
                     transitioning = false;
                     //move camera container to T2_WaypointOffice and rotate 45 degrees
                     ccPos = new Vector3(T2Waypoints[0].transform.position.x, CC.transform.position.y, T2Waypoints[0].transform.position.z);
@@ -80,7 +93,6 @@ public class ScenarioController : MonoBehaviour {
                     
                     suspect.transform.position = suspectPos;
                     suspect.transform.LookAt(new Vector3(boss.transform.position.x, 0, boss.transform.position.z));
-                    //suspect.transform.rotation = Quaternion.LookRotation(boss.transform.position - suspect.transform.position);
                     
                     //activate boss
                     //boss.GetComponent<Animator>().SetBool("START", true);
@@ -92,20 +104,35 @@ public class ScenarioController : MonoBehaviour {
         }
         else// scene == T2.OUTSIDE
         {
+           
+            while(timer < 3.5)
+            {
+                timer += Time.deltaTime;
+                yield return 0;
+            }
+            timer = 0f;
+
+            SteamVR_Fade.View(Color.black, 2f);
             while (transitioning)
             {
                 timer += Time.deltaTime;
                 if (timer > 2.5f)
                 {
-                    //move camera container to T2_WaypointOffice and rotate 45 degrees
-                    //ccPos = new Vector3(T2Waypoints[0].transform.position.x, CC.transform.position.y, T2Waypoints[0].transform.position.z);
-                    //CC.transform.SetPositionAndRotation(ccPos, new Quaternion(0, 45, 0, 1));
-                    //transport Jimmy into office looking at the boss
-                    //suspectPos = new Vector3(T2Waypoints[1].transform.position.x, suspect.transform.position.y, T2Waypoints[1].transform.position.z);
-                    //suspect.transform.SetPositionAndRotation(suspectPos, Quaternion.LookRotation(boss.transform.position - suspect.transform.position));
-                    //activate boss
-                    //boss.GetComponent<Animator>().SetBool("START", true);
+                    DM.initT2Dialogue();
+                    GRS.initGrammarT2();
+                    scFSM.setStatesT2();
                     transitioning = false;
+                    OutsideSun.enabled = true;
+                    //move camera container to T2_WaypointOutside and rotate 45 degrees
+                    ccPos = new Vector3(T2Waypoints[2].transform.position.x, CC.transform.position.y, T2Waypoints[2].transform.position.z);
+                    CC.transform.position = ccPos;
+                    CC.transform.LookAt(new Vector3(car.transform.position.x, 0, car.transform.position.z));
+                    //SetPositionAndRotation(ccPos, new Quaternion(0, 180, 0, 1));
+                    //transport Jimmy outside looking at you
+                    suspectPos = new Vector3(T2Waypoints[3].transform.position.x, suspect.transform.position.y, T2Waypoints[3].transform.position.z);
+
+                    suspect.transform.position = suspectPos;
+                    suspect.transform.LookAt(new Vector3(CC.transform.position.x, 0, CC.transform.position.z));
                 }
                 yield return 0;
 

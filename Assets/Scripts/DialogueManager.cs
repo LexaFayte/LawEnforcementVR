@@ -8,6 +8,14 @@ public class DialogueManager : MonoBehaviour {
     private Dictionary<string, float> dialogueText;
     private Dictionary<string, AudioClip[]> suspectDialogue;
     private Dictionary<string, string> responseMap;
+    private bool t2;
+
+    //properties
+    public bool T2
+    {
+        get { return t2; }
+        set { t2 = value; }
+    }
 
     // Use this for initialization
     void Awake () {
@@ -16,6 +24,15 @@ public class DialogueManager : MonoBehaviour {
         loadResponsesAudio("Office_T1_ClipData.json");
 	}
 	
+    public void initT2Dialogue()
+    {
+        unloadResponseAudio();
+        loadDialogueText("Office_T2.json");
+        loadResponses("Office_T2_Audio.json");
+        loadResponsesAudio("Office_T2_ClipData.json");
+        t2 = true;
+    }
+
     /// <summary>
     /// loads the dialogue aggravation score information
     /// from a JSON file and into a dictionary data structure
@@ -23,7 +40,11 @@ public class DialogueManager : MonoBehaviour {
     /// <param name="filename">The name of the JSON file</param>
 	public void loadDialogueText(string filename)
     {
-        dialogueText = new Dictionary<string, float>();
+        if(dialogueText == null)
+            dialogueText = new Dictionary<string, float>();
+        else
+            dialogueText.Clear();
+
         string filepath = Path.Combine(Application.streamingAssetsPath, filename);
 
         if(File.Exists(filepath))
@@ -48,7 +69,11 @@ public class DialogueManager : MonoBehaviour {
     /// <param name="filename">The name of the JSON file</param>
     public void loadResponses(string filename)
     {
-        responseMap = new Dictionary<string, string>();
+        if (responseMap == null)
+            responseMap = new Dictionary<string, string>();
+        else
+            responseMap.Clear();
+
         string filepath = Path.Combine(Application.streamingAssetsPath, filename);
 
         if (File.Exists(filepath))
@@ -65,6 +90,21 @@ public class DialogueManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// unloads the current audio for responses
+    /// </summary>
+    private void unloadResponseAudio()
+    {
+        foreach(KeyValuePair<string, AudioClip[]> clips in suspectDialogue)
+        {
+            AudioClip[] temp = clips.Value;
+
+            for (int i = 0; i < temp.Length;++i)
+            {
+                Resources.UnloadAsset(temp[i]);
+            }
+        }
+    }
 
     /// <summary>
     /// loads the audio clips from information stored in a JSON file,
@@ -73,8 +113,11 @@ public class DialogueManager : MonoBehaviour {
     /// <param name="filename">The name of the JSON file</param>
     public void loadResponsesAudio(string filename)
     {
+        if (suspectDialogue == null)
+            suspectDialogue = new Dictionary<string, AudioClip[]>();
+        else
+            suspectDialogue.Clear();
 
-        suspectDialogue = new Dictionary<string, AudioClip[]>();
         string filepath = Path.Combine(Application.streamingAssetsPath, filename);
 
         if (File.Exists(filepath))
@@ -127,21 +170,24 @@ public class DialogueManager : MonoBehaviour {
 
             if (i + 1 < s.Count)
             {
-                if (responseMap[s[i]] == "StepOut" && responseMap[s[i + 1]] == "TalkReason")
-                    ++i;
-                else if (responseMap[s[i]] == "HeyYou" && (responseMap[s[i + 1]] == "CalmDown" || responseMap[s[i + 1]] == "Insult"))
-                    ++i;
-                else if(responseMap[s[i]] == "RemovePersist" && responseMap[s[i+1]] == "Remove")
+                if (!t2)
                 {
-                    responseTags.Add(responseMap[s[i]]);
-                    ++i;
-                    continue;
-                }
-                else if (responseMap[s[i]] == "Resist" && responseMap[s[i + 1]] == "Insult")
-                {
-                    responseTags.Add(responseMap[s[i]]);
-                    ++i;
-                    continue;
+                    if (responseMap[s[i]] == "StepOut" && responseMap[s[i + 1]] == "TalkReason")
+                        ++i;
+                    else if (responseMap[s[i]] == "HeyYou" && (responseMap[s[i + 1]] == "CalmDown" || responseMap[s[i + 1]] == "Insult"))
+                        ++i;
+                    else if (responseMap[s[i]] == "RemovePersist" && responseMap[s[i + 1]] == "Remove")
+                    {
+                        responseTags.Add(responseMap[s[i]]);
+                        ++i;
+                        continue;
+                    }
+                    else if (responseMap[s[i]] == "Resist" && responseMap[s[i + 1]] == "Insult")
+                    {
+                        responseTags.Add(responseMap[s[i]]);
+                        ++i;
+                        continue;
+                    }
                 }
             }
             

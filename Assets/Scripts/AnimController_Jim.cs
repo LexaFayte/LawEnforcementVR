@@ -27,6 +27,7 @@ public class AnimController_Jim : MonoBehaviour {
         {
             if (timer >= initiateQuirk)
             {
+                recenter();
                 animator.SetInteger("QuirkID", UnityEngine.Random.Range(0, 3));
                 animator.SetBool("Quirk", true);
                 timer = 0f;
@@ -43,6 +44,12 @@ public class AnimController_Jim : MonoBehaviour {
         }
 
 
+    }
+
+    private void recenter()
+    {
+        Vector3 target = new Vector3(CC.transform.position.x, 0, CC.transform.position.z);
+        jimTransform.LookAt(target);
     }
 
     void OnAnimatorIK()

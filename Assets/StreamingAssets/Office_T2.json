@@ -1,0 +1,30 @@
+{
+	"items":
+	[
+		{"key":"diffuse--focus","value":"-1"},
+		{"key":"diffuse--dismiss","value":"-0.5"},
+		{"key":"diffuse--confide","value":"-1"},
+		{"key":"diffuse--bossReprimand","value":"-1"},
+		
+		{"key":"escalate--calmDown","value":"5"},
+		{"key":"escalate--quiet","value":"5"},
+		{"key":"escalate--insult","value":"5"},
+		{"key":"escalate--curse","value":"5"},
+		
+		{"key":"warning--repeatThreat","value":"1.5"},
+		{"key":"warning--noRepeatThreat","value":"1.5"},
+		
+		{"key":"aggressive--handsUp","value":"0.5"},
+		{"key":"aggressive--handsLOS","value":"0.25"},
+		{"key":"aggressive--ground","value":"1.75"},
+		
+		{"key":"title--formal","value":"-.5"},
+		{"key":"title--fname","value":"-.75"},
+		{"key":"title--lname","value":"-.75"},
+		{"key":"title--rude","value":"1.25"},
+		
+		{"key":"purpose--help","value":"-.5"},
+		{"key":"purpose--listen","value":"-.75"},
+		{"key":"purpose--convince","value":"-.75"}
+	]
+}

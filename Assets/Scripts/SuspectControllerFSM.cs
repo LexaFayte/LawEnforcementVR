@@ -283,8 +283,6 @@ public class SuspectControllerFSM : MonoBehaviour {
                 c = Color.black;
 
             SC.initializeT2(T2.OFFICE);
-
-            //suspect.GetComponent<Renderer>().material.color = c;
             Debug.Log("Starting T2 Boss Office");
         }
         else
@@ -296,7 +294,6 @@ public class SuspectControllerFSM : MonoBehaviour {
                 c = Color.white;
 
             SC.initializeT2(T2.OUTSIDE);
-            //suspect.GetComponent<Renderer>().material.color = c;
             Debug.Log("Starting T2 Outside");
         }
 
@@ -315,6 +312,17 @@ public class SuspectControllerFSM : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// set each state into T2
+    /// </summary>
+    public void setStatesT2()
+    {
+        foreach(KeyValuePair<STATE, StateBase> s in states)
+        {
+            s.Value.setT2(true);
+        }
+    }
+
     //coroutines
 
     /// <summary>
@@ -325,12 +333,10 @@ public class SuspectControllerFSM : MonoBehaviour {
     /// <returns>nothing</returns>
     IEnumerator PlayAudio(List<string> Tags, List<AudioClip[]> audioClips)
     {
-        //float timer;
         string lastTag = "";
         float delay = 0;
         for (int i = 0; i < Tags.Count; i++)
         {
-            //timer = 0;
             if (Tags[i] != lastTag)
             {
                 lastTag = Tags[i];
@@ -341,12 +347,6 @@ public class SuspectControllerFSM : MonoBehaviour {
                 
                 while (currentState.AS.isPlaying)
                 {
-                    //timer += Time.deltaTime;
-
-                    //if(timer > 0.25f)
-                    //{
-                    //    suspect.GetComponent<AnimController_Jim>().deselectTrigger(Tags[i]);
-                    //}
                     yield return 0;
                 }
                 
@@ -355,10 +355,7 @@ public class SuspectControllerFSM : MonoBehaviour {
 
         if (currentState.transitionA2)
         {
-            if (currentState.getStateID() != STATE.HIGH_AGGRO)
-                startCoWait(3.5f);
-            else
-                startCoWait(2.0f);
+            startCoWait(3.5f);
         }
         else
             StartCoGrumbles();

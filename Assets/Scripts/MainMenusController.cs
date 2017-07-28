@@ -17,6 +17,7 @@ public class MainMenusController : MonoBehaviour {
     private SteamVR_Controller.Device device;
     private SteamVR_TrackedController controller;
     private SteamVR_FirstPersonController_MainMenu laser;
+    private MenuAnimator MA;
 
     //scenario vars
     private List<int> scenarioIDs;
@@ -29,7 +30,7 @@ public class MainMenusController : MonoBehaviour {
         controller.TriggerUnclicked += triggerConfirm;
         SceneManager.sceneLoaded += sceneLoad;
         scenarioIDs = new List<int>();
-        
+        MA = MenusContainer.GetComponent<MenuAnimator>();
         Invoke("menuFade", 1f);
     }
 
@@ -117,12 +118,12 @@ public class MainMenusController : MonoBehaviour {
     {
         if(MainMenu)
         {
-            MenusContainer.GetComponent<MenuAnimator>().playTransToMainMenu();
+            MA.playTransToMainMenu();
             scenarioMenu = false;
         }
         else
         {
-            MenusContainer.GetComponent<MenuAnimator>().playTransToScenario();
+            MA.playTransToScenario();
             scenarioMenu = true;
         }
 

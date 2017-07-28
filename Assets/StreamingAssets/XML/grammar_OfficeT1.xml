@@ -205,9 +205,15 @@
 				<item>talk about it<tag>out+="_coax--talk"</tag></item>
 				<item>talk about this<tag>out+="_coax--talk"</tag></item>
 			</one-of>
-			<item repeat="0-1">and talk<tag>out+="_coax--andTalk"</tag></item>
-			<item repeat="0-1">and we can talk<tag>out+="_coax--andTalk"</tag></item>
-			<item repeat="0-1">and we'll talk<tag>out+="_coax--andTalk"</tag></item>
+			
+			<item repeat="0-1">	<tag>out+="_coax--andTalk"</tag>
+				<one-of>
+				<item>and talk</item>
+				<item>and we can talk</item>
+				<item>and we'll talk</item>
+				</one-of>
+			</item>
+		
 		</item>
 
 	
@@ -259,12 +265,14 @@
 		</one-of>
 	</item>
 	
-
-	<item repeat="0-1">so we can talk<tag>out+="_coax--talkReason"</tag></item>
-	<item repeat="0-1">to talk<tag>out+="_coax--talkReason"</tag></item>
-	<item repeat="0-1">just want to talk<tag>out+="_coax--talkReason"</tag></item>
-	<item repeat="0-1">just wanna to talk<tag>out+="_coax--talkReason"</tag></item>
-
+	<item repeat="0-1"><tag>out+="_coax--talkReason"</tag>
+		<one-of>
+			<item>so we can talk</item>
+			<item>to talk</item>
+			<item>just want to talk</item>
+			<item>just wanna to talk</item>
+		</one-of>
+	</item>
  </rule>
 
   <rule id="g">
@@ -273,11 +281,13 @@
   </rule>
 
   <rule id="approach">
-    <one-of>
-      <item>excuse me<tag>out+="_approach--introduce"</tag></item>
-      <item>hi there<tag>out+="_approach--introduce"</tag></item>
-      <item>hello there<tag>out+="_approach--introduce"</tag></item>
-    </one-of>
+	<item><tag>out+="_approach--introduce"</tag>
+		<one-of>
+			  <item>excuse me</item>
+			  <item>hi there</item>
+			  <item>hello there</item>
+		</one-of>
+	</item>
   </rule>
   
     <rule id="h">
