@@ -11,7 +11,8 @@ public class CameraMove : MonoBehaviour {
     private bool moving;
     private bool rotating;
 
-    private float TRANS_LERP_TIME = 3f; //time to move from one point to another
+    private float TRANS_LERP_TIME = 9f; //time to move from one point to another
+    private float LERP = 20f;
     private float ROT_LERP_TIME = 2.5f;
     private float SMOOTH_TIME = 3f;
 
@@ -19,10 +20,10 @@ public class CameraMove : MonoBehaviour {
 	void Awake () {
         moving = false;
         rotating = false;
-        Invoke("startMovement", 2.5f);
+        //Invoke("startMovement", 2.5f);
 	}
 
-    private void startMovement()
+    public void startMovement()
     {
         StartCoroutine(smoothMovement());
     }
@@ -46,6 +47,53 @@ public class CameraMove : MonoBehaviour {
             moving = false;
         }
        
+    }
+
+    
+    /// <summary>
+    /// move multiple objects towards one point over time
+    /// </summary>
+    /// <param name="objects">array of objects to move</param>
+    /// <param name="wp">waypoint to move towards</param>
+    /// <returns></returns>
+    public IEnumerator moveObjectsToPoint(GameObject[] objects, GameObject wp)
+    {
+        WaitForEndOfFrame EOF = new WaitForEndOfFrame();
+
+        float elapsedTime = 0f;
+        Vector3[] originalPosition = new Vector3[objects.Length];
+        for (int i = 0; i < objects.Length; i++)
+        {
+            originalPosition[i] = objects[i].transform.position;
+        }
+
+        moving = true;
+        while (elapsedTime < LERP)
+        {
+            Vector3 VecLERP;
+            elapsedTime += Time.deltaTime;
+            for (int j = 0; j < objects.Length; j++)
+            {
+                if (objects[j].tag == "Car")
+                    VecLERP = Vector3.Lerp(originalPosition[j], wp.transform.position, (elapsedTime / (LERP+0.07f)));
+                else
+                    VecLERP = Vector3.Lerp(originalPosition[j], wp.transform.position, (elapsedTime / LERP));
+                
+
+                VecLERP.z = originalPosition[j].z;
+                VecLERP.y = originalPosition[j].y;
+
+                //if (objects[j].tag == "Car")
+                //    VecLERP.x -= 1f;
+
+                objects[j].transform.position = VecLERP;
+            }
+                
+            yield return EOF;
+
+        }
+        moving = false;
+        
     }
 
     IEnumerator rotateAtWaypoint(GameObject wp)

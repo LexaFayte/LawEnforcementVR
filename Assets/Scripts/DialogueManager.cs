@@ -30,6 +30,7 @@ public class DialogueManager : MonoBehaviour {
         loadDialogueText("Office_T2.json");
         loadResponses("Office_T2_Audio.json");
         loadResponsesAudio("Office_T2_ClipData.json");
+        //Resources.UnloadUnusedAssets();
         t2 = true;
     }
 
@@ -97,11 +98,11 @@ public class DialogueManager : MonoBehaviour {
     {
         foreach(KeyValuePair<string, AudioClip[]> clips in suspectDialogue)
         {
-            AudioClip[] temp = clips.Value;
 
-            for (int i = 0; i < temp.Length;++i)
+            for (int i = 0; i < clips.Value.Length;++i)
             {
-                Resources.UnloadAsset(temp[i]);
+                //Resources.UnloadAsset(clips.Value[i]);
+                clips.Value[i].UnloadAudioData();
             }
         }
     }
