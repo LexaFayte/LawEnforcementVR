@@ -171,6 +171,7 @@ public class StateLowAggro : StateBase
             switch(tag)
             {
                 case "Temp":
+                    AS.clip = clips[audioIndex];
                     break;
             }
         }

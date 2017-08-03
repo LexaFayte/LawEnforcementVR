@@ -11,9 +11,9 @@ public class CameraMove : MonoBehaviour {
     private bool moving;
     private bool rotating;
 
-    private float TRANS_LERP_TIME = 9f; //time to move from one point to another
+    private float TRANS_LERP_TIME = 5f; //time to move from one point to another
     private float LERP = 20f;
-    private float ROT_LERP_TIME = 2.5f;
+    private float ROT_LERP_TIME = 2f;
     private float SMOOTH_TIME = 3f;
 
 	// Use this for initialization
@@ -50,6 +50,21 @@ public class CameraMove : MonoBehaviour {
     }
 
     
+    public IEnumerator translateOverTime(GameObject obj, GameObject waypoint, float LerpTime)
+    {
+        WaitForEndOfFrame EOF = new WaitForEndOfFrame();
+        float elapsedTime = 0f;
+        Vector3 originalPosition;
+        originalPosition = obj.transform.position;
+
+        while (elapsedTime < LerpTime)
+        {
+            elapsedTime += Time.deltaTime;
+            obj.transform.position = Vector3.Lerp(originalPosition, waypoint.transform.position, (elapsedTime / LerpTime));
+            yield return EOF;
+        }
+    }
+
     /// <summary>
     /// move multiple objects towards one point over time
     /// </summary>

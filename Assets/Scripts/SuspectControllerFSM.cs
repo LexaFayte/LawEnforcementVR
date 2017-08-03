@@ -93,6 +93,7 @@ public class SuspectControllerFSM : MonoBehaviour {
     private bool copsAnim;
     private ScenarioController SC;
     private GameObject suspect;
+    private bool tier2;
 
     public AudioSource dialogueSource;
     public GameObject CC;
@@ -112,6 +113,11 @@ public class SuspectControllerFSM : MonoBehaviour {
         get { return suspect; }
     }
 
+    public bool Tier2
+    {
+        get { return tier2; }
+    }
+
 	// Use this for initialization
 	void Awake () {
         suspect = gameObject;
@@ -123,6 +129,7 @@ public class SuspectControllerFSM : MonoBehaviour {
         losTest = false;
         wait = false;
         copsAnim = false;
+        tier2 = false;
     }
 
     /// <summary>
@@ -272,6 +279,7 @@ public class SuspectControllerFSM : MonoBehaviour {
     /// </summary>
     public void StartT2()
     {
+        tier2 = true;
         Color c = Color.grey;
         //check for losTest true or false (true = pass; false = fail)
         if (currentState.getStateID() == STATE.HIGH_AGGRO)

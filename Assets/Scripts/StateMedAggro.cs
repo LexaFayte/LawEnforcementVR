@@ -204,6 +204,7 @@ public class StateMedAggro : StateBase
             switch (tag)
             {
                 case "Temp":
+                    AS.clip = clips[audioIndex];
                     break;
             }
         }

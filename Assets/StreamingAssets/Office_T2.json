@@ -4,7 +4,7 @@
 		{"key":"diffuse--focus","value":"-1"},
 		{"key":"diffuse--dismiss","value":"-0.5"},
 		{"key":"diffuse--confide","value":"-1"},
-		{"key":"diffuse--bossReprimand","value":"-1"},
+		{"key":"diffuse--assureReprimand","value":"-1"},
 		
 		{"key":"escalate--calmDown","value":"5"},
 		{"key":"escalate--quiet","value":"5"},

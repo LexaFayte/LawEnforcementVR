@@ -7,7 +7,8 @@ public enum T2 { OFFICE, OUTSIDE};
 
 public class ScenarioController : MonoBehaviour {
 
-    public GameObject CC;//Camera Container
+    //public objects
+    public GameObject CC;
     public GameObject suspect;
     public GameObject boss;
     public GameObject Officer;
@@ -19,8 +20,9 @@ public class ScenarioController : MonoBehaviour {
     public AudioClip[] IntroClips;
     public AudioClip[] TutorialClips;
     public GameObject drivingWaypoint;
+    public GameObject drivingStrip;
     
-
+    //private objects and vars
     private SuspectControllerFSM scFSM;
     private float timer;
     private Coroutine MoveCar;
@@ -38,14 +40,6 @@ public class ScenarioController : MonoBehaviour {
     private SteamVR_PlayArea playArea;
     private Animator copAnim;
 
-
-
-    
-    //
-    //public GameObject securityGuard;
-    //public GameObject partnerCop;
-    //
-
     private void Awake()
     { 
         scFSM = suspect.GetComponent<SuspectControllerFSM>();
@@ -61,9 +55,10 @@ public class ScenarioController : MonoBehaviour {
         copAnim = Officer.GetComponent<Animator>();
         currentScene = SCENE.INTRO;
     }
+
     // Use this for initialization
     void Start () {
-        fadetoClear();
+        fadetoClear(2.5f);
         Invoke("PlayCarIntro", 2);
 	}
 	
@@ -71,15 +66,17 @@ public class ScenarioController : MonoBehaviour {
 	void Update () {
         if (!transitioning && timer > 0)
         {
-            fadetoClear();
+            fadetoClear(3);
             timer = 0;
         }
 	}
 
+    /// <summary>
+    /// play the scenario introduction
+    /// </summary>
     public void PlayCarIntro()
     {
-        GameObject[] toMove = { CC, Officer, car };
-        MoveCar = StartCoroutine(CM.moveObjectsToPoint(toMove,drivingWaypoint));
+        MoveCar = StartCoroutine(CM.translateOverTime(drivingStrip, drivingWaypoint, 50));
         PlayIntroAudio = StartCoroutine(coDrivingIntro());
     }
 
@@ -92,16 +89,27 @@ public class ScenarioController : MonoBehaviour {
         initT2 = StartCoroutine(coInitT2(scene));
     }
 
-    public void fadetoBlack()
+    /// <summary>
+    /// fade the VR View to black
+    /// </summary>
+    public void fadetoBlack(float t)
     {
-        SteamVR_Fade.View(Color.black, 2f);
+        SteamVR_Fade.View(Color.black, t);
     }
 
-    public void fadetoClear()
+    /// <summary>
+    /// fade the VR View to clear
+    /// </summary>
+    public void fadetoClear(float t)
     {
-        SteamVR_Fade.View(Color.clear, 2f);
+        SteamVR_Fade.View(Color.clear, t);
     }
 
+    /// <summary>
+    /// coroutine for scenario introduction;
+    /// driving and speaking to dispatch
+    /// </summary>
+    /// <returns></returns>
     IEnumerator coDrivingIntro()
     {
         //loop through all intro clips while moving car forward
@@ -119,6 +127,7 @@ public class ScenarioController : MonoBehaviour {
             }
             else
             {
+                copAnim.SetTrigger("Radio");
                 AudioOfficer.clip = IntroClips[i];
                 AudioOfficer.Play();
                 while(AudioOfficer.isPlaying)
@@ -128,39 +137,47 @@ public class ScenarioController : MonoBehaviour {
             }
         }
 
-        fadetoBlack();
+        fadetoBlack(2);
         initT1 = StartCoroutine(coInitT1());
     }
 
+    /// <summary>
+    /// start Tier 1 in of the scenario (will start it after 2.5s)
+    /// </summary>
     private void startT1()
     {
-        CM.Invoke("startMovement", 2.5f);
-
+        CM.Invoke("startMovement", 3f);
     }
 
-
+    /// <summary>
+    /// coroutine for initializing Tier 1 in the scenario
+    /// </summary>
+    /// <returns></returns>
     IEnumerator coInitT1()
     {
         transitioning = true;
         timer = 0f;
         StopCoroutine(MoveCar);
+        drivingStrip.SetActive(false);
 
         while (transitioning)
         {
             timer += Time.deltaTime;
-            if (timer > 2.5f)
+            if (timer > 2f)
             {
                 transitioning = false;
+                //move Officer to beside you
+                Officer.transform.position = new Vector3(7f, 0.015f, 2f);
+                Officer.transform.Rotate(Vector3.up, 25);
+                Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
+
                 playArea.size = SteamVR_PlayArea.Size._400x300;
                 CC.transform.position = new Vector3(8.62f, 0.5051446f, 1.23f);
                 CC.transform.rotation = new Quaternion(0, 0, 0, 1);
 
-                //move Officer to beside you
-                Officer.transform.position = new Vector3(7f, 0.015f, .4f);
-                Officer.transform.Rotate(Vector3.up, -15);
-                //Officer.transform.Rotate(Vector3.right, -Officer.transform.rotation.x);
-                Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
-
+                //car
+                car.transform.position = new Vector3(191.52f, 0.1f, -22.1f);
+                car.transform.Rotate(0, 0, -52.957f);
 
                 //turn off outside lighting
                 OutsideSun.enabled = false;
@@ -176,24 +193,29 @@ public class ScenarioController : MonoBehaviour {
     }
 
 
+    /// <summary>
+    /// coroutine for partner officers introduction ("tutorial") for the user
+    /// </summary>
+    /// <returns></returns>
     IEnumerator coTut()
     {
         bool tutorial = true;
         float timer = 0;
         while (tutorial)
         {
-            
+
             timer += Time.deltaTime;
 
             if (timer > 1f)
             {
-                fadetoClear();
+                copAnim.SetTrigger("T1Tut");
+                fadetoClear(3);                
             }
 
-            if (timer > 3f)
+            if (timer > 3.5f)
             {
                 tutorial = false;
-                copAnim.SetTrigger("T1Tut");
+               
                 for (int i = 0; i < TutorialClips.Length; i++)
                 {
                     AudioOfficer.clip = TutorialClips[i];
@@ -201,8 +223,8 @@ public class ScenarioController : MonoBehaviour {
 
                     if (i == 2)
                     {
-                        CM.Invoke("startMovement",2f);
-                        copAnim.SetTrigger("Walk");
+                        CM.Invoke("startMovement", 3.5f);
+                       
                     }
                     while (AudioOfficer.isPlaying)
                     {
@@ -210,29 +232,38 @@ public class ScenarioController : MonoBehaviour {
                     }
                 }
 
-                while (Officer.transform.position.z < T1waypoints[0].transform.position.z+0.5)
-                {
-                    yield return 0;
-                }
 
-                copAnim.SetTrigger("Turn");
-                Officer.transform.Rotate(Vector3.up, 25);
+                copAnim.SetTrigger("Walk");
+                Officer.transform.Rotate(Vector3.up, -40);
                 Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
 
-                while (Officer.transform.position.x < T1waypoints[1].transform.position.x)
-                {
-                    yield return 0;
-                }
+                //while (Officer.transform.position.z < T1waypoints[0].transform.position.z + 0.5)
+                //{
+                //    yield return 0;
+                //}
 
-                copAnim.SetTrigger("Stop");
-                Officer.transform.position = new Vector3(Officer.transform.position.x, 0.015f, Officer.transform.position.z);
-                Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
+                //copAnim.SetTrigger("Turn");
+                //Officer.transform.Rotate(Vector3.up, 25);
+                //Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
+
+                //while (Officer.transform.position.x < T1waypoints[1].transform.position.x - 2)
+                //{
+                //    yield return 0;
+                //}
+
+                //copAnim.SetTrigger("Stop");
+                //Officer.transform.position = new Vector3(Officer.transform.position.x, 0.015f, Officer.transform.position.z);
+                //Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
             }
         }
     }
 
 
-
+    /// <summary>
+    /// initializing Office Scenario Tier 2
+    /// </summary>
+    /// <param name="scene">the T2 scene (Outside or Office)</param>
+    /// <returns></returns>
     IEnumerator coInitT2(T2 scene)
     {
         transitioning = true;
@@ -240,6 +271,7 @@ public class ScenarioController : MonoBehaviour {
 
         Vector3 ccPos;
         Vector3 suspectPos;
+        Vector3 officerPos;
        
 
         if (scene == T2.OFFICE)
@@ -256,14 +288,21 @@ public class ScenarioController : MonoBehaviour {
                     scFSM.setStatesT2();
                     BGChars.SetActive(false);
                     transitioning = false;
-                    //move camera container to T2_WaypointOffice and rotate 45 degrees
+                    
+                    //camera
                     ccPos = new Vector3(T2Waypoints[0].transform.position.x, CC.transform.position.y, T2Waypoints[0].transform.position.z);
                     CC.transform.SetPositionAndRotation(ccPos, new Quaternion(0, 45, 0, 1));
-                    //transport Jimmy into office looking at the boss
-                    suspectPos = new Vector3(T2Waypoints[1].transform.position.x, suspect.transform.position.y, T2Waypoints[1].transform.position.z);
                     
+                    //Jim (Suspect)
+                    suspectPos = new Vector3(T2Waypoints[1].transform.position.x, suspect.transform.position.y, T2Waypoints[1].transform.position.z);
                     suspect.transform.position = suspectPos;
                     suspect.transform.LookAt(new Vector3(boss.transform.position.x, 0, boss.transform.position.z));
+
+                    //Officer
+                    officerPos = new Vector3(T2Waypoints[2].transform.position.x, Officer.transform.position.y, T2Waypoints[2].transform.position.z);
+                    Officer.transform.position = officerPos;
+                    Officer.transform.LookAt(new Vector3(suspect.transform.position.x, 0, suspect.transform.position.z));
+
                     
                     //activate boss
                     //boss.GetComponent<Animator>().SetBool("START", true);
@@ -273,7 +312,7 @@ public class ScenarioController : MonoBehaviour {
             }
 
         }
-        else// scene == T2.OUTSIDE
+        else if(scene == T2.OUTSIDE)
         {
            
             while(timer < 3.5)
@@ -292,24 +331,29 @@ public class ScenarioController : MonoBehaviour {
                     DM.initT2Dialogue();
                     GRS.initGrammarT2();
                     scFSM.setStatesT2();
+                    BGChars.SetActive(false);
                     transitioning = false;
                     OutsideSun.enabled = true;
-                    //move camera container to T2_WaypointOutside and rotate 45 degrees
-                    ccPos = new Vector3(T2Waypoints[2].transform.position.x, CC.transform.position.y, T2Waypoints[2].transform.position.z);
-                    CC.transform.position = ccPos;
-                    CC.transform.LookAt(new Vector3(car.transform.position.x, 0, car.transform.position.z));
-                    //SetPositionAndRotation(ccPos, new Quaternion(0, 180, 0, 1));
-                    //transport Jimmy outside looking at you
-                    suspectPos = new Vector3(T2Waypoints[3].transform.position.x, suspect.transform.position.y, T2Waypoints[3].transform.position.z);
-
+                    
+                    //Jim (Suspect)
+                    suspectPos = new Vector3(T2Waypoints[4].transform.position.x, suspect.transform.position.y, T2Waypoints[4].transform.position.z);
                     suspect.transform.position = suspectPos;
                     suspect.transform.LookAt(new Vector3(CC.transform.position.x, 0, CC.transform.position.z));
+
+                    //Camera
+                    ccPos = new Vector3(T2Waypoints[3].transform.position.x, CC.transform.position.y, T2Waypoints[3].transform.position.z);
+                    CC.transform.position = ccPos;
+                    CC.transform.LookAt(new Vector3(suspect.transform.position.x, 0, suspect.transform.position.z));
+
+                    //Officer
+                    officerPos = new Vector3(T2Waypoints[5].transform.position.x, Officer.transform.position.y, T2Waypoints[5].transform.position.z);
+                    Officer.transform.position = officerPos;
+                    Officer.transform.LookAt(new Vector3(suspect.transform.position.x, 0, suspect.transform.position.z));
                 }
                 yield return 0;
 
             }
             
         }
-       
     }
 }

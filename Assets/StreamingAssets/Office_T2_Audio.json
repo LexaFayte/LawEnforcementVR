@@ -25,6 +25,7 @@
 		
 		{"key":"diffuse--focus","value":"Temp"},
 		{"key":"diffuse--dismiss","value":"Temp"},
+		{"key":"diffuse--assureReprimand","value":"Temp"},
 		{"key":"diffuse--confide","value":"Temp"}
 	]
 }

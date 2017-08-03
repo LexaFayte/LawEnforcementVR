@@ -4,18 +4,25 @@ using UnityEngine;
 
 public class AnimController_Jim : MonoBehaviour {
 
+
     private Animator animator;
     private Transform jimTransform;
+    private SuspectControllerFSM scFSM;
     private float timer;
     private float initiateQuirk;
+    private bool tier2;
+
     public GameObject CC;
+    public GameObject boss;
 
     private void Awake()
     {
         animator = gameObject.GetComponent<Animator>();
         jimTransform = gameObject.transform;
+        scFSM = gameObject.GetComponent<SuspectControllerFSM>();
         timer = 0f;
         initiateQuirk = 3.5f;
+        tier2 = false;
     }
 
     private void Update()
@@ -27,7 +34,7 @@ public class AnimController_Jim : MonoBehaviour {
         {
             if (timer >= initiateQuirk)
             {
-                recenter();
+                //recenter();
                 animator.SetInteger("QuirkID", UnityEngine.Random.Range(0, 3));
                 animator.SetBool("Quirk", true);
                 timer = 0f;
@@ -42,14 +49,34 @@ public class AnimController_Jim : MonoBehaviour {
                 timer = -1.5f;
             }
         }
-
-
     }
 
     private void recenter()
     {
         Vector3 target = new Vector3(CC.transform.position.x, 0, CC.transform.position.z);
         jimTransform.LookAt(target);
+    }
+
+    private void startCoTargetBoss()
+    {
+        StartCoroutine(lookAtBoss());
+    }
+
+    IEnumerator lookAtBoss()
+    {
+        float elapsedTime = 0f;
+        float ROT_LERP_TIME = 1;
+        Quaternion ogRot = jimTransform.rotation;
+        Vector3 target = (new Vector3(boss.transform.position.x, 0, boss.transform.position.z)-jimTransform.position);
+        Quaternion rot = Quaternion.LookRotation(target);//Quaternion.FromToRotation(target, jimTransform.position);
+
+        while (elapsedTime < ROT_LERP_TIME)
+        {
+            elapsedTime += Time.deltaTime;
+            jimTransform.rotation = Quaternion.Slerp(ogRot,rot, (elapsedTime / ROT_LERP_TIME));
+            yield return 0;
+        }
+        animator.SetTrigger("Walk");
     }
 
     void OnAnimatorIK()
@@ -72,7 +99,7 @@ public class AnimController_Jim : MonoBehaviour {
     /// </summary>
     public void triggerIntroCops()
     {
-        animator.SetTrigger("Cops");
+        animator.SetTrigger("Cops"); 
     }
 
     /// <summary>
@@ -81,6 +108,7 @@ public class AnimController_Jim : MonoBehaviour {
     public void stopRant()
     {
         animator.SetTrigger("Rant Over");
+        recenter();
     }
 
     public void triggerAnswer(float aggro, string tag, bool longClip)
@@ -142,6 +170,27 @@ public class AnimController_Jim : MonoBehaviour {
                 break;
             case "Leave":
                 animator.SetTrigger("Leave");
+                Invoke("startCoTargetBoss",5);
+                break;
+        }
+    }
+
+    public void triggerAnswerT2(float aggro, string tag, bool longClip)
+    {
+        if (longClip)
+        {
+            animator.SetBool("LongClip", true);
+        }
+        else
+        {
+            animator.SetBool("LongClip", false);
+        }
+
+        animator.SetFloat("AggroLevel", aggro);
+
+        switch(tag)
+        {
+            case "":
                 break;
         }
     }
