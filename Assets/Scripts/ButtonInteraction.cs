@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ButtonInteraction : MonoBehaviour {
 
-    public enum buttonID { PAUSE, EXIT, SCENARIOS, RANGE, QUIT, BACK, START, STOP, RESET};
+    public enum buttonID { PAUSE, EXIT, SCENARIOS, RANGE, QUIT, BACK, START, STOP, RESET, SCENARIO};
 
     public buttonID BID;
     public Color highlight = Color.green;
@@ -15,6 +15,11 @@ public class ButtonInteraction : MonoBehaviour {
     private int scenarioID = -1;
     public GameObject MMContainerController;
     private bool buttonActive = false;
+
+    public int ScenarioID
+    {
+        get { return scenarioID; }
+    }
 
     private void Start()
     {

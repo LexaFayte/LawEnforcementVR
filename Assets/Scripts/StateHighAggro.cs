@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Assets.Scripts;
 
 public class StateHighAggro : StateBase
 {
@@ -251,16 +252,16 @@ public class StateHighAggro : StateBase
 
             }
         }
-        else//T2
-        {
-            switch (tag)
-            {
-                case "Temp":
-                    AS.clip = clips[audioIndex];
-                    //JimAC.triggerAnswer(aggroScore, tag, longclip);
-                    break;
-            }
-        }
+        //else//T2
+        //{
+        //    switch (tag)
+        //    {
+        //        case "Temp":
+        //            AS.clip = clips[audioIndex];
+        //            //JimAC.triggerAnswer(aggroScore, tag, longclip);
+        //            break;
+        //    }
+        //}
     }
 
     public override STATE getStateID()
@@ -271,5 +272,10 @@ public class StateHighAggro : StateBase
     public override void setT2(bool t2)
     {
         T2 = t2;
+    }
+
+    public override void kill()
+    {
+        Debug.Log("SUSPECT KILLS");
     }
 }

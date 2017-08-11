@@ -5,6 +5,7 @@
  
  <rule id="topLevel">
 	<one-of>
+		<item><ruleref uri="#title"/></item>
 		<item><ruleref uri="#a"/></item>
 		<item><ruleref uri="#b"/></item>
 		<item><ruleref uri="#c"/></item>
@@ -14,7 +15,7 @@
  
  <rule id="a">
 	<item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
-	<item><ruleref uri="#diffuse"/><tag>out+=rules.latest()</tag></item>
+	<item><ruleref uri="#defuse"/><tag>out+=rules.latest()</tag></item>
  </rule>
  
  
@@ -35,12 +36,12 @@
 	</item>
   </rule> 
  
- <rule id="diffuse">
+ <rule id="defuse">
 	 <item repeat="1-2">
 		<one-of>
-			<item>look at me <tag>out+="_diffuse--focus"</tag></item>
+			<item>look at me <tag>out+="_defuse--focus"</tag></item>
 			
-			<item><tag>out+="_diffuse--focus"</tag>
+			<item><tag>out+="_defuse--focus"</tag>
 				I need
 				<one-of>
 					<item>you to focus</item>
@@ -59,7 +60,7 @@
 				
 			</item>
 		 
-			<item><tag>out+="_diffuse--dismiss"</tag>
+			<item><tag>out+="_defuse--dismiss"</tag>
 				<item repeat="0-1">
 					<one-of>
 						<item>yes</item>
@@ -84,39 +85,46 @@
 				</item>	
 			</item>
 				
-			<item><tag>out+="_diffuse--bossReprimand"</tag>
+			<item><tag>out+="_defuse--assureReprimand"</tag>
 				<item repeat="0-1">I assure you</item>
 				
-				<one-of>
-					<item>I will</item>
-					<item>I'll</item>
-					<item>we will</item>
-					<item>we'll</item>
-				</one-of>
+				<item>
+					<one-of>
+						<item>I will</item>
+						<item>I'll</item>
+						<item>we will</item>
+						<item>we'll</item>
+					</one-of>
+				</item>
 					
 				<item repeat="0-1">have a</item>
 				
-				<one-of>
-					<item>deal with him later</item>
-					<item>talk with him later</item>
-					<item>chat with him later</item>
-				</one-of>
+				<item>
+					<one-of>
+						<item>deal with him later</item>
+						<item>talk with him later</item>
+						<item>chat with him later</item>
+					</one-of>
+				</item>
 			</item>
 			
-			<item><tag>out+="_diffuse--confide"</tag>
+			<item><tag>out+="_defuse--confide"</tag>
 				<item repeat="0-1">but</item>
-				<one-of>
-					<item>it's just you and me</item>
-					<item>I need you to talk to me</item>
-					<item>
-					I need you to tell me
-						<one-of>
-							<item>what's going on</item>
-							<item>what the problem is</item>
-							<item>what the issue is</item>
-						</one-of>
-					</item>
-				</one-of>
+				
+				<item>
+					<one-of>
+						<item>it's just you and me</item>
+						<item>I need you to talk to me</item>
+						<item>
+						I need you to tell me
+							<one-of>
+								<item>what's going on</item>
+								<item>what the problem is</item>
+								<item>what the issue is</item>
+							</one-of>
+						</item>
+					</one-of>
+				</item>
 				
 				<item repeat="0-1">
 					<one-of>
@@ -133,7 +141,7 @@
 				</item>
 			</item>
 		</one-of>
-		</item>
+	</item>
  </rule> 
  
   <rule id="b">

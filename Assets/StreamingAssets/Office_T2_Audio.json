@@ -2,30 +2,30 @@
 	"items":
 	[
 		
-		{"key":"escalate--calmDown","value":"Temp"},
-		{"key":"escalate--quiet","value":"Temp"},
-		{"key":"escalate--insult","value":"Temp"},
-		{"key":"escalate--curse","value":"Temp"},
+		{"key":"escalate--calmDown","value":"CalmDown"},
+		{"key":"escalate--quiet","value":"Resist"},
+		{"key":"escalate--insult","value":"Resist"},
+		{"key":"escalate--curse","value":"Resist"},
 		
-		{"key":"warning--repeatThreat","value":"NONE"},
-		{"key":"warning--noRepeatThreat","value":"Temp"},
+		{"key":"warning--repeatThreat","value":"Resist"},
+		{"key":"warning--noRepeatThreat","value":"Resist"},
 		
-		{"key":"aggressive--handsUp","value":"Temp"},
-		{"key":"aggressive--handsLOS","value":"Temp"},
-		{"key":"aggressive--ground","value":"Temp"},
+		{"key":"aggressive--handsUp","value":"Resist"},
+		{"key":"aggressive--handsLOS","value":"Resist"},
+		{"key":"aggressive--ground","value":"Resist"},
 		
-		{"key":"title--formal","value":"NONE"},
-		{"key":"title--fname","value":"NONE"},
-		{"key":"title--lname","value":"NONE"},
-		{"key":"title--rude","value":"Temp"},
+		{"key":"title--formal","value":"Title"},
+		{"key":"title--fname","value":"Title"},
+		{"key":"title--lname","value":"Title"},
+		{"key":"title--rude","value":"Resist"},
 		
-		{"key":"purpose--help","value":"Temp"},
-		{"key":"purpose--listen","value":"Temp"},
-		{"key":"purpose--convince","value":"Temp"},
+		{"key":"purpose--help","value":"Purpose"},
+		{"key":"purpose--listen","value":"Purpose"},
+		{"key":"purpose--convince","value":"Purpose"},
 		
-		{"key":"diffuse--focus","value":"Temp"},
-		{"key":"diffuse--dismiss","value":"Temp"},
-		{"key":"diffuse--assureReprimand","value":"Temp"},
-		{"key":"diffuse--confide","value":"Temp"}
+		{"key":"defuse--focus","value":"Focus"},
+		{"key":"defuse--dismiss","value":"Dismiss"},
+		{"key":"defuse--assureReprimand","value":"AssureReprimand"},
+		{"key":"defuse--confide","value":"Confide"}
 	]
 }

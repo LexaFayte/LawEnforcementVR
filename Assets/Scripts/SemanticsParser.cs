@@ -23,6 +23,19 @@ public static class SemanticsParser {
         semantics = semantics.Distinct().ToList();
     }
 
+    public static void parseNonDistinct(string toParse, ref List<string> semantics)
+    {
+        if (toParse.Contains("[object Object]"))
+        {
+            toParse = removeGarbage(toParse);
+        }
+
+        string[] splits = toParse.Split('_');
+        semantics = splits.ToList();
+        semantics.Remove("");
+        //semantics = semantics.Distinct().ToList();
+    }
+
     /// <summary>
     /// removes the "[object Object]" string from the semantics
     /// </summary>

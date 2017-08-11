@@ -7,78 +7,6 @@ using Assets.Scripts;
 public enum STATE { LOW_AGGRO, MED_AGGRO, HIGH_AGGRO};
 public enum TRIGGER { INTRO, COPS };
 
-public static class RangeConstants
-{
-    //grumble (muttering) index range constants
-    public static int grumble1_Boss = 0;
-    public static int grumble2_Company = 4;
-    public static int grumble3_Cops = 8;
-    public static int grumble4_BadGuy = 13;
-    public static int grumble5_Stupid = 17;
-    public static int grumble6_Unbelievable = 22;
-    public static int grumble7_WhatDoing = 27;
-
-    //Hey You index ranges
-    public static int heyYou_A1 = 0;
-    public static int heyYou_A2 = 1;
-    public static int heyYou_A3 = 3;
-
-    //Insult index range
-    public static int insult_A1 = 0;
-    public static int insult_A2 = 2;
-    public static int insult_A3 = 4;
-
-    //Name index range
-    public static int name_A1 = 0;
-    public static int name_A2 = 1;
-    public static int name_A3 = 2;
-
-    //Purpose index range
-    public static int purpose_A1 = 0;
-    public static int purpose_A2 = 1;
-    public static int purpose_A3 = 3;
-    public static int[] longClipPurpose = { 2 };
-
-    //Resist index range
-    public static int resist_A1 = 0;
-    public static int resist_A2 = 3;
-    public static int resist_A3 = 6;
-    public static int[] longClipResist = { 3,4,7,8 };
-
-    //StepOut index range
-    public static int stepOut_A1 = 0;
-    public static int stepOut_A2 = 2;
-    public static int stepOut_A3 = 4;
-
-    //TalkReason index range
-    public static int talkReason_A1 = 0;
-    public static int talkReason_A2 = 1;
-    public static int talkReason_A3 = 3;
-
-    //Approach index range
-    public static int approach_A1 = 0;
-    public static int approach_A2 = 2;
-    public static int approach_A3 = 4;
-
-    //Leave count
-    public static int leave_count = 3;
-    public static int[] longClipLeave = { 0, 1 };
-
-    //LosPass count
-    public static int losPass_count = 6;
-    public static int[] longClipLosPass = { 2, 3, 4, 5 };
-
-    //Talk count
-    public static int talk_count = 3;
-
-    //Remove count
-    public static int remove_count = 3;
-
-    //Remove Persist count
-    public static int removePersist_count = 3;
-
-}
-
 public class SuspectControllerFSM : MonoBehaviour {
 
     private Coroutine co_audio;
@@ -87,12 +15,16 @@ public class SuspectControllerFSM : MonoBehaviour {
     private Dictionary<STATE, StateBase> states;
     private StateBase currentState;
     private float aggroScore;
+    private float defuseScore;
+    private bool defused;
     private bool grumble;
     private bool losTest;
     private bool wait;
     private bool copsAnim;
     private ScenarioController SC;
+    private DialogueManager DM;
     private GameObject suspect;
+    private AnimController_Jim JimAC;
     private bool tier2;
 
     public AudioSource dialogueSource;
@@ -122,7 +54,7 @@ public class SuspectControllerFSM : MonoBehaviour {
 	void Awake () {
         suspect = gameObject;
         aggroScore = 5;
-        //dialogueSource = this.gameObject.AddComponent<AudioSource>();
+        defuseScore = 15;
         initStates();
         states[STATE.MED_AGGRO].Enter(null);
         grumble = false;
@@ -130,6 +62,9 @@ public class SuspectControllerFSM : MonoBehaviour {
         wait = false;
         copsAnim = false;
         tier2 = false;
+        defused = false;
+        DM = CC.GetComponent<DialogueManager>();
+        JimAC = suspect.GetComponent<AnimController_Jim>();
     }
 
     /// <summary>
@@ -212,14 +147,54 @@ public class SuspectControllerFSM : MonoBehaviour {
     }
 
     /// <summary>
+    /// set the defuse score
+    /// </summary>
+    /// <param name="newScore"></param>
+    public void setDefuseScore(float newScore)
+    {
+        defuseScore += newScore;
+
+        if(defuseScore <= 5)
+        {
+            defused = true;
+        }
+    }
+
+    /// <summary>
     /// starts a suspect FSM update
     /// </summary>
-    /// <param name="newAggroScore">the new suspect aggravation score</param>
+    /// <param name="newScore">the new suspect aggravation score</param>
     /// <param name="semantics">the semantics of the users dialogue</param>
-    public void UpdateFSM(float newAggroScore, List<string> semantics)
+    public void UpdateFSM(float newScore, List<string> semantics)
     {
-        setAggroScore(newAggroScore);
+        setAggroScore(newScore);
         currentState.UpdateState(aggroScore, semantics);
+    }
+
+    public void UpdateT2Suspect(float newDefuseScore, List<string> semantics)
+    {
+        setDefuseScore(newDefuseScore);
+        SC.Interrupt = true;
+
+        List<string> Tags = DM.semanticToAudio(semantics);
+        List<AudioClip[]> audioClips = DM.getAudioClips(Tags);
+        switch (Tags.Count)
+        {
+            case 1:
+                PlaySuspectAudio(Tags, audioClips);
+                break;
+            case 2:
+                PlaySuspectAudio(Tags, audioClips);
+                break;
+            case 3:
+                PlaySuspectAudio(Tags, audioClips);
+                break;
+            case 4:
+                PlaySuspectAudio(Tags, audioClips);
+                break;
+        }
+
+        grumble = false;
     }
 
     /// <summary>
@@ -234,8 +209,10 @@ public class SuspectControllerFSM : MonoBehaviour {
 
         if (co_grumbles != null)
             StopCoroutine(co_grumbles);
-
-        co_audio = StartCoroutine(PlayAudio(Tags, audioClips));
+        if (!tier2)
+            co_audio = StartCoroutine(PlayAudio(Tags, audioClips));
+        else
+            co_audio = StartCoroutine(PlayDefuseResponse(Tags, audioClips));
     }
 
     /// <summary>
@@ -259,16 +236,16 @@ public class SuspectControllerFSM : MonoBehaviour {
         {
             case TRIGGER.INTRO:
                 //trigger animation
-                suspect.GetComponent<AnimController_Jim>().triggerIntroRant();
+                JimAC.triggerIntroRant();
                 //trigger audio
-                co_audio = StartCoroutine(PlaySingleAudio(CC.GetComponent<DialogueManager>().getSingleClips("Intro"), false));
+                co_audio = StartCoroutine(PlaySingleAudio(DM.getSingleClips("Intro"), false));
                 break;
             case TRIGGER.COPS:
                 //trigger animation
                 copsAnim = true;
-                suspect.GetComponent<AnimController_Jim>().triggerIntroCops();
+                JimAC.triggerIntroCops();
                 //trigger audio
-                co_audio = StartCoroutine(PlaySingleAudio(CC.GetComponent<DialogueManager>().getSingleClips("CopsHere"), true));
+                co_audio = StartCoroutine(PlaySingleAudio(DM.getSingleClips("CopsHere"), true));
                 break;
         }
         
@@ -280,15 +257,10 @@ public class SuspectControllerFSM : MonoBehaviour {
     public void StartT2()
     {
         tier2 = true;
-        Color c = Color.grey;
         //check for losTest true or false (true = pass; false = fail)
         if (currentState.getStateID() == STATE.HIGH_AGGRO)
         {
             //transition to T2 Boss Office
-            if (losTest)
-                c = Color.magenta;
-            else
-                c = Color.black;
 
             SC.initializeT2(T2.OFFICE);
             Debug.Log("Starting T2 Boss Office");
@@ -296,10 +268,6 @@ public class SuspectControllerFSM : MonoBehaviour {
         else
         {
             //transition to T2 Outside
-            if (losTest)
-                c = Color.cyan;
-            else
-                c = Color.white;
 
             SC.initializeT2(T2.OUTSIDE);
             Debug.Log("Starting T2 Outside");
@@ -329,6 +297,15 @@ public class SuspectControllerFSM : MonoBehaviour {
         {
             s.Value.setT2(true);
         }
+    }
+
+    /// <summary>
+    /// triggers the suspect to kill in a T2 scene
+    /// </summary>
+    public void triggerKill()
+    {
+        if(tier2 && defuseScore > 7)
+            currentState.kill();
     }
 
     //coroutines
@@ -367,6 +344,54 @@ public class SuspectControllerFSM : MonoBehaviour {
         }
         else
             StartCoGrumbles();
+    }
+
+    IEnumerator PlayDefuseResponse(List<string> Tags, List<AudioClip[]> audioClips)
+    {
+        string lastTag = "";
+        for (int i = 0; i < Tags.Count; i++)
+        {
+            if (Tags[i] != lastTag)
+            {
+                switch(Tags[i])
+                {
+                    case "AssureReprimand":
+                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.assureReprimand_count)];
+                        break;
+                    case "Confide":
+                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.confide_count)];
+                        break;
+                    case "Dismiss":
+                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.dismiss_count)];
+                        break;
+                    case "Focus":
+                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.focus_count)];
+                        break;
+                    case "Title":
+                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.title_count)];
+                        break;
+                    case "CalmDown":
+                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.calmDown_count)];
+                        break;
+                    case "Resist":
+                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.resist_count)];
+                        break;
+                    case "Purpose":
+                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.purpose_count)];
+                        break;
+
+                }
+
+                dialogueSource.volume = 1f;
+                dialogueSource.Play();
+
+                while (dialogueSource.isPlaying)
+                {
+                    yield return 0;
+                }
+
+            }
+        }
     }
 
     /// <summary>

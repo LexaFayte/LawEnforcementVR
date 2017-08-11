@@ -10,6 +10,8 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
     private string[] keyWords_MM;
     private KeywordRecognizer recognizer_MM;
     private bool scenarioMenu = false;
+    private MainMenusController MMC;
+    private CanvasGroup AudioCG;
 
     public GameObject MM_Container;
     //audio HUD
@@ -21,13 +23,15 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
 
     private void Awake()
     {
+        MMC = GetComponent<MainMenusController>();
+        AudioCG = AudioHUD.GetComponent<CanvasGroup>();
         //set up voice recognition
         keyWords_MM = new string[5];
         keyWords_MM[0] = "Scenarios";
         keyWords_MM[1] = "Range";
         keyWords_MM[2] = "Quit";
         keyWords_MM[3] = "Back";
-        keyWords_MM[4] = "Domestic Dispute";
+        keyWords_MM[4] = "Office";
         recognizer_MM = new KeywordRecognizer(keyWords_MM);
         recognizer_MM.OnPhraseRecognized += onRecognition;
         recognizer_MM.Start();
@@ -74,19 +78,19 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
             case "Scenarios":
                 //swap to scenarios menu
                 HUDtext.text = "Scenarios";
-                StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                scenarioMenu = GetComponent<MainMenusController>().menuTransition(false);
+                StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                scenarioMenu = MMC.menuTransition(false);
                 break;
             case "Range":
                 //load the target range scene
                 HUDtext.text = "Range";
-                StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                GetComponent<MainMenusController>().Invoke("LoadRange", 1.5f);
+                StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                MMC.Invoke("LoadRange", 1.5f);
                 break;
             case "Quit":
                 //Quit the appplication
                 HUDtext.text = "Quit";
-                StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
+                StartCoroutine(FadeFlash(AudioCG, AudioHUD));
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -98,15 +102,15 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
                 {
                     //transition back
                     HUDtext.text = "Back";
-                    StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                    scenarioMenu = GetComponent<MainMenusController>().menuTransition(true);
+                    StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                    scenarioMenu = MMC.menuTransition(true);
                 }
                 break;
-            case "Domestic Dispute":
+            case "Office":
                 if(scenarioMenu)
                 {
-                    HUDtext.text = "Domestic Dispute";
-                    StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
+                    HUDtext.text = "Office";
+                    StartCoroutine(FadeFlash(AudioCG, AudioHUD));
                 }
                 break;
         }

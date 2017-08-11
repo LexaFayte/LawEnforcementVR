@@ -21,6 +21,7 @@ public class GunController : MonoBehaviour {
     private SteamVR_Controller.Device device;
     private SteamVR_TrackedController controller;
 
+    private PauseController PC;
 
     private int currentBullets;
 
@@ -45,20 +46,21 @@ public class GunController : MonoBehaviour {
         controller.TriggerClicked += TriggerPressed;
         controller.Gripped += GripPressed;
         trackedObj = controllerRight.GetComponent<SteamVR_TrackedObject>();
+        PC = CameraContainer.GetComponent<PauseController>();
     }
 	
     //events
     private void TriggerPressed(object sender, ClickedEventArgs e)
     {
-        if(CameraContainer.GetComponent<PauseController>().IsPaused == false
-            && CameraContainer.GetComponent<PauseController>().ViveController == false)   
+        if(PC.IsPaused == false
+            && PC.ViveController == false)   
             Shoot();
     }
 
     private void GripPressed(object sender, ClickedEventArgs e)
     {
-        if (CameraContainer.GetComponent<PauseController>().IsPaused == false
-        && CameraContainer.GetComponent<PauseController>().ViveController == false)
+        if (PC.IsPaused == false
+        && PC.ViveController == false)
             Reload();
     }
 

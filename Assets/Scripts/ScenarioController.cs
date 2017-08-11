@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using Assets.Scripts;
 
 public enum SCENE { INTRO,T1,T2};
 public enum T2 { OFFICE, OUTSIDE};
@@ -13,12 +15,16 @@ public class ScenarioController : MonoBehaviour {
     public GameObject boss;
     public GameObject Officer;
     public GameObject car;
+    public GameObject guard;
     public GameObject[] T1waypoints;
     public GameObject[] T2Waypoints;
     public Light OutsideSun;
     public GameObject BGChars;
     public AudioClip[] IntroClips;
     public AudioClip[] TutorialClips;
+    public AudioClip[] OfficeScriptClips;
+    public AudioClip[] OutsideScriptClips;
+    public AudioClip[] ExtraSFX;
     public GameObject drivingWaypoint;
     public GameObject drivingStrip;
     
@@ -30,15 +36,25 @@ public class ScenarioController : MonoBehaviour {
     private Coroutine initT1;
     private Coroutine OfficerTut;
     private Coroutine initT2;
+    private Coroutine escalateT2;
     private bool transitioning;
     private GrammarRecognizerScript GRS;
     private DialogueManager DM;
     private CameraMove CM;
-    private AudioSource AudioOfficer;
-    private AudioSource AudioCar;
+    private AudioSource Audio1;
+    private AudioSource Audio2;
     private SCENE currentScene;
     private SteamVR_PlayArea playArea;
     private Animator copAnim;
+    private bool interrupt;
+    private WaitForSecondsRealtime wfs_short;
+    private WaitForSecondsRealtime wfs_long;
+
+    public bool Interrupt
+    {
+        set { interrupt = value; }
+        get { return interrupt; }
+    }
 
     private void Awake()
     { 
@@ -49,11 +65,13 @@ public class ScenarioController : MonoBehaviour {
         GRS = CC.GetComponent<GrammarRecognizerScript>();
         DM = CC.GetComponent<DialogueManager>();
         CM = CC.GetComponent<CameraMove>();
-        AudioOfficer = Officer.GetComponent<AudioSource>();
-        AudioCar = car.GetComponent<AudioSource>();
+        Audio1 = Officer.GetComponent<AudioSource>();
+        Audio2 = car.GetComponent<AudioSource>();
         playArea = CC.GetComponentInChildren<SteamVR_PlayArea>();
         copAnim = Officer.GetComponent<Animator>();
         currentScene = SCENE.INTRO;
+        wfs_short = new WaitForSecondsRealtime(1f);
+        wfs_long = new WaitForSecondsRealtime(5f);
     }
 
     // Use this for initialization
@@ -118,9 +136,9 @@ public class ScenarioController : MonoBehaviour {
         {
             if(i%2 == 0)
             {
-                AudioCar.clip = IntroClips[i];
-                AudioCar.Play();
-                while(AudioCar.isPlaying)
+                Audio2.clip = IntroClips[i];
+                Audio2.Play();
+                while(Audio2.isPlaying)
                 {
                     yield return 0;
                 }
@@ -128,9 +146,9 @@ public class ScenarioController : MonoBehaviour {
             else
             {
                 copAnim.SetTrigger("Radio");
-                AudioOfficer.clip = IntroClips[i];
-                AudioOfficer.Play();
-                while(AudioOfficer.isPlaying)
+                Audio1.clip = IntroClips[i];
+                Audio1.Play();
+                while(Audio1.isPlaying)
                 {
                     yield return 0;
                 }
@@ -218,15 +236,15 @@ public class ScenarioController : MonoBehaviour {
                
                 for (int i = 0; i < TutorialClips.Length; i++)
                 {
-                    AudioOfficer.clip = TutorialClips[i];
-                    AudioOfficer.Play();
+                    Audio1.clip = TutorialClips[i];
+                    Audio1.Play();
 
                     if (i == 2)
                     {
                         CM.Invoke("startMovement", 3.5f);
                        
                     }
-                    while (AudioOfficer.isPlaying)
+                    while (Audio1.isPlaying)
                     {
                         yield return 0;
                     }
@@ -296,16 +314,21 @@ public class ScenarioController : MonoBehaviour {
                     //Jim (Suspect)
                     suspectPos = new Vector3(T2Waypoints[1].transform.position.x, suspect.transform.position.y, T2Waypoints[1].transform.position.z);
                     suspect.transform.position = suspectPos;
-                    suspect.transform.LookAt(new Vector3(boss.transform.position.x, 0, boss.transform.position.z));
+                    suspect.transform.LookAt(new Vector3(boss.transform.position.x, suspect.transform.position.y, boss.transform.position.z));
 
                     //Officer
                     officerPos = new Vector3(T2Waypoints[2].transform.position.x, Officer.transform.position.y, T2Waypoints[2].transform.position.z);
                     Officer.transform.position = officerPos;
-                    Officer.transform.LookAt(new Vector3(suspect.transform.position.x, 0, suspect.transform.position.z));
+                    Officer.transform.LookAt(new Vector3(suspect.transform.position.x, Officer.transform.position.y, suspect.transform.position.z));
 
-                    
+
                     //activate boss
                     //boss.GetComponent<Animator>().SetBool("START", true);
+
+                    if (escalateT2 != null)
+                        StopCoroutine(escalateT2);
+
+                    escalateT2 = StartCoroutine(coOfficeSituation());
                     
                 }
                 yield return 0;
@@ -334,26 +357,145 @@ public class ScenarioController : MonoBehaviour {
                     BGChars.SetActive(false);
                     transitioning = false;
                     OutsideSun.enabled = true;
+                    guard.SetActive(true);
                     
+
+                    //positions
+
                     //Jim (Suspect)
                     suspectPos = new Vector3(T2Waypoints[4].transform.position.x, suspect.transform.position.y, T2Waypoints[4].transform.position.z);
                     suspect.transform.position = suspectPos;
-                    suspect.transform.LookAt(new Vector3(CC.transform.position.x, 0, CC.transform.position.z));
-
+ 
                     //Camera
                     ccPos = new Vector3(T2Waypoints[3].transform.position.x, CC.transform.position.y, T2Waypoints[3].transform.position.z);
                     CC.transform.position = ccPos;
-                    CC.transform.LookAt(new Vector3(suspect.transform.position.x, 0, suspect.transform.position.z));
 
                     //Officer
                     officerPos = new Vector3(T2Waypoints[5].transform.position.x, Officer.transform.position.y, T2Waypoints[5].transform.position.z);
                     Officer.transform.position = officerPos;
-                    Officer.transform.LookAt(new Vector3(suspect.transform.position.x, 0, suspect.transform.position.z));
+
+                    //Gurad
+                    
+                    
+                    //rotations
+
+                    //Jim (Suspect)
+                    suspect.transform.LookAt(new Vector3(CC.transform.position.x, suspect.transform.position.y, CC.transform.position.z));
+
+                    //Camera
+                    CC.transform.LookAt(new Vector3(suspect.transform.position.x, CC.transform.position.y, suspect.transform.position.z));
+
+                    //Officer
+                    Officer.transform.LookAt(new Vector3(suspect.transform.position.x, Officer.transform.position.y, suspect.transform.position.z));
+
+                    //Guard
+                    guard.transform.LookAt(new Vector3(suspect.transform.position.x, guard.transform.position.y, suspect.transform.position.z));
+              
+                  
+
+                    if (escalateT2 != null)
+                        StopCoroutine(escalateT2);
+
+                    escalateT2 = StartCoroutine(coOutsideSituation());
                 }
                 yield return 0;
 
             }
             
         }
+    }
+
+    /// <summary>
+    /// coroutine for T2 Office situation;
+    /// scripted sequence where boss and suspect exchange words.
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator coOfficeSituation()
+    { 
+        Audio1 = suspect.GetComponent<AudioSource>();
+        Audio2 = boss.GetComponent<AudioSource>();
+
+        for (int i = 0; i < OfficeScriptClips.Length-1; i++)
+        {
+            if(interrupt)
+            {
+                interrupt = false;
+                i = OfficeScriptClips.Length-1;
+                yield return wfs_long;
+            }
+            
+            if (i % 2 == 0)
+            {
+                Audio1.clip = OfficeScriptClips[i];
+                Audio1.Play();
+                while(Audio1.isPlaying)
+                {
+                    yield return 0;
+                }
+            }
+            else
+            {
+                Audio2.clip = OfficeScriptClips[i];
+                Audio2.Play();
+                while(Audio2.isPlaying)
+                {
+                    yield return 0;
+                }
+            }
+        }
+
+        //went too far; trigger suspect shooting boss
+        scFSM.triggerKill();
+    }
+
+    /// <summary>
+    /// coroutine for T2 Outside situation;
+    /// scripted sequence where security guard and suspect exchange words.
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator coOutsideSituation()
+    {
+        Audio1 = suspect.GetComponent<AudioSource>();
+        Audio2 = guard.GetComponent<AudioSource>();
+
+        //animate guard to drop stuff (play dropping stuff audio)
+        Audio2.clip = ExtraSFX[RangeConstants.dropStuff_index];
+        Audio2.Play();
+
+        yield return wfs_short;
+
+        for (int i = 0; i < OutsideScriptClips.Length-1; i++)
+        {
+            if (interrupt)
+            {
+                interrupt = false;
+                i = OfficeScriptClips.Length - 1;
+                yield return wfs_long;
+            }
+
+            if (i % 2 == 0)
+            {
+                Audio1.clip = OutsideScriptClips[i];
+                Audio1.Play();
+                while (Audio1.isPlaying)
+                {
+                    yield return 0;
+                }
+            }
+            else
+            {
+                Audio2.clip = OutsideScriptClips[i];
+                Audio2.Play();
+                while (Audio2.isPlaying)
+                {
+                    yield return 0;
+                }
+            }
+        }
+
+
+
+        //went too far; trigger suspect shooting guard
+        scFSM.triggerKill();
     }
 }

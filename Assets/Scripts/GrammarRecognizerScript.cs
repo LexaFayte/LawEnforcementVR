@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 using UnityEngine.UI;
+using System.Linq;
 
 public class GrammarRecognizerScript : MonoBehaviour {
 
@@ -39,8 +40,8 @@ public class GrammarRecognizerScript : MonoBehaviour {
         SemanticMeaning[] meanings = args.semanticMeanings;
 
 
-        
-        if(meanings.Length > 0)
+
+        if (meanings.Length > 0)
         {
             for (int i = 0; i < meanings.Length; ++i)
             {
@@ -48,13 +49,25 @@ public class GrammarRecognizerScript : MonoBehaviour {
                 tokens += meanings[i].values[0];
             }
 
-            SemanticsParser.parse(tokens, ref semantics);
-            dialogueScore = DM.evaluateDialogue(semantics);
-            Debug.Log("Dialogue Score: " + dialogueScore);
-            scFSM.UpdateFSM(dialogueScore, semantics);
-            float overallScore = scFSM.getAggroScore();
-            feedbackUI.text = args.text + "\nscore: " + dialogueScore + "\nCurrent Aggro: " + overallScore;
-            
+            //Tier 1 of scenario
+            if (!scFSM.Tier2)
+            {
+
+                SemanticsParser.parse(tokens, ref semantics);
+                dialogueScore = DM.evaluateDialogue(semantics);
+                Debug.Log("Dialogue Score: " + dialogueScore);
+                scFSM.UpdateFSM(dialogueScore, semantics);
+                float overallScore = scFSM.getAggroScore();
+                feedbackUI.text = args.text + "\nscore: " + dialogueScore + "\nCurrent Aggro: " + overallScore;
+
+            }
+            else //Tier 2 of scenario
+            {
+                SemanticsParser.parseNonDistinct(tokens, ref semantics);
+                dialogueScore = DM.evaluateDialogue(semantics);
+                semantics = semantics.Distinct().ToList();
+                scFSM.UpdateT2Suspect(dialogueScore, semantics);
+            }
         }
     }
 

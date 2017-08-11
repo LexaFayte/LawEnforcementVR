@@ -189,6 +189,15 @@ public class DialogueManager : MonoBehaviour {
                         ++i;
                         continue;
                     }
+                    else if(responseMap[s[i]] == "Talk" && responseMap[s[i+1]] == "TalkReason")
+                    {
+                        i++;
+                    }
+
+                }
+                else
+                {
+
                 }
             }
             

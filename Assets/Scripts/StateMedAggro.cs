@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Assets.Scripts;
 
 public class StateMedAggro : StateBase
 {
@@ -199,15 +200,15 @@ public class StateMedAggro : StateBase
 
             }
         }
-        else
-        {
-            switch (tag)
-            {
-                case "Temp":
-                    AS.clip = clips[audioIndex];
-                    break;
-            }
-        }
+        //else
+        //{
+        //    switch (tag)
+        //    {
+        //        case "Temp":
+        //            AS.clip = clips[audioIndex];
+        //            break;
+        //    }
+        //}
     }
 
     public override STATE getStateID()
@@ -218,5 +219,10 @@ public class StateMedAggro : StateBase
     public override void setT2(bool t2)
     {
         T2 = t2;
+    }
+
+    public override void kill()
+    {
+        throw new NotImplementedException();
     }
 }

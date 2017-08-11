@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -20,4 +19,5 @@ public abstract class StateBase {
     public abstract void selectAudio(string tag, AudioClip[] clips);
     public abstract STATE getStateID();
     public abstract void setT2(bool t2);
+    public abstract void kill();
 }
