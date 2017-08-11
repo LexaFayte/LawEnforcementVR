@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Assets.Scripts;
 
 public class DialogueManager : MonoBehaviour {
 
@@ -159,57 +160,38 @@ public class DialogueManager : MonoBehaviour {
     /// translate semantics into audio clip tags
     /// </summary>
     /// <param name="s">list of tags</param>
-    /// <returns>a list of audio clip tags</returns>
-    public List<string> semanticToAudio(List<string> s)
+    /// <returns>the tag for audio clips</returns>
+    public string semanticToAudio(List<string> s)
     {
-        List<string> responseTags = new List<string>();
+        string responseTag = "";
 
-        
-
-        for (int i = 0; i < s.Count; i++)
+        int index1 = 0;
+        int index2 = 0;
+        if (!t2)
         {
-
-            if (i + 1 < s.Count)
+            if (s.Count > 1)
             {
-                if (!t2)
-                {
-                    if (responseMap[s[i]] == "StepOut" && responseMap[s[i + 1]] == "TalkReason")
-                        ++i;
-                    else if (responseMap[s[i]] == "HeyYou" && (responseMap[s[i + 1]] == "CalmDown" || responseMap[s[i + 1]] == "Insult"))
-                        ++i;
-                    else if (responseMap[s[i]] == "RemovePersist" && responseMap[s[i + 1]] == "Remove")
-                    {
-                        responseTags.Add(responseMap[s[i]]);
-                        ++i;
-                        continue;
-                    }
-                    else if (responseMap[s[i]] == "Resist" && responseMap[s[i + 1]] == "Insult")
-                    {
-                        responseTags.Add(responseMap[s[i]]);
-                        ++i;
-                        continue;
-                    }
-                    else if(responseMap[s[i]] == "Talk" && responseMap[s[i+1]] == "TalkReason")
-                    {
-                        i++;
-                    }
-
-                }
-                else
-                {
-
-                }
+                index1 = (int)TagMatrix.T1_TagConversion[responseMap[s[s.Count - 2]]];
+                index2 = (int)TagMatrix.T1_TagConversion[responseMap[s[s.Count - 1]]];
+                responseTag = TagMatrix.T1_Tags[index1, index2];
             }
-            
-            
-            if (responseMap[s[i]] != "NONE")
-                responseTags.Add(responseMap[s[i]]);
-            
+            else
+                responseTag = responseMap[s[0]];
+        }
+        else
+        {
+            if (s.Count > 1)
+            {
+                index1 = (int)TagMatrix.T2_TagConversion[responseMap[s[s.Count - 2]]];
+                index2 = (int)TagMatrix.T2_TagConversion[responseMap[s[s.Count - 1]]];
+                responseTag = TagMatrix.T2_Tags[index1, index2];
+            }
+            else
+                responseTag = responseMap[s[0]];
         }
 
+        return responseTag;
 
-
-        return responseTags;
     }
 
     /// <summary>

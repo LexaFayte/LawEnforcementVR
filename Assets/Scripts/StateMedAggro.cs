@@ -55,24 +55,13 @@ public class StateMedAggro : StateBase
 
     public void response(List<string> semantics)
     {
-        List<string> Tags = DM.semanticToAudio(semantics);
-        List<AudioClip[]> audioClips = DM.getAudioClips(Tags);
-        switch (Tags.Count)
-        {
-            case 1:
-                scFSM.PlaySuspectAudio(Tags, audioClips);
-                break;
-            case 2:
-                scFSM.PlaySuspectAudio(Tags, audioClips);
-                break;
-            case 3:
-                scFSM.PlaySuspectAudio(Tags, audioClips);
-                break;
-            case 4:
-                scFSM.PlaySuspectAudio(Tags, audioClips);
-                break;
+        string Tag = "";
 
-        }
+        Tag = DM.semanticToAudio(semantics);
+
+        AudioClip[] audioClips = DM.getSingleClips(Tag);
+
+        scFSM.PlaySuspectAudio(Tag, audioClips);
     }
 
     public override void selectAudio(string tag, AudioClip[] clips)

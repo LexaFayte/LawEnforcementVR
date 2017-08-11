@@ -33,7 +33,6 @@ public static class SemanticsParser {
         string[] splits = toParse.Split('_');
         semantics = splits.ToList();
         semantics.Remove("");
-        //semantics = semantics.Distinct().ToList();
     }
 
     /// <summary>

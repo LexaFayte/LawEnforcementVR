@@ -176,25 +176,13 @@ public class SuspectControllerFSM : MonoBehaviour {
         setDefuseScore(newDefuseScore);
         SC.Interrupt = true;
 
-        List<string> Tags = DM.semanticToAudio(semantics);
-        List<AudioClip[]> audioClips = DM.getAudioClips(Tags);
-        switch (Tags.Count)
-        {
-            case 1:
-                PlaySuspectAudio(Tags, audioClips);
-                break;
-            case 2:
-                PlaySuspectAudio(Tags, audioClips);
-                break;
-            case 3:
-                PlaySuspectAudio(Tags, audioClips);
-                break;
-            case 4:
-                PlaySuspectAudio(Tags, audioClips);
-                break;
-        }
+        string Tag = "";
 
-        grumble = false;
+        Tag = DM.semanticToAudio(semantics);
+
+        AudioClip[] audioClips = DM.getSingleClips(Tag);
+
+        PlaySuspectAudio(Tag, audioClips);
     }
 
     /// <summary>
@@ -203,16 +191,16 @@ public class SuspectControllerFSM : MonoBehaviour {
     /// </summary>
     /// <param name="Tags">Tags retrieved from semantics</param>
     /// <param name="audioClips">list of clips based on tags</param>
-    public void PlaySuspectAudio(List<string> Tags, List<AudioClip[]> audioClips)
+    public void PlaySuspectAudio(string Tag, AudioClip[] audioClips)
     {
         grumble = false;
 
         if (co_grumbles != null)
             StopCoroutine(co_grumbles);
         if (!tier2)
-            co_audio = StartCoroutine(PlayAudio(Tags, audioClips));
+            co_audio = StartCoroutine(PlayAudio(Tag, audioClips));
         else
-            co_audio = StartCoroutine(PlayDefuseResponse(Tags, audioClips));
+            co_audio = StartCoroutine(PlayDefuseResponse(Tag, audioClips));
     }
 
     /// <summary>
@@ -313,29 +301,18 @@ public class SuspectControllerFSM : MonoBehaviour {
     /// <summary>
     /// plays a current states audio clip response
     /// </summary>
-    /// <param name="Tags">Tags for response</param>
+    /// <param name="Tags">Tag for response</param>
     /// <param name="audioClips">all audio clips for response</param>
     /// <returns>nothing</returns>
-    IEnumerator PlayAudio(List<string> Tags, List<AudioClip[]> audioClips)
+    IEnumerator PlayAudio(string Tag, AudioClip[] audioClips)
     {
-        string lastTag = "";
-        float delay = 0;
-        for (int i = 0; i < Tags.Count; i++)
+        currentState.selectAudio(Tag, audioClips);
+        currentState.AS.volume = 1f;
+        currentState.AS.Play();
+
+        while (currentState.AS.isPlaying)
         {
-            if (Tags[i] != lastTag)
-            {
-                lastTag = Tags[i];
-                currentState.selectAudio(Tags[i], audioClips[i]);
-                currentState.AS.volume = 1f;
-                currentState.AS.PlayDelayed(delay);
-                delay += 0.5f;
-                
-                while (currentState.AS.isPlaying)
-                {
-                    yield return 0;
-                }
-                
-            }
+            yield return 0;
         }
 
         if (currentState.transitionA2)
@@ -346,52 +323,44 @@ public class SuspectControllerFSM : MonoBehaviour {
             StartCoGrumbles();
     }
 
-    IEnumerator PlayDefuseResponse(List<string> Tags, List<AudioClip[]> audioClips)
+    IEnumerator PlayDefuseResponse(string Tag, AudioClip[] audioClips)
     {
-        string lastTag = "";
-        for (int i = 0; i < Tags.Count; i++)
-        {
-            if (Tags[i] != lastTag)
+            switch(Tag)
             {
-                switch(Tags[i])
-                {
-                    case "AssureReprimand":
-                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.assureReprimand_count)];
-                        break;
-                    case "Confide":
-                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.confide_count)];
-                        break;
-                    case "Dismiss":
-                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.dismiss_count)];
-                        break;
-                    case "Focus":
-                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.focus_count)];
-                        break;
-                    case "Title":
-                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.title_count)];
-                        break;
-                    case "CalmDown":
-                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.calmDown_count)];
-                        break;
-                    case "Resist":
-                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.resist_count)];
-                        break;
-                    case "Purpose":
-                        dialogueSource.clip = audioClips[i][UnityEngine.Random.Range(0, RangeConstants.purpose_count)];
-                        break;
-
-                }
-
-                dialogueSource.volume = 1f;
-                dialogueSource.Play();
-
-                while (dialogueSource.isPlaying)
-                {
-                    yield return 0;
-                }
+                case "AssureReprimand":
+                    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.assureReprimand_count)];
+                    break;
+                case "Confide":
+                    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.confide_count)];
+                    break;
+                case "Dismiss":
+                    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.dismiss_count)];
+                    break;
+                case "Focus":
+                    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.focus_count)];
+                    break;
+                case "Title":
+                    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.title_count)];
+                    break;
+                case "CalmDown":
+                    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.calmDown_count)];
+                    break;
+                case "Resist":
+                    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.resist_count)];
+                    break;
+                case "Purpose":
+                    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.purpose_count)];
+                    break;
 
             }
-        }
+
+            dialogueSource.volume = 1f;
+            dialogueSource.Play();
+
+            while (dialogueSource.isPlaying)
+            {
+                yield return 0;
+            }
     }
 
     /// <summary>

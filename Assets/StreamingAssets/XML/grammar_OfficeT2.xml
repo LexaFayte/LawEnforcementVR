@@ -5,7 +5,6 @@
  
  <rule id="topLevel">
 	<one-of>
-		<item><ruleref uri="#title"/></item>
 		<item><ruleref uri="#a"/></item>
 		<item><ruleref uri="#b"/></item>
 		<item><ruleref uri="#c"/></item>
@@ -15,7 +14,7 @@
  
  <rule id="a">
 	<item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
-	<item><ruleref uri="#defuse"/><tag>out+=rules.latest()</tag></item>
+	<item repeat="0-2"><ruleref uri="#defuse"/><tag>out+=rules.latest()</tag></item>
  </rule>
  
  
