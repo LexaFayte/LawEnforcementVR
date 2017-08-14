@@ -47,7 +47,7 @@ public class StateMedAggro : StateBase
         }
         else
         {
-            //get parsed semantics and respond with correct anims and audio
+            //get parsed semantics and respond with correct animations and audio
             response(semantics);
 
         }

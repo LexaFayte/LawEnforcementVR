@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class AnimController_Boss : MonoBehaviour {
 
-    private Animator animator;
-    private float timer;
+	private Animator animator;
+	private float timer;
 
-    private void Awake()
-    {
-        animator = GetComponentInChildren<Animator>();
-        timer = 0f;
-    }
-    // Use this for initialization
+	private void Awake()
+	{
+		animator = GetComponentInChildren<Animator>();
+		timer = 0f;
+	}
+	// Use this for initialization
  //   void Start () {
 		
 	//}

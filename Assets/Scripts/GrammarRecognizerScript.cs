@@ -67,6 +67,9 @@ public class GrammarRecognizerScript : MonoBehaviour {
                 dialogueScore = DM.evaluateDialogue(semantics);
                 semantics = semantics.Distinct().ToList();
                 scFSM.UpdateT2Suspect(dialogueScore, semantics);
+                feedbackUI.text = args.text + "\nDefuse Line Score: " + dialogueScore + "\nDefuse Score Overall: " + scFSM.getDefuseScore()
+                    + "\nDefused: " + scFSM.Defused;
+
             }
         }
     }

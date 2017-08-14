@@ -85,6 +85,14 @@ namespace Assets.Scripts
         /// T2 Constant Ranges
         /// </summary>
 
+        //Office script range
+        public const int office_firstDefuse = 8;
+        public const int office_secondDefuse = 11;
+
+        //Outside script range
+        public const int outside_firstDefuse = 7;
+        public const int outside_secondDefuse = 11;
+
         //AssureReprimand count
         public const int assureReprimand_count = 5;
 
@@ -92,7 +100,7 @@ namespace Assets.Scripts
         public const int calmDown_count = 1;
 
         //Confide count
-        public const int confide_count = 3;
+        public const int confide_count = 2;
 
         //Dismiss count
         public const int dismiss_count = 5;
