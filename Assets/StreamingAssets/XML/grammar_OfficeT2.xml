@@ -75,8 +75,31 @@
 					</one-of>
 				</item>
 				
+				<item repeat="0-1">but</item>
+				
 				<item repeat="0-1">
 					<one-of>
+						<item>just ignore him</item>
+						<item>
+							<one-of>
+								<item>that's</item>
+								<item>that is</item>
+								<item>he's</item>
+								<item>he is</item>
+							</one-of>
+							not 
+							<one-of>
+								<item>the</item>
+								<item>my</item>
+								<item>a</item>
+							</one-of>
+							<one-of>
+								<item>issue</item>
+								<item>problem</item>
+								<item>concern</item>
+							</one-of>
+							<item repeat="0-1">right now</item>
+						</item>
 						<item>don't worry about him</item>
 						<item>he's not a concern</item>
 						<item>I'm not concered with him</item>

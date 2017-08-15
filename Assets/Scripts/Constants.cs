@@ -120,6 +120,9 @@ namespace Assets.Scripts
         //Outside drop stuff
         public const int dropStuff_index = 0;
 
+        //Ending clips count
+        public const int endingClips_count = 2;
+
     }
 
     public enum T1_TAG_INDEX { EMPTY, CALMDOWN, INSULT, RESIST, QUESTION, NAME, HEYYOU, PURPOSE, LOSPASS, STEPOUT, TALKREASON,
@@ -188,7 +191,7 @@ namespace Assets.Scripts
             { "Title",    "CalmDown", "Resist", "Title", "Purpose", "Focus", "Dismiss", "AssureReprimand", "Confide", "NONE"},
             { "Purpose",  "CalmDown", "Resist", "Title", "Purpose", "Focus", "Dismiss", "AssureReprimand", "Confide", "NONE"},
             { "Focus",    "CalmDown", "Resist", "Title", "Purpose", "Focus", "Focus", "AssureReprimand", "Confide", "NONE"},
-            { "Dismiss",  "CalmDown", "Resist", "Title", "Purpose", "Focus", "Focus", "AssureReprimand", "Confide", "NONE"},
+            { "Dismiss",  "CalmDown", "Resist", "Title", "Purpose", "Dismiss", "Focus", "AssureReprimand", "Confide", "NONE"},
             { "AssureReprimand",  "CalmDown", "Resist", "Title", "Purpose", "AssureReprimand", "AssureReprimand", "AssureReprimand", "Confide", "NONE"},
             { "Confide",  "CalmDown", "Resist", "Title", "Purpose", "Focus", "Dismiss", "AssureReprimand", "Confide", "NONE"},
             { "NONE",     "CalmDown", "Resist", "Title", "Purpose", "Focus", "Dismiss", "AssureReprimand", "Confide", "NONE"}

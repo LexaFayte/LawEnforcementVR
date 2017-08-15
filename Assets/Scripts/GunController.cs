@@ -22,14 +22,21 @@ public class GunController : MonoBehaviour {
     private SteamVR_TrackedController controller;
 
     private PauseController PC;
+    private ScenarioController SC;
 
     private int currentBullets;
+    private bool scenario;
 
     //properties
     public int Bullets
     {
         get { return Bullets; }
         set { Bullets = value; }
+    }
+
+    public bool Scenario
+    {
+        set { scenario = value; }
     }
 
     //initialization
@@ -48,7 +55,7 @@ public class GunController : MonoBehaviour {
         trackedObj = controllerRight.GetComponent<SteamVR_TrackedObject>();
         PC = CameraContainer.GetComponent<PauseController>();
     }
-	
+    
     //events
     private void TriggerPressed(object sender, ClickedEventArgs e)
     {
@@ -67,6 +74,16 @@ public class GunController : MonoBehaviour {
     
 
     //functions
+
+    /// <summary>
+    /// sets the scenario controller and scenario boolean
+    /// </summary>
+    /// <param name="sc"></param>
+    public void setScenarioController(ScenarioController sc)
+    {
+        scenario = true;
+        SC = sc;
+    }
 
     /// <summary>
     /// deals with shooting logic
@@ -98,10 +115,36 @@ public class GunController : MonoBehaviour {
                     Bullet_Mark.transform.Translate(new Vector3(0, 0, -0.005f));
                     Bullet_Mark.transform.SetParent(hit.rigidbody.gameObject.transform);
 
-                    if(hit.rigidbody.gameObject.tag == "Target" && hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit == false)
+                    //switch(hit.rigidbody.gameObject.tag)
+                    //{
+                    //    case "Target":
+                    //        if(hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit == false)
+                    //            hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit = true;
+
+                    //        break;
+                    //    case "Jim":
+
+                    //        break;
+                    //    case "Boss":
+                    //        break;
+                    //    case "SecuirtyGuard":
+                    //        break;
+                    //    default:
+                    //        break;
+                    //}
+                    if(!scenario)
                     {
-                        hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit = true;
+                        if (hit.rigidbody.gameObject.tag == "Target" && hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit == false)
+                        {
+                            hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit = true;
+                        }
                     }
+                    else
+                    {
+                        SC.shotsFired(hit.rigidbody.gameObject.tag);
+                    }
+
+                    
                 }
             }
 

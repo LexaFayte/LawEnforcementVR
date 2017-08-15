@@ -26,6 +26,7 @@ public class SuspectControllerFSM : MonoBehaviour {
 	private GameObject suspect;
 	private AnimController_Jim JimAC;
 	private bool tier2;
+    private bool kill;
 	private bool finish;
 
 	public AudioSource dialogueSource;
@@ -56,6 +57,11 @@ public class SuspectControllerFSM : MonoBehaviour {
 		get { return defused; }
 		set { defused = value; }
 	}
+
+    public bool Kill
+    {
+        get { return kill; }
+    }
 
 	public bool Finish
 	{
@@ -314,8 +320,11 @@ public class SuspectControllerFSM : MonoBehaviour {
 	/// </summary>
 	public void triggerKill()
 	{
-		if(tier2 && defuseScore > 7)
-			currentState.kill();
+        if (tier2)
+        {
+            kill = true;
+            currentState.kill();
+        }
 	}
 
 	//coroutines

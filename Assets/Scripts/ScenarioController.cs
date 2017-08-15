@@ -6,11 +6,14 @@ using Assets.Scripts;
 
 public enum SCENE { INTRO,T1,T2};
 public enum T2 { OFFICE, OUTSIDE};
+public enum SHOT { JIM, BOSS, GUARD, NOTHING};
+public enum SCENARIO_RESULT { TALK, KILL, DISCHARGE};
 
 public class ScenarioController : MonoBehaviour {
 
 	//public objects
 	public GameObject CC;
+    public GameObject Gun;
 	public GameObject suspect;
 	public GameObject boss;
 	public GameObject Officer;
@@ -32,6 +35,7 @@ public class ScenarioController : MonoBehaviour {
 	//private objects and vars
 	private SuspectControllerFSM scFSM;
 	private float timer;
+    private Coroutine WaitShot;
 	private Coroutine MoveCar;
 	private Coroutine PlayIntroAudio;
 	private Coroutine initT1;
@@ -49,12 +53,19 @@ public class ScenarioController : MonoBehaviour {
 	private SteamVR_PlayArea playArea;
 	private Animator copAnim;
 	private bool interrupt;
+    private int[] shot;
+    private SCENARIO_RESULT scenarioResult;
 
 	public bool Interrupt
 	{
 		set { interrupt = value; }
 		get { return interrupt; }
 	}
+
+    public SCENARIO_RESULT ScenarioResult
+    {
+        get { return scenarioResult; }
+    }
 
 	private void Awake()
 	{ 
@@ -71,6 +82,8 @@ public class ScenarioController : MonoBehaviour {
 		copAnim = Officer.GetComponent<Animator>();
 		currentScene = SCENE.INTRO;
 		interrupt = false;
+        shot = new int[4];
+        
 	}
 
 	// Use this for initialization
@@ -122,11 +135,85 @@ public class ScenarioController : MonoBehaviour {
 		SteamVR_Fade.View(Color.clear, t);
 	}
 
+    public void shotsFired(string targetTag)
+    {
+        //array.sum()  <--will sum up all the integers
+        //shot.Sum();
+        switch(targetTag)
+        {
+            case "Jim":
+                if(!scFSM.Tier2)
+                {
+                    shot[(int)SHOT.JIM]++;
+                    if (WaitShot != null)
+                        StopCoroutine(WaitShot);
+                    //wtf? don't shoot him
+                    scenarioResult = SCENARIO_RESULT.KILL;
+                }
+                else
+                {
+                    shot[(int)SHOT.JIM]++;
+                    if (WaitShot != null)
+                        StopCoroutine(WaitShot);
+                    //Was suspect "Kill" triggered?
+                    if(scFSM.Kill)
+                    {
+                        scenarioResult = SCENARIO_RESULT.KILL;
+                    }
+                }
+                break;
+            case "Boss":
+                shot[(int)SHOT.BOSS]++;
+                if (WaitShot != null)
+                    StopCoroutine(WaitShot);
+                //wtf? don't shoot him
+                break;
+            case "SecuirtyGuard":
+                shot[(int)SHOT.GUARD]++;
+                if (WaitShot != null)
+                    StopCoroutine(WaitShot);
+                //wtf? don't shoot him
+                break;
+            default:
+                //DO NOT DISCHARGE YOUR WEAPON!
+                shot[(int)SHOT.NOTHING]++;
+                if(WaitShot == null)
+                    WaitShot = StartCoroutine(wait(2f));
+                
+                break;
+        }
+    }
+
+    /// <summary>
+    /// wait to see if more shots are fired; user accuracy may not be 100%, it's possible
+    /// for the first shot or two to miss.
+    /// If the only shots fired are misses, then the intent was not to shoot a person, and
+    /// therefore classified as illegally discharging your weapon (an automatic fail)
+	/// </summary>
+	/// <returns></returns>
+	IEnumerator wait(float t)
+    {
+        float timer = t;
+
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            yield return 0;
+        }
+
+        if(shot[(int)SHOT.NOTHING] == shot.Sum())
+        {
+            //user only shot at nothing; illegal discharge of weapon
+            scenarioResult = SCENARIO_RESULT.DISCHARGE;
+        }
+    }
+
+
     //
     //---------------------------------------->>TIER 1 SCENARIO SEQUENCE<<----------------------------------------
     //
-    
-        /// <summary>
+
+    /// <summary>
     /// coroutine for scenario introduction;
     /// driving and speaking to dispatch
     /// </summary>
@@ -258,6 +345,8 @@ public class ScenarioController : MonoBehaviour {
 				Officer.transform.Rotate(Vector3.up, -40);
 				Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
 
+                Gun.GetComponent<GunController>().setScenarioController(this);
+
 				//while (Officer.transform.position.z < T1waypoints[0].transform.position.z + 0.5)
 				//{
 				//    yield return 0;
@@ -312,6 +401,7 @@ public class ScenarioController : MonoBehaviour {
 					scFSM.setStatesT2();
 					BGChars.SetActive(false);
 					transitioning = false;
+                    boss.SetActive(true);
 					
 					//camera
 					ccPos = new Vector3(T2Waypoints[0].transform.position.x, CC.transform.position.y, T2Waypoints[0].transform.position.z);
@@ -517,7 +607,7 @@ public class ScenarioController : MonoBehaviour {
         interrupt = false;
 
         //SECOND DEFUSE SITUATION
-        while (coTimer < 2.5f)
+        while (coTimer < 1.5f)
         {
             coTimer += Time.deltaTime;
             yield return 0;
@@ -568,11 +658,12 @@ public class ScenarioController : MonoBehaviour {
     /// </summary>
     public void startT3()
     {
-        T3Ending = StartCoroutine(scenarioEnding());
+        if(T3Ending == null)
+            T3Ending = StartCoroutine(scenarioEndingTalk());
     }
 
 
-    IEnumerator scenarioEnding()
+    IEnumerator scenarioEndingTalk()
     {
         Audio1 = suspect.GetComponent<AudioSource>();
         Audio2 = Officer.GetComponent<AudioSource>();
@@ -581,7 +672,7 @@ public class ScenarioController : MonoBehaviour {
         {
             if (i % 2 == 0)
             {
-                Audio1.clip = OutsideScriptClips[i];
+                Audio1.clip = EndingClips[i];
                 Audio1.Play();
                 while (Audio1.isPlaying)
                 {
@@ -590,7 +681,7 @@ public class ScenarioController : MonoBehaviour {
             }
             else
             {
-                Audio2.clip = OutsideScriptClips[i];
+                Audio2.clip = EndingClips[i];
                 Audio2.Play();
                 while (Audio2.isPlaying)
                 {
@@ -600,5 +691,44 @@ public class ScenarioController : MonoBehaviour {
         }
         fadetoBlack(1);
         //to the ending screen (tells the user their outcome)
+    }
+
+    
+    IEnumerator scenarioEndingKill()
+    {
+        float timer = 2;
+        //stop all audio
+        Audio1.Stop();
+        Audio2.Stop();
+        suspect.GetComponent<AudioSource>().Stop();
+
+        //stop the scenario (freeze all animations, except the gun)
+        suspect.GetComponent<Animator>().speed = 0;
+        Officer.GetComponent<Animator>().speed = 0;
+        if(scFSM.Tier2)
+        {
+            if(boss.active == true)
+                boss.GetComponent<Animator>().speed = 0;
+            else if(guard.active == true)
+                guard.GetComponent<Animator>().speed = 0;
+        }
+
+
+        //wait a few second
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            yield return 0;
+        }
+
+        //fade to black
+        fadetoBlack(1f);
+
+        //show results screen (outcome; pass/fail; reason for pass/fail; accuracy?)
+
+
+        //wait for user to press button
+
+        //return back to Main Menu
     }
 }
