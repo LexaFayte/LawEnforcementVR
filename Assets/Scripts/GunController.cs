@@ -115,23 +115,7 @@ public class GunController : MonoBehaviour {
                     Bullet_Mark.transform.Translate(new Vector3(0, 0, -0.005f));
                     Bullet_Mark.transform.SetParent(hit.rigidbody.gameObject.transform);
 
-                    //switch(hit.rigidbody.gameObject.tag)
-                    //{
-                    //    case "Target":
-                    //        if(hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit == false)
-                    //            hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit = true;
 
-                    //        break;
-                    //    case "Jim":
-
-                    //        break;
-                    //    case "Boss":
-                    //        break;
-                    //    case "SecuirtyGuard":
-                    //        break;
-                    //    default:
-                    //        break;
-                    //}
                     if(!scenario)
                     {
                         if (hit.rigidbody.gameObject.tag == "Target" && hit.rigidbody.gameObject.GetComponent<TargetMove>().Hit == false)

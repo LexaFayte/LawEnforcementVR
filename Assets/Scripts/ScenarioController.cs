@@ -15,6 +15,7 @@ public class ScenarioController : MonoBehaviour {
 	public GameObject CC;
     public GameObject Gun;
 	public GameObject suspect;
+    public GameObject suspectGun;
 	public GameObject boss;
 	public GameObject Officer;
 	public GameObject car;
@@ -55,6 +56,9 @@ public class ScenarioController : MonoBehaviour {
 	private bool interrupt;
     private int[] shot;
     private SCENARIO_RESULT scenarioResult;
+    private Animator JimAnim;
+    private Animator GuardAnim;
+    private Animator BossAnim;
 
 	public bool Interrupt
 	{
@@ -80,10 +84,13 @@ public class ScenarioController : MonoBehaviour {
 		Audio2 = car.GetComponent<AudioSource>();
 		playArea = CC.GetComponentInChildren<SteamVR_PlayArea>();
 		copAnim = Officer.GetComponent<Animator>();
+        JimAnim = suspect.GetComponent<Animator>();
+        GuardAnim = guard.GetComponent<Animator>();
+        BossAnim = boss.GetComponent<Animator>();
 		currentScene = SCENE.INTRO;
 		interrupt = false;
         shot = new int[4];
-        
+        suspectGun.SetActive(false);
 	}
 
 	// Use this for initialization
@@ -149,6 +156,7 @@ public class ScenarioController : MonoBehaviour {
                         StopCoroutine(WaitShot);
                     //wtf? don't shoot him
                     scenarioResult = SCENARIO_RESULT.KILL;
+                    StartCoroutine(scenarioEndingKill());
                 }
                 else
                 {
@@ -159,6 +167,7 @@ public class ScenarioController : MonoBehaviour {
                     if(scFSM.Kill)
                     {
                         scenarioResult = SCENARIO_RESULT.KILL;
+                        StartCoroutine(scenarioEndingKill());
                     }
                 }
                 break;
@@ -166,12 +175,16 @@ public class ScenarioController : MonoBehaviour {
                 shot[(int)SHOT.BOSS]++;
                 if (WaitShot != null)
                     StopCoroutine(WaitShot);
+
+                StartCoroutine(scenarioEndingKill());
                 //wtf? don't shoot him
                 break;
             case "SecuirtyGuard":
                 shot[(int)SHOT.GUARD]++;
                 if (WaitShot != null)
                     StopCoroutine(WaitShot);
+
+                StartCoroutine(scenarioEndingKill());
                 //wtf? don't shoot him
                 break;
             default:
@@ -179,7 +192,8 @@ public class ScenarioController : MonoBehaviour {
                 shot[(int)SHOT.NOTHING]++;
                 if(WaitShot == null)
                     WaitShot = StartCoroutine(wait(2f));
-                
+
+                StartCoroutine(scenarioEndingKill());
                 break;
         }
     }
@@ -254,6 +268,8 @@ public class ScenarioController : MonoBehaviour {
 	/// </summary>
 	private void startT1()
 	{
+        Gun.GetComponent<GunController>().setScenarioController(this);
+        fadetoClear(1.5f);
 		CM.Invoke("startMovement", 3f);
 	}
 
@@ -296,7 +312,8 @@ public class ScenarioController : MonoBehaviour {
 			yield return 0;
 		}
 
-		OfficerTut = StartCoroutine(coTut());
+        //OfficerTut = StartCoroutine(coTut());
+        startT1();
 
 	}
 
@@ -510,55 +527,114 @@ public class ScenarioController : MonoBehaviour {
 	/// </summary>
 	/// <returns></returns>
 	IEnumerator coOfficeSituation()
-	{ 
-		Audio1 = suspect.GetComponent<AudioSource>();
+	{
+        int interruptCount = 0;
+        Audio1 = suspect.GetComponent<AudioSource>();
 		Audio2 = boss.GetComponent<AudioSource>();
-		float coTimer = 0f;
+        JimAnim.SetBool("Office", true);
+        float coTimer = 0f;
 
-		for (int i = 0; i < OfficeScriptClips.Length-1; i++)
+        //FIRST DEFUSE SITUATION
+		for (int i = 0; i < RangeConstants.office_firstDefuse; i++)
 		{
-			if(interrupt)
-			{
-				interrupt = false;
-				i = OfficeScriptClips.Length-1;
-				//while(coTimer < 2.5f)
-				//{
-				//	coTimer += Time.deltaTime;
-				//	yield return 0;
-				//}
-
-    //            Audio2.clip = OfficeScriptClips[i];
-    //            Audio2.Play();
-    //            while (Audio2.isPlaying)
-    //            {
-    //                yield return 0;
-    //            }
-
+            if (interrupt)
+            {
+                interruptCount++;
                 break;
             }
+         
 			
-			if (i % 2 == 0)
+			if (i % 2 == 0)//JIM
 			{
 				Audio1.clip = OfficeScriptClips[i];
 				Audio1.Play();
-				while(Audio1.isPlaying)
+                JimAnim.SetInteger("Scripted Index", i);
+                JimAnim.SetTrigger("PlayScripted");
+                while (Audio1.isPlaying)
 				{
 					yield return 0;
 				}
-			}
-			else
+
+                if (i == RangeConstants.outside_firstDefuse - 1)
+                {
+                    suspectGun.SetActive(true);
+                    while(coTimer < 1)
+                    {
+                        yield return 0;
+                    }
+                    Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
+                }
+            }
+			else//BOSS
 			{
 				Audio2.clip = OfficeScriptClips[i];
 				Audio2.Play();
-				while(Audio2.isPlaying)
+                //BossAnim.SetInteger("Scripted Index", i);
+                //BossAnim.SetTrigger("PlayScripted");
+                while (Audio2.isPlaying)
 				{
 					yield return 0;
 				}
 			}
 		}
 
-		//went too far; trigger suspect shooting boss
-		if(!scFSM.Defused)
+
+        interrupt = false;
+        coTimer = 0f;
+        //SECOND DEFUSE SITUATION
+        if (interruptCount > 0)
+        {
+            while (coTimer < 2f)
+            {
+                coTimer += Time.deltaTime;
+                yield return 0;
+            }
+
+            scFSM.setDefuseScore(2);
+
+            for (int i = RangeConstants.office_firstDefuse; i < RangeConstants.office_secondDefuse; ++i)
+            {
+                if (interrupt)
+                {
+                    interruptCount++;
+                    break;
+                }
+
+                if (i % 2 == 0)//JIM
+                {
+                    Audio1.clip = OutsideScriptClips[i];
+                    Audio1.Play();
+                    JimAnim.SetInteger("Scripted Index", i);
+                    JimAnim.SetTrigger("PlayScripted");
+                    while (Audio1.isPlaying)
+                    {
+                        yield return 0;
+                    }
+
+                    if (i == RangeConstants.outside_firstDefuse - 1)
+                    {
+                        suspectGun.SetActive(true);
+                    }
+                }
+                else//BOSS
+                {
+                    Audio2.clip = OutsideScriptClips[i];
+                    Audio2.Play();
+                    //BossAnim.SetInteger("Scripted Index", i);
+                    //BossAnim.SetTrigger("PlayScripted");
+                    while (Audio2.isPlaying)
+                    {
+                        yield return 0;
+                    }
+                }
+
+            }
+
+            interrupt = false;
+        }
+
+        //went too far; trigger suspect shooting boss
+        if (!scFSM.Defused)
 			scFSM.triggerKill();
 	}
 
@@ -569,35 +645,55 @@ public class ScenarioController : MonoBehaviour {
 	/// <returns></returns>
 	IEnumerator coOutsideSituation()
 	{
+        int interruptCount = 0;
 		Audio1 = suspect.GetComponent<AudioSource>();
 		Audio2 = guard.GetComponent<AudioSource>();
-
+        JimAnim.SetBool("Outside", true);
 		//animate guard to drop stuff (play dropping stuff audio)
 		Audio2.clip = ExtraSFX[RangeConstants.dropStuff_index];
 		Audio2.Play();
 		float coTimer = 0f;
-       
+
+        JimAnim.SetInteger("Scripted Index", 0);
+        JimAnim.SetTrigger("PlayScripted");
+
         //FIRST DEFUSE SITUATION
-		for (int i = 0; i < RangeConstants.outside_firstDefuse; i++)
+        for (int i = 0; i < RangeConstants.outside_firstDefuse; i++)
 		{
             if (interrupt)
+            {
+                interruptCount++;
                 break;
-            
+            }
 
-			if (i % 2 == 0)
+			if (i % 2 == 0)//JIM
 			{
 				Audio1.clip = OutsideScriptClips[i];
 				Audio1.Play();
-				while (Audio1.isPlaying)
+
+                if (i > 0)
+                {
+                    JimAnim.SetInteger("Scripted Index", i);
+                    JimAnim.SetTrigger("PlayScripted");
+                }
+
+                while (Audio1.isPlaying)
 				{
 					yield return 0;
 				}
+
+                if(i == RangeConstants.outside_firstDefuse-1)
+                {
+                    suspectGun.SetActive(true);
+                }
 			}
-			else
+			else//GUARD
 			{
 				Audio2.clip = OutsideScriptClips[i];
 				Audio2.Play();
-				while (Audio2.isPlaying)
+                GuardAnim.SetInteger("Scripted Index", i);
+                GuardAnim.SetTrigger("PlayScripted");
+                while (Audio2.isPlaying)
 				{
 					yield return 0;
 				}
@@ -605,44 +701,60 @@ public class ScenarioController : MonoBehaviour {
 		}
 
         interrupt = false;
-
+        coTimer = 0f;
         //SECOND DEFUSE SITUATION
-        while (coTimer < 1.5f)
+
+
+        if (interruptCount > 0)
         {
-            coTimer += Time.deltaTime;
-            yield return 0;
-        }
-
-        scFSM.setDefuseScore(2);
-
-        for (int i = RangeConstants.outside_firstDefuse; i < RangeConstants.outside_secondDefuse; ++i)
-        {
-            if (interrupt)
-                break;
-
-            if (i % 2 == 0)
+            while (coTimer < 2f)
             {
-                Audio1.clip = OutsideScriptClips[i];
-                Audio1.Play();
-                while (Audio1.isPlaying)
-                {
-                    yield return 0;
-                }
-            }
-            else
-            {
-                Audio2.clip = OutsideScriptClips[i];
-                Audio2.Play();
-                while (Audio2.isPlaying)
-                {
-                    yield return 0;
-                }
+                coTimer += Time.deltaTime;
+                yield return 0;
             }
 
-        }
+            scFSM.setDefuseScore(2);
 
-        interrupt = false;
-        
+            for (int i = RangeConstants.outside_firstDefuse; i < RangeConstants.outside_secondDefuse; ++i)
+            {
+                if (interrupt)
+                {
+                    interruptCount++;
+                    break;
+                }
+
+                if (i % 2 == 0)//JIM
+                {
+                    Audio1.clip = OutsideScriptClips[i];
+                    Audio1.Play();
+                    JimAnim.SetInteger("Scripted Index", i);
+                    JimAnim.SetTrigger("PlayScripted");
+                    while (Audio1.isPlaying)
+                    {
+                        yield return 0;
+                    }
+
+                    if (i == RangeConstants.outside_firstDefuse - 1)
+                    {
+                        suspectGun.SetActive(true);
+                    }
+                }
+                else//GUARD
+                {
+                    Audio2.clip = OutsideScriptClips[i];
+                    Audio2.Play();
+                    GuardAnim.SetInteger("Scripted Index", i);
+                    GuardAnim.SetTrigger("PlayScripted");
+                    while (Audio2.isPlaying)
+                    {
+                        yield return 0;
+                    }
+                }
+
+            }
+
+            interrupt = false;
+        }
 
         //went too far; trigger suspect shooting guard
         if (!scFSM.Defused)
@@ -703,14 +815,14 @@ public class ScenarioController : MonoBehaviour {
         suspect.GetComponent<AudioSource>().Stop();
 
         //stop the scenario (freeze all animations, except the gun)
-        suspect.GetComponent<Animator>().speed = 0;
-        Officer.GetComponent<Animator>().speed = 0;
+        JimAnim.enabled = false;
+        copAnim.enabled = false;
         if(scFSM.Tier2)
         {
-            if(boss.active == true)
-                boss.GetComponent<Animator>().speed = 0;
-            else if(guard.active == true)
-                guard.GetComponent<Animator>().speed = 0;
+            if (boss.activeSelf == true)
+                BossAnim.enabled = false;
+            else if (guard.activeSelf == true)
+                GuardAnim.enabled = false;
         }
 
 

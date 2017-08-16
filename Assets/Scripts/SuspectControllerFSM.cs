@@ -323,7 +323,7 @@ public class SuspectControllerFSM : MonoBehaviour {
         if (tier2)
         {
             kill = true;
-            currentState.kill();
+            //currentState.kill();
         }
 	}
 

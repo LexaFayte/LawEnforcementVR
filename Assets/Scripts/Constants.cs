@@ -120,6 +120,9 @@ namespace Assets.Scripts
         //Outside drop stuff
         public const int dropStuff_index = 0;
 
+        //Gun Shot for suspect kill
+        public const int gunShot_index = 1;
+
         //Ending clips count
         public const int endingClips_count = 2;
 
