@@ -17,6 +17,7 @@ public class PauseController : MonoBehaviour {
     private SteamVR_Controller.Device device;
     private SteamVR_TrackedController controller;
     private SteamVR_FirstPersonController laser;
+    private TargetController TC;
 
     private bool paused = false;
     private bool controllerToggle = false;
@@ -47,6 +48,7 @@ public class PauseController : MonoBehaviour {
         controller.PadUnclicked += PadReleased;
         Invoke("controllerRenderOff", 0.25f);
         SceneManager.sceneLoaded += sceneLoad;
+        TC = GetComponent<TargetController>();
     }
 
     /// <summary>
@@ -90,16 +92,16 @@ public class PauseController : MonoBehaviour {
                     break;
                 case ButtonInteraction.buttonID.START:
                     statusText.text = "Targets started";
-                    GetComponent<TargetController>().startTargetSequence();
+                    TC.startTargetSequence();
                     break;
                 case ButtonInteraction.buttonID.STOP:
-                    GetComponent<TargetController>().stopTargetSequence();
+                    TC.stopTargetSequence();
                     statusText.text = "Targets stopped";
                     break;
                 case ButtonInteraction.buttonID.RESET:
-                    if (!GetComponent<TargetController>().IsRunning)
+                    if (!TC.IsRunning)
                     {
-                        GetComponent<TargetController>().resetTargetSequence();
+                        TC.resetTargetSequence();
                         statusText.text = "Targets reset";
                     }
                     break;

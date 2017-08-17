@@ -17,11 +17,13 @@ public class MainMenusController : MonoBehaviour {
     private SteamVR_Controller.Device device;
     private SteamVR_TrackedController controller;
     private SteamVR_FirstPersonController_MainMenu laser;
+    private MenuAnimator MA;
 
     //scenario vars
     private List<int> scenarioIDs;
     private bool scenarioMenu = false;
     private float FADE_LERP = 0.015f;
+    private int currentScenarioID;
 
     private void Awake()
     {
@@ -29,8 +31,9 @@ public class MainMenusController : MonoBehaviour {
         controller.TriggerUnclicked += triggerConfirm;
         SceneManager.sceneLoaded += sceneLoad;
         scenarioIDs = new List<int>();
-        
+        MA = MenusContainer.GetComponent<MenuAnimator>();
         Invoke("menuFade", 1f);
+        currentScenarioID = -1;
     }
 
     /// <summary>
@@ -95,8 +98,8 @@ public class MainMenusController : MonoBehaviour {
     /// <returns>the scenarioID</returns>
     public int addScenario()
     {
-        scenarioIDs.Add(scenarioIDs.Count);
-        return scenarioIDs.Count-1;
+        scenarioIDs.Add(scenarioIDs.Count+2);
+        return scenarioIDs.Count;
     }
 
     /// <summary>
@@ -117,12 +120,12 @@ public class MainMenusController : MonoBehaviour {
     {
         if(MainMenu)
         {
-            MenusContainer.GetComponent<MenuAnimator>().playTransToMainMenu();
+            MA.playTransToMainMenu();
             scenarioMenu = false;
         }
         else
         {
-            MenusContainer.GetComponent<MenuAnimator>().playTransToScenario();
+            MA.playTransToScenario();
             scenarioMenu = true;
         }
 
@@ -144,6 +147,12 @@ public class MainMenusController : MonoBehaviour {
                     //swap to scenarios menu
                     menuTransition(false);
                     Button = null;
+                    break;
+                case ButtonInteraction.buttonID.SCENARIO:
+                    currentScenarioID = Button.GetComponent<ButtonInteraction>().ScenarioID;
+                    Button = null;
+                    SteamVR_Fade.View(Color.black, 1.25f);
+                    Invoke("LoadScenario", 1f);
                     break;
                 case ButtonInteraction.buttonID.RANGE:
                     Button = null;
@@ -173,5 +182,13 @@ public class MainMenusController : MonoBehaviour {
     public void LoadRange()
     {
         SceneManager.LoadScene(1);//the target range
+    }
+
+    /// <summary>
+    /// loads into the selected scenario
+    /// </summary>
+    public void LoadScenario()
+    {
+        SceneManager.LoadScene(currentScenarioID);
     }
 }

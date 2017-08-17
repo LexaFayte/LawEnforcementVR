@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<grammar version="1.0" xml:lang="en-US" root="topLevel"
+ xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
+ 
+ <rule id="topLevel">
+	<one-of>
+		<item><ruleref uri="#a"/></item>
+		<item><ruleref uri="#b"/></item>
+		<item><ruleref uri="#c"/></item>
+		<item><ruleref uri="#d"/></item>
+	</one-of>
+ </rule>
+ 
+ <rule id="a">
+	<item repeat="0-1"><ruleref uri="#title"/><tag>out+=rules.latest()</tag></item>
+	<item repeat="0-2"><ruleref uri="#defuse"/><tag>out+=rules.latest()</tag></item>
+ </rule>
+ 
+ 
+  <rule id="title">
+  <item repeat="1-3">
+		<one-of>
+			<item> sir <tag>out+="_title--formal"</tag></item>
+			<item> <tag>out+="_title--fname"</tag>
+			  <one-of>
+				<item>Jim</item>
+				<item>Jimmy</item>
+			  </one-of>
+			</item>
+			<item> Mr.Smith <tag>out+="_title--lname"</tag></item>
+			<item> Hey you <tag>out+="_title--rude"</tag> </item>
+			<item> Hey <tag>out+="_title--rude"</tag> </item>
+		</one-of>
+	</item>
+  </rule> 
+ 
+ <rule id="defuse">
+	 <item repeat="1-2">
+		<one-of>
+			<item>look at me <tag>out+="_defuse--focus"</tag></item>
+			
+			<item><tag>out+="_defuse--focus"</tag>
+				I need
+				<one-of>
+					<item>you to focus</item>
+					<item>your focus</item>
+					<item>your attention</item>
+					<item>you to be focusing</item>
+				</one-of>
+							
+				<item repeat="0-1">
+					<one-of>
+						<item>here</item>
+						<item>on me</item>
+						<item>to be on me</item>
+					</one-of>
+				</item>
+				
+			</item>
+		 
+			<item><tag>out+="_defuse--dismiss"</tag>
+				<item repeat="0-1">
+					<one-of>
+						<item>yes</item>
+						<item>yea</item>
+					</one-of>
+				</item>
+				
+				<item repeat="0-1">
+					<one-of>
+						<item>I understand</item>
+						<item>I heard</item>
+						<item>I know</item>
+					</one-of>
+				</item>
+				
+				<item repeat="0-1">but</item>
+				
+				<item repeat="0-1">
+					<one-of>
+						<item>just ignore him</item>
+						<item>
+							<one-of>
+								<item>that's</item>
+								<item>that is</item>
+								<item>he's</item>
+								<item>he is</item>
+							</one-of>
+							not 
+							<one-of>
+								<item>the</item>
+								<item>my</item>
+								<item>a</item>
+							</one-of>
+							<one-of>
+								<item>issue</item>
+								<item>problem</item>
+								<item>concern</item>
+							</one-of>
+							<item repeat="0-1">right now</item>
+						</item>
+						<item>don't worry about him</item>
+						<item>he's not a concern</item>
+						<item>I'm not concered with him</item>
+					</one-of>
+				</item>	
+			</item>
+				
+			<item><tag>out+="_defuse--assureReprimand"</tag>
+				<item repeat="0-1">I assure you</item>
+				
+				<item>
+					<one-of>
+						<item>I will</item>
+						<item>I'll</item>
+						<item>we will</item>
+						<item>we'll</item>
+					</one-of>
+				</item>
+					
+				<item repeat="0-1">have a</item>
+				
+				<item>
+					<one-of>
+						<item>deal with him later</item>
+						<item>talk with him later</item>
+						<item>chat with him later</item>
+					</one-of>
+				</item>
+			</item>
+			
+			<item><tag>out+="_defuse--confide"</tag>
+				<item repeat="0-1">but</item>
+				
+				<item>
+					<one-of>
+						<item>it's just you and me</item>
+						<item>I need you to talk to me</item>
+						<item>
+						I need you to tell me
+							<one-of>
+								<item>what's going on</item>
+								<item>what the problem is</item>
+								<item>what the issue is</item>
+							</one-of>
+						</item>
+					</one-of>
+				</item>
+				
+				<item repeat="0-1">
+					<one-of>
+						<item>here</item>
+						<item>now</item>
+					</one-of>
+				</item>
+				
+				<item repeat="0-1">
+					<one-of>
+						<item>I want to hear your side of the story</item>
+						<item>I want to talk to you first</item>
+					</one-of>
+				</item>
+			</item>
+		</one-of>
+	</item>
+ </rule> 
+ 
+  <rule id="b">
+	<ruleref uri="#autoEscalate"/>
+ </rule>
+ 
+  <rule id="autoEscalate">
+   <one-of>
+		<item> calm down <tag> out+="_escalate--calmDown" </tag></item>
+		<item> shut up <tag> out+="_escalate--quiet" </tag></item>
+    <item> <tag>out+="_escalate--insult"</tag>
+      <one-of>
+        <item> ass hole </item>
+        <item> retard </item>
+		    <item> dip shit </item>
+		    <item> scum </item>
+      </one-of>
+    </item>
+		<item> <tag> out+="_escalate--curse" </tag>
+			<one-of>
+				<item> bitch </item>
+				<item> fuck </item>
+				<item> fucker </item>
+				<item> mother fucker </item>
+				<item> dick </item>
+			</one-of>
+		</item>
+	</one-of>
+ </rule>
+ 
+  <rule id="c">
+	<item repeat="0-1"><ruleref uri="#aggressiveArrestAttempt"/></item>
+	<item repeat="0-1">I said<tag>out+="_warning--repeatThreat"</tag></item>
+  <item repeat="0-1">I won't say it again <tag>out+="_warning--noRepeatThreat"</tag></item>
+  <item repeat="0-1">I'm not going to say it again <tag>out+="_warning--noRepeatThreat"</tag></item>
+	<item repeat="0-1"><ruleref uri="#aggressiveArrestAttempt"/><tag>out+=rules.latest()</tag></item>
+ </rule>
+ 
+  <rule id="aggressiveArrestAttempt">
+	<item>
+		<one-of>
+			<item> hands up <tag> out+="_aggressive--handsUp" </tag></item>
+			<item> hands where I can see them <tag> out+="_aggressive--handsLOS" </tag></item>
+			<item> get on the ground <tag> out+="_aggressive--ground" </tag></item>
+		</one-of>
+	</item>
+	<item repeat="0-1">
+		<ruleref uri="#autoEscalate"/> <tag> out+=rules.latest() </tag>
+	</item>
+ </rule>
+ 
+   <rule id="d">
+	<item repeat="0-1"><ruleref uri="#title"/> <tag> out+=rules.latest() </tag></item>
+	<ruleref uri="#purpose"/> <tag> out+=rules.latest() </tag>
+  </rule>
+  
+  <rule id="purpose">
+	<item> I'm here to </item>
+	<one-of>
+		<item> help <tag>out+="_purpose--help"</tag></item>
+		<item> listen <tag>out+="_purpose--listen"</tag></item>
+	</one-of>
+	<item repeat="0-1">
+    <tag>out+="_purpose--convince"</tag>
+		<item>but I</item>
+		<one-of>
+			<item>need you to</item>
+			<item>can only do that</item>
+			<item>can't do that</item>
+		</one-of>
+		<one-of>
+			<item>let me</item>
+			<item>with your help</item>
+			<item>with your assistance</item>
+			<item>if you help</item>
+			<item>if you let me</item>
+			<item>if you work with me</item>
+			<item>without your assistance</item>
+			<item>without your help</item>
+			<item>if you don't comply</item>
+			<item>if you won't let me</item>
+		</one-of>
+	</item>
+  </rule>
+ 
+ </grammar>

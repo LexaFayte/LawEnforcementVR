@@ -10,6 +10,10 @@ public class VoiceRecognizer : MonoBehaviour {
     private string[] keyWords;
     private KeywordRecognizer recognizer;
 
+    private TargetController TC;
+    private PauseController PC;
+    private CanvasGroup AudioCG;
+
     //audio HUD
     public Canvas AudioHUD;
     public Text HUDtext;
@@ -19,6 +23,9 @@ public class VoiceRecognizer : MonoBehaviour {
 
     private void Awake()
     {
+        TC = GetComponent<TargetController>();
+        PC = GetComponent<PauseController>();
+        AudioCG = AudioHUD.GetComponent<CanvasGroup>();
         //set up voice recognition
         keyWords = new string[6];
         keyWords[0] = "Start";
@@ -71,43 +78,43 @@ public class VoiceRecognizer : MonoBehaviour {
         switch (e.text)
         {
             case "Start":
-                if (!GetComponent<PauseController>().IsPaused)
+                if (!PC.IsPaused)
                 {
                    HUDtext.text = "Start";
-                    StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                    GetComponent<TargetController>().Invoke("startTargetSequence", 1.5f);
+                    StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                    TC.Invoke("startTargetSequence", 1.5f);
                 }
                 break;
             case "Stop":
-                if (!GetComponent<PauseController>().IsPaused)
+                if (!PC.IsPaused)
                 {
                     HUDtext.text = "Stop";
-                    StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                    GetComponent<TargetController>().Invoke("stopTargetSequence", 1f);
+                    StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                    TC.Invoke("stopTargetSequence", 1f);
                 }
                 break;
             case "Reset":
-                if (!GetComponent<PauseController>().IsPaused && !GetComponent<TargetController>().IsRunning)
+                if (!PC.IsPaused && !TC.IsRunning)
                 {
                     HUDtext.text = "Reset";
-                    StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                    GetComponent<TargetController>().Invoke("resetTargetSequence",1f);
+                    StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                    TC.Invoke("resetTargetSequence",1f);
                 }
                 break;
             case "Pause":
                 HUDtext.text = "Pause";
-                StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                GetComponent<PauseController>().MenuCalled(true);
+                StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                PC.MenuCalled(true);
                 break;
             case "Resume":
                 HUDtext.text = "Resume";
-                StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                GetComponent<PauseController>().MenuCalled(false);
+                StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                PC.MenuCalled(false);
                 break;
             case "Exit":
                 HUDtext.text = "Exit";
-                StartCoroutine(FadeFlash(AudioHUD.GetComponent<CanvasGroup>(), AudioHUD));
-                GetComponent<PauseController>().ExitCalled();          
+                StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                PC.ExitCalled();          
                 break;
         }
     }

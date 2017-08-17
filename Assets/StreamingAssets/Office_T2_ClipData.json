@@ -1,0 +1,13 @@
+{
+	"items":
+	[
+		{"key":"AssureReprimand","value":"Dialogue/T2/Defuse/AssureReprimand"},
+		{"key":"Confide","value":"Dialogue/T2/Defuse/Confide"},
+		{"key":"Dismiss","value":"Dialogue/T2/Defuse/Dismiss"},
+		{"key":"Focus","value":"Dialogue/T2/Defuse/Focus"},
+		{"key":"Title","value":"Dialogue/T2/Defuse/Title"},
+		{"key":"CalmDown","value":"Dialogue/T2/Defuse/CalmDown"},
+		{"key":"Purpose","value":"Dialogue/T2/Defuse/Purpose"},
+		{"key":"Resist","value":"Dialogue/T2/Defuse/Resist"}
+	]
+}

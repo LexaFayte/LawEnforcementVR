@@ -11,5 +11,11 @@ public class T1_trigger : MonoBehaviour {
     {
         Debug.Log("Triggered!");
         suspect.GetComponent<SuspectControllerFSM>().triggerHit(t);
+        Invoke("deactivate", 1);
+    }
+
+    private void deactivate()
+    {
+        gameObject.SetActive(false);
     }
 }

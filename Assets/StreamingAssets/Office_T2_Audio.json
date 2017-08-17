@@ -1,0 +1,31 @@
+{
+	"items":
+	[
+		
+		{"key":"escalate--calmDown","value":"CalmDown"},
+		{"key":"escalate--quiet","value":"Resist"},
+		{"key":"escalate--insult","value":"Resist"},
+		{"key":"escalate--curse","value":"Resist"},
+		
+		{"key":"warning--repeatThreat","value":"Resist"},
+		{"key":"warning--noRepeatThreat","value":"Resist"},
+		
+		{"key":"aggressive--handsUp","value":"Resist"},
+		{"key":"aggressive--handsLOS","value":"Resist"},
+		{"key":"aggressive--ground","value":"Resist"},
+		
+		{"key":"title--formal","value":"Title"},
+		{"key":"title--fname","value":"Title"},
+		{"key":"title--lname","value":"Title"},
+		{"key":"title--rude","value":"Resist"},
+		
+		{"key":"purpose--help","value":"Purpose"},
+		{"key":"purpose--listen","value":"Purpose"},
+		{"key":"purpose--convince","value":"Purpose"},
+		
+		{"key":"defuse--focus","value":"Focus"},
+		{"key":"defuse--dismiss","value":"Dismiss"},
+		{"key":"defuse--assureReprimand","value":"AssureReprimand"},
+		{"key":"defuse--confide","value":"Confide"}
+	]
+}
