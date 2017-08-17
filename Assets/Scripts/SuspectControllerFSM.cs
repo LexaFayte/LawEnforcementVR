@@ -68,6 +68,12 @@ public class SuspectControllerFSM : MonoBehaviour {
 		get { return finish; }
 	}
 
+    public bool Grumble
+    {
+        set { grumble = value; }
+        get { return grumble; }
+    }
+
 	// Use this for initialization
 	void Awake () {
 		suspect = gameObject;
@@ -326,6 +332,16 @@ public class SuspectControllerFSM : MonoBehaviour {
             //currentState.kill();
         }
 	}
+
+    public void stopCoroutines()
+    {
+        if (co_audio != null)
+            StopCoroutine(co_audio);
+        if (co_grumbles != null)
+            StopCoroutine(co_grumbles);
+        if (co_wait != null)
+            StopCoroutine(co_wait);
+    }
 
 	//coroutines
 
