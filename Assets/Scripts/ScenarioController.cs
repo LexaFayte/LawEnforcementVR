@@ -35,6 +35,7 @@ public class ScenarioController : MonoBehaviour {
 	public AudioClip[] ExtraSFX;
 	public GameObject drivingWaypoint;
 	public GameObject drivingStrip;
+    public GameObject officerT1Waypoint;
 	
 	//private objects and vars
 	private SuspectControllerFSM scFSM;
@@ -62,6 +63,7 @@ public class ScenarioController : MonoBehaviour {
     private Animator JimAnim;
     private Animator GuardAnim;
     private Animator BossAnim;
+    private AnimController_Jim JimAC;
 
 	public bool Interrupt
 	{
@@ -90,6 +92,7 @@ public class ScenarioController : MonoBehaviour {
         JimAnim = suspect.GetComponent<Animator>();
         GuardAnim = guard.GetComponent<Animator>();
         BossAnim = boss.GetComponent<Animator>();
+        JimAC = suspect.GetComponent<AnimController_Jim>();
 		currentScene = SCENE.INTRO;
 		interrupt = false;
         shot = new int[4];
@@ -147,10 +150,12 @@ public class ScenarioController : MonoBehaviour {
 		SteamVR_Fade.View(Color.clear, t);
 	}
 
+    /// <summary>
+    /// logic to determine what happens when the user has fired the gun.
+    /// </summary>
+    /// <param name="targetTag">tag belonging to the object the user shot</param>
     public void shotsFired(string targetTag)
     {
-        //array.sum()  <--will sum up all the integers
-        //shot.Sum();
         switch(targetTag)
         {
             case "Jim":
@@ -277,7 +282,7 @@ public class ScenarioController : MonoBehaviour {
 	{
         Gun.GetComponent<GunController>().setScenarioController(this);
         fadetoClear(1.5f);
-		CM.Invoke("startMovement", 3f);
+		CM.Invoke("startMovement", 2f);
 	}
 
 	/// <summary>
@@ -288,21 +293,26 @@ public class ScenarioController : MonoBehaviour {
 	{
 		transitioning = true;
 		timer = 0f;
-		StopCoroutine(MoveCar);
-		drivingStrip.SetActive(false);
+		
 
 		while (transitioning)
 		{
 			timer += Time.deltaTime;
 			if (timer > 2f)
 			{
-				transitioning = false;
-				//move Officer to beside you
-				Officer.transform.position = new Vector3(7f, 0.015f, 2f);
-				Officer.transform.Rotate(Vector3.up, 25);
-				Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
+                StopCoroutine(MoveCar);
+                drivingStrip.SetActive(false);
+                transitioning = false;
 
-				playArea.size = SteamVR_PlayArea.Size._400x300;
+                //move Officer to beside you
+                Officer.transform.position = new Vector3(officerT1Waypoint.transform.position.x, Officer.transform.position.y, officerT1Waypoint.transform.position.z);
+				Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
+                Officer.transform.LookAt(new Vector3(suspect.transform.position.x, Officer.transform.position.y, suspect.transform.position.z));
+                copAnim.SetTrigger("T1Tut");
+                copAnim.SetLayerWeight(1, 0);
+                copAnim.SetLayerWeight(2, 0);
+
+                playArea.size = SteamVR_PlayArea.Size._400x300;
 				CC.transform.position = new Vector3(8.62f, 0.5051446f, 1.23f);
 				CC.transform.rotation = new Quaternion(0, 0, 0, 1);
 
@@ -364,10 +374,8 @@ public class ScenarioController : MonoBehaviour {
 					}
 				}
 
-
-				copAnim.SetTrigger("Walk");
-				Officer.transform.Rotate(Vector3.up, -40);
-				Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
+				//Officer.transform.Rotate(Vector3.up, -40);
+				//Officer.transform.eulerAngles = new Vector3(0, Officer.transform.eulerAngles.y, 0);
 
                 Gun.GetComponent<GunController>().setScenarioController(this);
 
@@ -551,6 +559,8 @@ public class ScenarioController : MonoBehaviour {
 		{
             if (interrupt)
             {
+                JimAC.turnToCamera();
+                JimAnim.SetTrigger("interrupt");
                 interruptCount++;
                 break;
             }
@@ -596,8 +606,8 @@ public class ScenarioController : MonoBehaviour {
 			{
                 Audio2.clip = OfficeScriptClips[i];
                 Audio2.Play();
-                //BossAnim.SetInteger("Scripted Index", i);
-                //BossAnim.SetTrigger("PlayScripted");
+                BossAnim.SetInteger("Scripted Index", i);
+                BossAnim.SetTrigger("PlayScripted");
                 while (Audio2.isPlaying)
                 {
                     yield return 0;
@@ -623,26 +633,43 @@ public class ScenarioController : MonoBehaviour {
 
             scFSM.setDefuseScore(2);
 
-            for (int i = RangeConstants.office_firstDefuse; i < RangeConstants.office_secondDefuse; ++i)
+            for (int j = RangeConstants.office_firstDefuse; j < RangeConstants.office_secondDefuse; ++j)
             {
                 if (interrupt)
                 {
+                    JimAC.turnToCamera();
+                    JimAnim.SetTrigger("interrupt");
                     interruptCount++;
                     break;
                 }
 
-                if (i % 2 == 0)//JIM
+                if (j % 2 == 0)//BOSS
                 {
-                    Audio1.clip = OfficeScriptClips[i];
+                    Audio2.clip = OfficeScriptClips[j];
+                    Audio2.Play();
+                    //BossAnim.SetInteger("Scripted Index", i);
+                    //BossAnim.SetTrigger("PlayScripted");
+                    if (j == RangeConstants.office_firstDefuse)
+                        JimAC.turnToBoss();
+
+                    while (Audio2.isPlaying)
+                    {
+                        yield return 0;
+                    }
+                }
+                else//JIM
+                {
+
+                    Audio1.clip = OfficeScriptClips[j];
                     Audio1.Play();
-                    JimAnim.SetInteger("Scripted Index", i);
+                    JimAnim.SetInteger("Scripted Index", j);
                     JimAnim.SetTrigger("PlayScripted");
                     while (Audio1.isPlaying)
                     {
                         yield return 0;
                     }
 
-                    if (i == RangeConstants.office_firstDefuse - 1)
+                    if (j == RangeConstants.office_firstDefuse - 1)
                     {
                         suspectGun.SetActive(true);
                         while (coTimer < 2.5f)
@@ -656,17 +683,7 @@ public class ScenarioController : MonoBehaviour {
                         scFSM.Grumble = false;
                         break;
                     }
-                }
-                else//BOSS
-                {
-                    Audio2.clip = OfficeScriptClips[i];
-                    Audio2.Play();
-                    //BossAnim.SetInteger("Scripted Index", i);
-                    //BossAnim.SetTrigger("PlayScripted");
-                    while (Audio2.isPlaying)
-                    {
-                        yield return 0;
-                    }
+                    
                 }
 
             }

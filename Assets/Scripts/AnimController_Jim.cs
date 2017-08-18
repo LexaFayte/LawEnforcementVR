@@ -11,6 +11,7 @@ public class AnimController_Jim : MonoBehaviour {
     private float timer;
     private float initiateQuirk;
     private bool tier2;
+    private Coroutine LookAt;
 
     public GameObject CC;
     public GameObject boss;
@@ -30,7 +31,7 @@ public class AnimController_Jim : MonoBehaviour {
 
         timer += Time.deltaTime;
 
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("breathing_idle"))
+        if (!scFSM.Tier2 && animator.GetCurrentAnimatorStateInfo(0).IsName("breathing_idle"))
         {
             if (timer >= initiateQuirk)
             {
@@ -62,10 +63,27 @@ public class AnimController_Jim : MonoBehaviour {
         StartCoroutine(lookAtBoss());
     }
 
+    public void turnToBoss()
+    {
+        if (LookAt != null)
+            StopCoroutine(lookAtCamera());
+
+        LookAt = StartCoroutine(lookAtBoss());
+    }
+
+    public void turnToCamera()
+    {
+        if (LookAt != null)
+            StopCoroutine(lookAtBoss());
+
+        LookAt = StartCoroutine(lookAtCamera());
+    }
+
+
     IEnumerator lookAtBoss()
     {
         float elapsedTime = 0f;
-        float ROT_LERP_TIME = 1;
+        float ROT_LERP_TIME = .5f;
         Quaternion ogRot = jimTransform.rotation;
         Vector3 target = (new Vector3(boss.transform.position.x, 0, boss.transform.position.z)-jimTransform.position);
         Quaternion rot = Quaternion.LookRotation(target);//Quaternion.FromToRotation(target, jimTransform.position);
@@ -76,7 +94,26 @@ public class AnimController_Jim : MonoBehaviour {
             jimTransform.rotation = Quaternion.Slerp(ogRot,rot, (elapsedTime / ROT_LERP_TIME));
             yield return 0;
         }
-        animator.SetTrigger("Walk");
+
+        if (!scFSM.Tier2)
+            animator.SetTrigger("Walk");
+    }
+
+    IEnumerator lookAtCamera()
+    {
+        float elapsedTime = 0f;
+        float ROT_LERP_TIME = .5f;
+        Quaternion ogRot = jimTransform.rotation;
+        Vector3 target = (new Vector3(CC.transform.position.x, 0, CC.transform.position.z) - jimTransform.position);
+        Quaternion rot = Quaternion.LookRotation(target);//Quaternion.FromToRotation(target, jimTransform.position);
+
+        while (elapsedTime < ROT_LERP_TIME)
+        {
+            elapsedTime += Time.deltaTime;
+            jimTransform.rotation = Quaternion.Slerp(ogRot, rot, (elapsedTime / ROT_LERP_TIME));
+            yield return 0;
+        }
+        //animator.SetTrigger("Walk");
     }
 
     void OnAnimatorIK()
