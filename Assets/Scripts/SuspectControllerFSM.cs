@@ -376,30 +376,38 @@ public class SuspectControllerFSM : MonoBehaviour {
 		{
 			case "AssureReprimand":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.assureReprimand_count)];
+                JimAC.triggerAnswerT2(Tag, false);
 				break;
 			case "Confide":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.confide_count)];
-				//finish scenario
-				finish = true;
+                JimAC.triggerAnswerT2(Tag, false);
+                //finish scenario
+                finish = true;
 				break;
 			case "Dismiss":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.dismiss_count)];
-				break;
+                JimAC.triggerAnswerT2(Tag, false);
+                break;
 			case "Focus":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.focus_count)];
-				break;
+                JimAC.triggerAnswerT2(Tag, false);
+                break;
 			case "Title":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.title_count)];
-				break;
+                //JimAC.triggerAnswerT2("Interrupt", false);
+                break;
 			case "CalmDown":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.calmDown_count)];
-				break;
+                JimAC.triggerAnswerT2(Tag, false);
+                break;
 			case "Resist":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.resist_count)];
-				break;
+                JimAC.triggerAnswerT2(Tag, false);
+                break;
 			case "Purpose":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.purpose_count)];
-				break;
+                JimAC.triggerAnswerT2(Tag, false);
+                break;
 
 		}
 

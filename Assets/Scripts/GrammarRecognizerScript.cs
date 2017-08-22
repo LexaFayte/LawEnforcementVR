@@ -91,9 +91,9 @@ public class GrammarRecognizerScript : MonoBehaviour {
     }
 
     /// <summary>
-    /// on exiting the scenario, stop the Grammar Recognizer and dispose of resources.
+    /// on scenario finish, stop the Grammar Recognizer and dispose of resources.
     /// </summary>
-    public void exitScenario()
+    public void scenarioCleanUp()
     {
         grammarRec.Stop();
         grammarRec.Dispose();

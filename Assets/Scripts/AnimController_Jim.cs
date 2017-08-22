@@ -75,7 +75,6 @@ public class AnimController_Jim : MonoBehaviour {
     {
         if (LookAt != null)
             StopCoroutine(lookAtBoss());
-
         LookAt = StartCoroutine(lookAtCamera());
     }
 
@@ -212,7 +211,7 @@ public class AnimController_Jim : MonoBehaviour {
         }
     }
 
-    public void triggerAnswerT2(float aggro, string tag, bool longClip)
+    public void triggerAnswerT2(string tag, bool longClip)
     {
         if (longClip)
         {
@@ -223,11 +222,33 @@ public class AnimController_Jim : MonoBehaviour {
             animator.SetBool("LongClip", false);
         }
 
-        animator.SetFloat("AggroLevel", aggro);
+        //animator.SetFloat("AggroLevel", aggro);
 
         switch(tag)
         {
-            case "":
+            case "AssureReprimand":
+                animator.SetTrigger("AssureReprimand");
+                break;
+            case "Confide":
+                animator.SetTrigger("Confide");
+                break;
+            case "Dismiss":
+                animator.SetTrigger("Dismiss");
+                break;
+            case "Focus":
+                animator.SetTrigger("Focus");
+                break;
+            case "Title":
+                animator.SetTrigger("Title");
+                break;
+            case "CalmDown":
+                animator.SetTrigger("CalmDownT2");
+                break;
+            case "Resist":
+                animator.SetTrigger("ResistT2");
+                break;
+            case "Purpose":
+                animator.SetTrigger("PurposeT2");
                 break;
         }
     }
