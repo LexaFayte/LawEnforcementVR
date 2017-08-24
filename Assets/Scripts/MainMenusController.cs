@@ -99,7 +99,7 @@ public class MainMenusController : MonoBehaviour {
     public int addScenario()
     {
         scenarioIDs.Add(scenarioIDs.Count+2);
-        return scenarioIDs.Count;
+        return scenarioIDs.Count+1;
     }
 
     /// <summary>
