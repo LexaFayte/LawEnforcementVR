@@ -113,13 +113,13 @@ public class ScenarioController : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
-		if (!transitioning && timer > 0)
-		{
-			fadetoClear(3);
-			timer = 0;
-		}
-	}
+ //   void Update () {
+	//	if (!transitioning && timer > 0)
+	//	{
+	//		fadetoClear(3);
+	//		timer = 0;
+	//	}
+	//}
 
 	/// <summary>
 	/// play the scenario introduction
@@ -135,7 +135,7 @@ public class ScenarioController : MonoBehaviour {
         //    timer_ -= Time.deltaTime;
         //}
 
-        fadetoClear(1);
+        fadetoClear(1f);
         MoveCar = StartCoroutine(CM.translateOverTime(drivingStrip, drivingWaypoint, 50));
 		PlayIntroAudio = StartCoroutine(coDrivingIntro());
 	}
@@ -442,9 +442,6 @@ public class ScenarioController : MonoBehaviour {
 					Officer.transform.position = officerPos;
 					Officer.transform.LookAt(new Vector3(suspect.transform.position.x, Officer.transform.position.y, suspect.transform.position.z));
 
-
-                    //activate boss
-                    //boss.GetComponent<Animator>().SetBool("START", true);
                     currentScene = SCENE.T2_OFFICE;
 
 					if (escalateT2 != null)
@@ -520,10 +517,11 @@ public class ScenarioController : MonoBehaviour {
 					if (escalateT2 != null)
 						StopCoroutine(escalateT2);
 
-					fadetoClear(1f);
+					
                     interrupt = false;
                     OfficeLighting.SetActive(false);
                     BuildingInside.SetActive(false);
+                    fadetoClear(1f);
                     escalateT2 = StartCoroutine(coOutsideSituation());
 				}
 				yield return 0;
@@ -1010,28 +1008,23 @@ public class ScenarioController : MonoBehaviour {
         }
 
         //fade to clear
-        fadetoClear(1);
+        fadetoClear(1f);
 
         //show results screen (outcome; pass/fail; reason for pass/fail; accuracy?)
         results_cg.alpha = 1;
 
         //Count Down
-        timer_ = 4;
+        timer_ = 8;
 
-        
-        
         //wait a few second
         while (timer_ > 0)
         {
             timer_ -= Time.deltaTime;
-            if(timer_ >= 2.5f)
+            if(timer_ <= 3f)
                 fadetoBlack(1f);
             yield return 0;
         }
-
-
-        //Clean up
-        
+                
         //return back to Main Menu
         SceneManager.LoadScene(0);
     }
@@ -1092,25 +1085,23 @@ public class ScenarioController : MonoBehaviour {
         results_text.text = calculateFinalResult();
 
         //fade to clear
-        fadetoClear(1);
+        fadetoClear(1f);
         
         //show results screen (outcome; pass/fail; reason for pass/fail; accuracy?)
         results_cg.alpha = 1;
 
+
         //Count Down
-        timer_ = 4;
+        timer_ = 8;
 
         //wait a few second
         while (timer_ > 0)
         {
             timer_ -= Time.deltaTime;
-            if (timer_ >= 2.5f)
+            if (timer_ <= 3f)
                 fadetoBlack(1f);
             yield return 0;
         }
-
-
-        //Clean up
 
         //return back to Main Menu
         SceneManager.LoadScene(0);

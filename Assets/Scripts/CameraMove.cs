@@ -20,36 +20,23 @@ public class CameraMove : MonoBehaviour {
 	void Awake () {
 		moving = false;
 		rotating = false;
-		//Invoke("startMovement", 2.5f);
 	}
 
+    /// <summary>
+    /// start movement for T1
+    /// </summary>
 	public void startMovement()
 	{
 		StartCoroutine(smoothMovement());
 	}
 
-	IEnumerator moveToWaypoint(GameObject wp)
-	{
-		WaitForEndOfFrame EOF = new WaitForEndOfFrame();
-		
-		float elapsedTime = 0f;
-		Vector3 originalPosition = transform.position;
-		for (int i = 0; i < waypoints.Length; i++)
-		{
-			moving = true;
-			while (elapsedTime < TRANS_LERP_TIME)
-			{ 
-				elapsedTime += Time.deltaTime;
-				transform.position = Vector3.Lerp(originalPosition, wp.transform.position, (elapsedTime / TRANS_LERP_TIME));
-				yield return EOF;
-				
-			}
-			moving = false;
-		}
-	   
-	}
-
-	
+	/// <summary>
+    /// translates object over a given period of time
+    /// </summary>
+    /// <param name="obj">the object to translate</param>
+    /// <param name="waypoint">waypoint of where to move</param>
+    /// <param name="LerpTime">time to move</param>
+    /// <returns></returns>
 	public IEnumerator translateOverTime(GameObject obj, GameObject waypoint, float LerpTime)
 	{
 		WaitForEndOfFrame EOF = new WaitForEndOfFrame();
@@ -65,70 +52,10 @@ public class CameraMove : MonoBehaviour {
 		}
 	}
 
-	/// <summary>
-	/// move multiple objects towards one point over time
-	/// </summary>
-	/// <param name="objects">array of objects to move</param>
-	/// <param name="wp">waypoint to move towards</param>
-	/// <returns></returns>
-	public IEnumerator moveObjectsToPoint(GameObject[] objects, GameObject wp)
-	{
-		WaitForEndOfFrame EOF = new WaitForEndOfFrame();
-
-		float elapsedTime = 0f;
-		Vector3[] originalPosition = new Vector3[objects.Length];
-		for (int i = 0; i < objects.Length; i++)
-		{
-			originalPosition[i] = objects[i].transform.position;
-		}
-
-		moving = true;
-		while (elapsedTime < LERP)
-		{
-			Vector3 VecLERP;
-			elapsedTime += Time.deltaTime;
-			for (int j = 0; j < objects.Length; j++)
-			{
-				if (objects[j].tag == "Car")
-					VecLERP = Vector3.Lerp(originalPosition[j], wp.transform.position, (elapsedTime / (LERP+0.07f)));
-				else
-					VecLERP = Vector3.Lerp(originalPosition[j], wp.transform.position, (elapsedTime / LERP));
-				
-
-				VecLERP.z = originalPosition[j].z;
-				VecLERP.y = originalPosition[j].y;
-
-				//if (objects[j].tag == "Car")
-				//    VecLERP.x -= 1f;
-
-				objects[j].transform.position = VecLERP;
-			}
-				
-			yield return EOF;
-
-		}
-		moving = false;
-		
-	}
-
-	IEnumerator rotateAtWaypoint(GameObject wp)
-	{
-		WaitForEndOfFrame EOF = new WaitForEndOfFrame();
-		float elapsedTime = 0f;
-		Quaternion originalRot = transform.rotation;
-		Quaternion rot = Quaternion.Euler(transform.rotation.x, wp.transform.rotation.y, transform.rotation.z);
-
-		rotating = true;
-		while (elapsedTime < ROT_LERP_TIME)
-		{
-			elapsedTime += Time.deltaTime;
-			//transform.rotation = Quaternion.Lerp(originalRot, rot, (elapsedTime/ROT_LERP_TIME));
-			transform.rotation = Quaternion.Slerp(originalRot, rot, (elapsedTime / ROT_LERP_TIME));
-			yield return EOF;
-		}
-		rotating = false;
-	}
-
+    /// <summary>
+    /// moves camera over time in T1
+    /// </summary>
+    /// <returns></returns>
 	IEnumerator smoothMovement()
 	{
 		WaitForEndOfFrame EOF = new WaitForEndOfFrame();
