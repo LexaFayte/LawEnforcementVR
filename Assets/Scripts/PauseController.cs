@@ -105,6 +105,9 @@ public class PauseController : MonoBehaviour {
                         statusText.text = "Targets reset";
                     }
                     break;
+                case ButtonInteraction.buttonID.EXIT_SCENARIO:
+                    GetComponent<ScenarioController>().ExitScenario = true;
+                    break;
             }        
         }
     }

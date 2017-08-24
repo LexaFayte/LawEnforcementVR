@@ -69,6 +69,13 @@ public class ScenarioController : MonoBehaviour {
     private Animator GuardAnim;
     private Animator BossAnim;
     private AnimController_Jim JimAC;
+    private bool exitScenario;
+
+    public bool ExitScenario
+    {
+        set { exitScenario = value; }
+        get { return exitScenario; }
+    }
 
 	public bool Interrupt
 	{
@@ -568,15 +575,22 @@ public class ScenarioController : MonoBehaviour {
                 }
 
                 scFSM.triggerKill();
-                suspectGun.SetActive(true);
+                
                 while (coTimer < 2.5f)
                 {
                     coTimer += Time.deltaTime;
+                    if(coTimer >= 1.5f)
+                    {
+                        if(!suspectGun.activeSelf)
+                            suspectGun.SetActive(true);
+                    }
+                        
                     yield return 0;
                 }
 
                 Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
                 Audio1.Play();
+                BossAnim.SetTrigger("death");
 
                 while (Audio1.isPlaying)
                     yield return 0;
@@ -702,6 +716,7 @@ public class ScenarioController : MonoBehaviour {
 
         //                Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
         //                Audio1.Play();
+        //                BossAnim.SetTrigger("death");
         //                scFSM.Grumble = false;
         //                break;
         //            }
@@ -769,7 +784,7 @@ public class ScenarioController : MonoBehaviour {
                     scFSM.triggerKill();
                     suspectGun.SetActive(true);
                     
-                    while (coTimer < 1.25f)
+                    while (coTimer < 1f)
                     {
                         coTimer += Time.deltaTime;
                         yield return 0;
@@ -777,7 +792,7 @@ public class ScenarioController : MonoBehaviour {
 
                     Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
                     Audio1.Play();
-
+                    GuardAnim.SetTrigger("death");
                     while (Audio1.isPlaying)
                         yield return 0;
                     //Audio1.PlayOneShot(ExtraSFX[RangeConstants.gunShot_index]);
@@ -869,7 +884,7 @@ public class ScenarioController : MonoBehaviour {
 
                         Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
                         Audio1.Play();
-
+                        GuardAnim.SetTrigger("death");
                         while (Audio1.isPlaying)
                             yield return 0;
 
@@ -997,14 +1012,28 @@ public class ScenarioController : MonoBehaviour {
         CC.transform.position = new Vector3(ResultsWaypoint.transform.position.x, CC.transform.position.y, ResultsWaypoint.transform.position.z);
         CC.transform.rotation = new Quaternion(0, 0, 0, 1);
 
+        suspect.SetActive(false);
+        if(boss.activeSelf)
+            boss.SetActive(false);
+        if (guard.activeSelf)
+            guard.SetActive(false);
 
-        if(currentScene == SCENE.T2_OUTSIDE)
+        Officer.SetActive(false);
+        car.SetActive(false);
+
+        if (BGChars.activeSelf)
+            BGChars.SetActive(false);
+
+
+        if (currentScene == SCENE.T2_OUTSIDE)
         {
-            results_text.text = "Result: PASS\n\nThe situation was resolved successfully; the suspect was isolated and controlled without the need to use force.\n\n\nYou will be returned to the Main Menu shortly.";//PASS
+            results_text.text = "Result: PASS\n\nThe situation was resolved successfully; the suspect was isolated and controlled without the need to use force.";//PASS
+            BuildingOutside.SetActive(false);
         }
         else if (currentScene == SCENE.T2_OFFICE)
         {
-            results_text.text = "Result: PASS\n\nThe situation was resolved successfully, but not optimally; the situation escalated unnecessarily into a confrontation with between the suspect and his boss.\n\n\nYou will be returned to the Main Menu shortly.";//PASS
+            results_text.text = "Result: PASS\n\nThe situation was resolved successfully, but not optimally; the situation escalated unnecessarily into a confrontation with between the suspect and his boss.";//PASS
+            BuildingInside.SetActive(false);
         }
 
         //fade to clear
@@ -1013,18 +1042,23 @@ public class ScenarioController : MonoBehaviour {
         //show results screen (outcome; pass/fail; reason for pass/fail; accuracy?)
         results_cg.alpha = 1;
 
+        while (!exitScenario)
+        {
+            yield return 0;
+        }
+
+        fadetoBlack(1);
+
         //Count Down
-        timer_ = 8;
+        timer_ = 2;
 
         //wait a few second
         while (timer_ > 0)
         {
             timer_ -= Time.deltaTime;
-            if(timer_ <= 3f)
-                fadetoBlack(1f);
             yield return 0;
         }
-                
+
         //return back to Main Menu
         SceneManager.LoadScene(0);
     }
@@ -1081,6 +1115,24 @@ public class ScenarioController : MonoBehaviour {
         CC.transform.position = new Vector3(ResultsWaypoint.transform.position.x, CC.transform.position.y, ResultsWaypoint.transform.position.z);
         CC.transform.rotation = new Quaternion(0, 0, 0, 1);
 
+        suspect.SetActive(false);
+        if (boss.activeSelf)
+            boss.SetActive(false);
+        if (guard.activeSelf)
+            guard.SetActive(false);
+
+        Officer.SetActive(false);
+        car.SetActive(false);
+
+        if (BuildingInside.activeSelf)
+            BuildingInside.SetActive(false);
+
+        if (BuildingOutside.activeSelf)
+            BuildingOutside.SetActive(false);
+
+        if (BGChars.activeSelf)
+            BGChars.SetActive(false);
+
         //calculate results
         results_text.text = calculateFinalResult();
 
@@ -1090,16 +1142,20 @@ public class ScenarioController : MonoBehaviour {
         //show results screen (outcome; pass/fail; reason for pass/fail; accuracy?)
         results_cg.alpha = 1;
 
+        while(!exitScenario)
+        {
+            yield return 0;
+        }
+
+        fadetoBlack(1);
 
         //Count Down
-        timer_ = 8;
+        timer_ = 2;
 
         //wait a few second
         while (timer_ > 0)
         {
             timer_ -= Time.deltaTime;
-            if (timer_ <= 3f)
-                fadetoBlack(1f);
             yield return 0;
         }
 
@@ -1117,7 +1173,7 @@ public class ScenarioController : MonoBehaviour {
         //what scene is it?
         if (currentScene == SCENE.INTRO)
         {
-            result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
+            result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.";//FAIL
         }
         else if (currentScene == SCENE.T1)
         {
@@ -1136,13 +1192,12 @@ public class ScenarioController : MonoBehaviour {
                     }
                 }
 
-                result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
+                result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.";//FAIL
             }
             else if (victim == SHOT.JIM)
             {
-                result = "Result: FAIL\n\nThe suspect was not an immediate danger to anyone's life.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
+                result = "Result: FAIL\n\nThe suspect was not an immediate danger to anyone's life.";//FAIL
             }
-            
         }
         else
         {
@@ -1160,7 +1215,7 @@ public class ScenarioController : MonoBehaviour {
                 if (scenarioResult == SCENARIO_RESULT.DISCHARGE)
                 {
                     //Illegal discharge of weapon
-                    result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
+                    result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.";//FAIL
                 }
                 else
                 {   
@@ -1178,20 +1233,20 @@ public class ScenarioController : MonoBehaviour {
                             //was kill triggered?
                             if(scFSM.Kill)
                             {
-                                result = "Result: PASS\n\nThe suspect was an immediate danger.\n\n\nYou will be returned to the Main Menu shortly.";
+                                result = "Result: PASS\n\nThe suspect was an immediate danger.";
                             }
                             else
                             {
-                                result = "Result: FAIL\n\nThe suspect was not an immediate danger to anyone's life.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
+                                result = "Result: FAIL\n\nThe suspect was not an immediate danger to anyone's life.";//FAIL
                             }
                             break;
                         case SHOT.GUARD:
                             //no reason for this
-                            result = "Result: FAIL\n\nThe guard was not a threat.\n\n\nYou will be returned to the Main Menu shortly.";
+                            result = "Result: FAIL\n\nThe guard was not a threat.";
                             break;
                         case SHOT.BOSS:
                             //no reason for this
-                            result = "Result: FAIL\n\nThe boss was not a threat.\n\n\nYou will be returned to the Main Menu shortly.";
+                            result = "Result: FAIL\n\nThe boss was not a threat.";
                             break;
                     }
                 }
