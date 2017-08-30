@@ -25,6 +25,12 @@ public class MainMenusController : MonoBehaviour {
     private float FADE_LERP = 0.015f;
     private int currentScenarioID;
 
+    public int CurrectScenarioID
+    {
+        get { return currentScenarioID; }
+        set { currentScenarioID = value; }
+    }
+
     private void Awake()
     {
         controller = controllerRight.GetComponent<SteamVR_TrackedController>();

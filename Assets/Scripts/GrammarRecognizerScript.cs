@@ -22,7 +22,7 @@ public class GrammarRecognizerScript : MonoBehaviour {
         grammarRec.OnPhraseRecognized += OnGrammerRecognized;
         grammarRec.Start();       
         
-        Debug.Log("grammar started\nStreaming asset path: " + grammarRec.GrammarFilePath);
+        //Debug.Log("grammar started\nStreaming asset path: " + grammarRec.GrammarFilePath);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class GrammarRecognizerScript : MonoBehaviour {
         {
             for (int i = 0; i < meanings.Length; ++i)
             {
-                Debug.Log("Semantic meaning(s)\nValue:" + meanings[i].values[0]);
+                //Debug.Log("Semantic meaning(s)\nValue:" + meanings[i].values[0]);
                 tokens += meanings[i].values[0];
             }
 
@@ -55,10 +55,10 @@ public class GrammarRecognizerScript : MonoBehaviour {
 
                 SemanticsParser.parse(tokens, ref semantics);
                 dialogueScore = DM.evaluateDialogue(semantics);
-                Debug.Log("Dialogue Score: " + dialogueScore);
+                //Debug.Log("Dialogue Score: " + dialogueScore);
                 scFSM.UpdateFSM(dialogueScore, semantics);
                 float overallScore = scFSM.getAggroScore();
-                feedbackUI.text = args.text + "\nscore: " + dialogueScore + "\nCurrent Aggro: " + overallScore;
+                //feedbackUI.text = args.text + "\nscore: " + dialogueScore + "\nCurrent Aggro: " + overallScore;
 
             }
             else //Tier 2 of scenario
@@ -67,8 +67,8 @@ public class GrammarRecognizerScript : MonoBehaviour {
                 dialogueScore = DM.evaluateDialogue(semantics);
                 semantics = semantics.Distinct().ToList();
                 scFSM.UpdateT2Suspect(dialogueScore, semantics);
-                feedbackUI.text = args.text + "\nDefuse Line Score: " + dialogueScore + "\nDefuse Score Overall: " + scFSM.getDefuseScore()
-                    + "\nDefused: " + scFSM.Defused;
+                //feedbackUI.text = args.text + "\nDefuse Line Score: " + dialogueScore + "\nDefuse Score Overall: " + scFSM.getDefuseScore()
+                //    + "\nDefused: " + scFSM.Defused;
 
             }
         }
@@ -87,7 +87,7 @@ public class GrammarRecognizerScript : MonoBehaviour {
         grammarRec.OnPhraseRecognized += OnGrammerRecognized;
         grammarRec.Start();
 
-        Debug.Log("grammar T2 started\nStreaming asset path: " + grammarRec.GrammarFilePath);
+        //Debug.Log("grammar T2 started\nStreaming asset path: " + grammarRec.GrammarFilePath);
     }
 
     /// <summary>

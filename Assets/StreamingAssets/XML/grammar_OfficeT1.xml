@@ -88,6 +88,8 @@
 		<item> the issue <tag> out+="_question--situation" </tag></item>
 		<item> your name <tag> out+="_question--name" </tag></item>
 	</one-of>
+	
+	<item repeat="0-1">here</item>
  </rule>
  
  <rule id="title">
@@ -243,6 +245,14 @@
 				<item>about this<tag>out+="_coax--talk"</tag></item>
 				<item>outside<tag>out+="_coax--talkOutside"</tag></item>
 				<item>about this outside<tag>out+="_coax--talkOutside"</tag></item>
+			</one-of>
+		</item>
+		
+		<item>
+			lets
+			<one-of>
+				<item>go outside<tag>out+="_coax--stepOut"</tag></item>
+				<item>go outside and talk<tag>out+="_coax--talkOutside"</tag></item>
 			</one-of>
 		</item>
 		

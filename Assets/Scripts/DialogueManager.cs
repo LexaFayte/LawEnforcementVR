@@ -59,8 +59,7 @@ public class DialogueManager : MonoBehaviour {
 				dialogueText.Add(data.items[i].key, data.items[i].value);
 			}
 
-			Debug.Log("Json dialogue loaded");
-			//int a = 0;
+			//Debug.Log("Json dialogue loaded");
 		}
 	}
 
@@ -88,7 +87,7 @@ public class DialogueManager : MonoBehaviour {
 				responseMap.Add(data.items[i].key, data.items[i].value);
 			}
 
-			Debug.Log("Json responses loaded");
+			//Debug.Log("Json responses loaded");
 		}
 	}
 
@@ -132,7 +131,7 @@ public class DialogueManager : MonoBehaviour {
 				suspectDialogue.Add(data.items[i].key, Resources.LoadAll<AudioClip>(data.items[i].value));
 			}
 
-			Debug.Log("Json responses audio loaded");
+			//Debug.Log("Json responses audio loaded");
 		}
 	}
 

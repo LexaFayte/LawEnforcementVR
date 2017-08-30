@@ -111,6 +111,8 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
                 {
                     HUDtext.text = "Office";
                     StartCoroutine(FadeFlash(AudioCG, AudioHUD));
+                    MMC.CurrectScenarioID = 2;
+                    MMC.Invoke("LoadScenario", 1.5f);
                 }
                 break;
         }

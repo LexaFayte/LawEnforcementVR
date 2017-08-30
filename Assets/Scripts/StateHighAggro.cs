@@ -265,6 +265,6 @@ public class StateHighAggro : StateBase
 
     public override void kill()
     {
-        Debug.Log("SUSPECT KILLS");
+        //Debug.Log("SUSPECT KILLS");
     }
 }

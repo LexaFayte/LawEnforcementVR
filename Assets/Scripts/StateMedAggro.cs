@@ -153,7 +153,7 @@ public class StateMedAggro : StateBase
                     JimAC.triggerAnswer(aggroScore, tag, longclip);
                     break;
                 case "TalkReason":
-                    if (aggroScore < 5)
+                    if (aggroScore < 4)
                     {
                         audioIndex = UnityEngine.Random.Range(RangeConstants.talkReason_A2, RangeConstants.talkReason_A3);
                         AS.clip = clips[audioIndex];
