@@ -38,33 +38,6 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
     }
 
 
-    /// <summary>
-    /// coroutine for fading in and out a UI canvas and it's elements
-    /// </summary>
-    /// <param name="cg">the canvas group of the canvas to fade</param>
-    /// <returns></returns>
-    IEnumerator FadeFlash(CanvasGroup cg, Canvas canvas)
-    {
-        for (int i = 0; i < FADE_NO; ++i)
-        {
-            if (i % 2 == 0)
-            {
-                while (cg.alpha != 1)
-                {
-                    cg.alpha += FADE_LERP;//change FADE_LERP
-                    yield return 0;
-                }
-            }
-            else
-            {
-                while (cg.alpha != 0)
-                {
-                    cg.alpha -= FADE_LERP;//change FADE_LERP
-                    yield return 0;
-                }
-            }
-        }
-    }
 
     /// <summary>
     /// event for when a phrase or word is recognized
@@ -131,6 +104,34 @@ public class VoiceRecognizer_MainMenu : MonoBehaviour {
                     MMC.menuTransition(MENU.INSTRUCTION);
                 }
                 break;
+        }
+    }
+
+    /// <summary>
+    /// coroutine for fading in and out a UI canvas and it's elements
+    /// </summary>
+    /// <param name="cg">the canvas group of the canvas to fade</param>
+    /// <returns></returns>
+    IEnumerator FadeFlash(CanvasGroup cg, Canvas canvas)
+    {
+        for (int i = 0; i < FADE_NO; ++i)
+        {
+            if (i % 2 == 0)
+            {
+                while (cg.alpha != 1)
+                {
+                    cg.alpha += FADE_LERP;//change FADE_LERP
+                    yield return 0;
+                }
+            }
+            else
+            {
+                while (cg.alpha != 0)
+                {
+                    cg.alpha -= FADE_LERP;//change FADE_LERP
+                    yield return 0;
+                }
+            }
         }
     }
 

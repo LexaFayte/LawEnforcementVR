@@ -41,6 +41,7 @@ public class ScenarioController : MonoBehaviour {
     public CanvasGroup results_cg;
     public Text results_text;
     public GameObject ResultsWaypoint;
+    
 	
 	//private objects and vars
 	private SuspectControllerFSM scFSM;
@@ -70,6 +71,7 @@ public class ScenarioController : MonoBehaviour {
     private Animator BossAnim;
     private AnimController_Jim JimAC;
     private bool exitScenario;
+    private VoiceRecognizer_Scenario VRS;
 
     public bool ExitScenario
     {
@@ -105,6 +107,7 @@ public class ScenarioController : MonoBehaviour {
         GuardAnim = guard.GetComponent<Animator>();
         BossAnim = boss.GetComponent<Animator>();
         JimAC = suspect.GetComponent<AnimController_Jim>();
+        VRS = CC.GetComponent<VoiceRecognizer_Scenario>();
 		currentScene = SCENE.INTRO;
 		interrupt = false;
         shot = new int[4];
@@ -1131,6 +1134,8 @@ public class ScenarioController : MonoBehaviour {
             BuildingInside.SetActive(false);
         }
 
+        VRS.startKeyWordRecognition();
+
         //fade to clear
         fadetoClear(1f);
 
@@ -1154,6 +1159,7 @@ public class ScenarioController : MonoBehaviour {
             yield return 0;
         }
 
+        VRS.stopKeyWordRecognition();
         //return back to Main Menu
         SceneManager.LoadScene(0);
     }
@@ -1232,6 +1238,7 @@ public class ScenarioController : MonoBehaviour {
         //calculate results
         results_text.text = calculateFinalResult();
 
+        VRS.startKeyWordRecognition();
         //fade to clear
         fadetoClear(1f);
         
@@ -1254,6 +1261,8 @@ public class ScenarioController : MonoBehaviour {
             timer_ -= Time.deltaTime;
             yield return 0;
         }
+
+        VRS.stopKeyWordRecognition();
 
         //return back to Main Menu
         SceneManager.LoadScene(0);
