@@ -215,7 +215,7 @@ public class SteamVR_FirstPersonController : MonoBehaviour
             float pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
             SetPointerTransform(pointerBeamLength, pointerThickness);
 
-            //check for buttons (deals with button targetting for menus)
+            //check for buttons (deals with button targeting for menus)
             if(rayHit)
             {
                 checkButton(pointerCollidedWith);

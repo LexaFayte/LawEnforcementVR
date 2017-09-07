@@ -272,9 +272,10 @@ public class SuspectControllerFSM : MonoBehaviour {
 				JimAC.triggerIntroCops();
 				//trigger audio
 				co_audio = StartCoroutine(PlaySingleAudio(DM.getSingleClips("CopsHere"), true));
-				break;
+                //start the grammar recognition
+                SC.startGrammar();
+                break;
 		}
-		
 	}
 
 	/// <summary>

@@ -128,7 +128,10 @@ public class PauseController : MonoBehaviour {
             controllerToggle = false;
             ToggleViveController(false);
             if (Button != null)
+            {
                 Button.GetComponent<ButtonInteraction>().OffButton();
+                Button = null;
+            }
         }
     }   
 

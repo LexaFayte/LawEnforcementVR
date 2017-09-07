@@ -20,9 +20,17 @@ public class GrammarRecognizerScript : MonoBehaviour {
         scFSM = target.GetComponent<SuspectControllerFSM>();
         grammarRec = new GrammarRecognizer(Application.streamingAssetsPath + "/XML/grammar_OfficeT1.xml");
         grammarRec.OnPhraseRecognized += OnGrammerRecognized;
-        grammarRec.Start();       
+        //grammarRec.Start();       
         
         //Debug.Log("grammar started\nStreaming asset path: " + grammarRec.GrammarFilePath);
+    }
+
+    /// <summary>
+    /// starts the grammar recognizer
+    /// </summary>
+    public void startGrammarRecognizer()
+    {
+        grammarRec.Start();
     }
 
     /// <summary>

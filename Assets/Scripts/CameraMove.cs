@@ -7,6 +7,7 @@ public class CameraMove : MonoBehaviour {
 	public GameObject[] waypoints;
 	private Coroutine co_translate;
 	private Coroutine co_rotate;
+    private Coroutine co_move;
 
 	private bool moving;
 	private bool rotating;
@@ -27,8 +28,17 @@ public class CameraMove : MonoBehaviour {
     /// </summary>
 	public void startMovement()
 	{
-		StartCoroutine(smoothMovement());
+		co_move = StartCoroutine(smoothMovement());
 	}
+
+    /// <summary>
+    /// stops the movement co-routine
+    /// </summary>
+    public void stopMovement()
+    {
+        if (co_move != null)
+            StopCoroutine(co_move);
+    }
 
 	/// <summary>
     /// translates object over a given period of time

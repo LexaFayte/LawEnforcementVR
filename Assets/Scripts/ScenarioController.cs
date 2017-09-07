@@ -147,6 +147,14 @@ public class ScenarioController : MonoBehaviour {
 		PlayIntroAudio = StartCoroutine(coDrivingIntro());
 	}
 
+    /// <summary>
+    /// start grammar recognizer
+    /// </summary>
+    public void startGrammar()
+    {
+        GRS.startGrammarRecognizer();
+    }
+
 	/// <summary>
 	/// set up T2
 	/// </summary>
@@ -692,9 +700,6 @@ public class ScenarioController : MonoBehaviour {
                     BossAnim.SetInteger("Scripted Index", j);
                     BossAnim.SetTrigger("PlayScripted");
 
-                    if (j == RangeConstants.office_firstDefuse)
-                        JimAC.turnToBoss();
-
                     while (Audio2.isPlaying)
                     {
                         if (interrupt)
@@ -739,6 +744,9 @@ public class ScenarioController : MonoBehaviour {
                             T3Ending = StartCoroutine(scenarioEndingKill());
                         break;
                     }
+
+                    if (j == RangeConstants.office_firstDefuse + 1)
+                        JimAC.turnToBoss();
 
                     Audio1.clip = OfficeScriptClips[j];
                     Audio1.Play();
@@ -1038,6 +1046,8 @@ public class ScenarioController : MonoBehaviour {
     {
         float timer_ = 2;
 
+        CM.stopMovement();
+
         //stop the grammar recognizer
         GRS.scenarioCleanUp();
 
@@ -1117,7 +1127,7 @@ public class ScenarioController : MonoBehaviour {
         }
         else if (currentScene == SCENE.T2_OFFICE)
         {
-            results_text.text = "Result: PASS\n\nThe situation was resolved successfully, but not optimally; the situation escalated unnecessarily into a confrontation with between the suspect and his boss.";//PASS
+            results_text.text = "Result: PASS\n\nThe situation was resolved successfully, but not optimally; the situation escalated unnecessarily into a confrontation between the suspect and his boss.";//PASS
             BuildingInside.SetActive(false);
         }
 
@@ -1158,6 +1168,7 @@ public class ScenarioController : MonoBehaviour {
         suspect.GetComponent<AudioSource>().Stop();
 
         //stop all co-routines except this one
+        CM.stopMovement();
         if (escalateT2 != null)
             StopCoroutine(escalateT2);
         if (WaitShot != null)
