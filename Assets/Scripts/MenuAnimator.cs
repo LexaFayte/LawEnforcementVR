@@ -22,4 +22,22 @@ public class MenuAnimator : MonoBehaviour {
     {
         anims.Play("TransToMainMenu");
     }
+
+    /// <summary>
+    /// plays the transition animation;
+    /// transitions from the scenario menu to the scenario instructions screen
+    /// </summary>
+    public void playTransToScenarioInstructions()
+    {
+        anims.Play("TransToInstructions");
+    }
+
+    /// <summary>
+    /// plays the transition animation;
+    /// transitions from the scenario instructions screen to the scenario menu
+    /// </summary>
+    public void playTransToScenarioFromInstructions()
+    {
+        anims.Play("TransToScenarioFromInstruction");
+    }
 }

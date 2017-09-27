@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum MENU { MAIN, SCENARIO, INSTRUCTION };
+
 public class MainMenusController : MonoBehaviour {
     //public fields
     public Transform MainCanvas;
@@ -18,12 +20,24 @@ public class MainMenusController : MonoBehaviour {
     private SteamVR_TrackedController controller;
     private SteamVR_FirstPersonController_MainMenu laser;
     private MenuAnimator MA;
+    private MENU currentMenu;
 
     //scenario vars
     private List<int> scenarioIDs;
     private bool scenarioMenu = false;
     private float FADE_LERP = 0.015f;
     private int currentScenarioID;
+
+    public int CurrectScenarioID
+    {
+        get { return currentScenarioID; }
+        set { currentScenarioID = value; }
+    }
+
+    public MENU CurrentMenu
+    {
+        get { return currentMenu; }
+    }
 
     private void Awake()
     {
@@ -34,6 +48,7 @@ public class MainMenusController : MonoBehaviour {
         MA = MenusContainer.GetComponent<MenuAnimator>();
         Invoke("menuFade", 1f);
         currentScenarioID = -1;
+        currentMenu = MENU.MAIN;
     }
 
     /// <summary>
@@ -112,24 +127,34 @@ public class MainMenusController : MonoBehaviour {
     }
 
     /// <summary>
-    /// plays the animation for transitioning between the main menu and the scenario menu
+    /// sets the current menu and plays the animation for the menu transition
     /// </summary>
-    /// <param name="MainMenu">transition to main menu?</param>
-    /// <returns>flag for if currently in the scenario menu</returns>
-    public bool menuTransition(bool MainMenu)
+    /// <param name="menu">which menu to transition to</param>
+    public void menuTransition(MENU menu)
     {
-        if(MainMenu)
+        switch(menu)
         {
-            MA.playTransToMainMenu();
-            scenarioMenu = false;
+            case MENU.MAIN:
+                currentMenu = MENU.MAIN;
+                MA.playTransToMainMenu();
+                break;
+            case MENU.SCENARIO:
+                if (currentMenu == MENU.MAIN)
+                {
+                    currentMenu = MENU.SCENARIO;
+                    MA.playTransToScenario();
+                }
+                else if(currentMenu == MENU.INSTRUCTION)
+                {
+                    currentMenu = MENU.SCENARIO;
+                    MA.playTransToScenarioFromInstructions();
+                }
+                break;
+            case MENU.INSTRUCTION:
+                currentMenu = MENU.INSTRUCTION;
+                MA.playTransToScenarioInstructions();
+                break;
         }
-        else
-        {
-            MA.playTransToScenario();
-            scenarioMenu = true;
-        }
-
-        return scenarioMenu;
     }
 
     /// <summary>
@@ -145,7 +170,7 @@ public class MainMenusController : MonoBehaviour {
             {
                 case ButtonInteraction.buttonID.SCENARIOS:
                     //swap to scenarios menu
-                    menuTransition(false);
+                    menuTransition(MENU.SCENARIO);
                     Button = null;
                     break;
                 case ButtonInteraction.buttonID.SCENARIO:
@@ -167,10 +192,20 @@ public class MainMenusController : MonoBehaviour {
 #endif
                     break;
                 case ButtonInteraction.buttonID.BACK:
-                    if(scenarioMenu)
+                    if(currentMenu == MENU.SCENARIO)
                     {
-                        menuTransition(true);
+                        menuTransition(MENU.MAIN);
+                        Button = null;
                     }
+                    else if(currentMenu == MENU.INSTRUCTION)
+                    {
+                        menuTransition(MENU.SCENARIO);
+                        Button = null;
+                    }
+                    break;
+                case ButtonInteraction.buttonID.INSTRUCTIONS:
+                    menuTransition(MENU.INSTRUCTION);
+                    Button = null;
                     break;
             }        
         }

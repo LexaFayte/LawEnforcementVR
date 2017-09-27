@@ -59,8 +59,7 @@ public class DialogueManager : MonoBehaviour {
 				dialogueText.Add(data.items[i].key, data.items[i].value);
 			}
 
-			Debug.Log("Json dialogue loaded");
-			//int a = 0;
+			//Debug.Log("Json dialogue loaded");
 		}
 	}
 
@@ -88,7 +87,7 @@ public class DialogueManager : MonoBehaviour {
 				responseMap.Add(data.items[i].key, data.items[i].value);
 			}
 
-			Debug.Log("Json responses loaded");
+			//Debug.Log("Json responses loaded");
 		}
 	}
 
@@ -106,6 +105,8 @@ public class DialogueManager : MonoBehaviour {
 				clips.Value[i].UnloadAudioData();
 			}
 		}
+
+        suspectDialogue = null;
 	}
 
 	/// <summary>
@@ -132,7 +133,7 @@ public class DialogueManager : MonoBehaviour {
 				suspectDialogue.Add(data.items[i].key, Resources.LoadAll<AudioClip>(data.items[i].value));
 			}
 
-			Debug.Log("Json responses audio loaded");
+			//Debug.Log("Json responses audio loaded");
 		}
 	}
 
@@ -221,5 +222,10 @@ public class DialogueManager : MonoBehaviour {
 		return suspectDialogue[Tag];
 	}
 
+    public void cleanup()
+    {
+        unloadResponseAudio();
+        Resources.UnloadUnusedAssets();
+    }
 
 }

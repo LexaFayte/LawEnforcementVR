@@ -105,6 +105,9 @@ public class PauseController : MonoBehaviour {
                         statusText.text = "Targets reset";
                     }
                     break;
+                case ButtonInteraction.buttonID.EXIT_SCENARIO:
+                    GetComponent<ScenarioController>().ExitScenario = true;
+                    break;
             }        
         }
     }
@@ -125,7 +128,10 @@ public class PauseController : MonoBehaviour {
             controllerToggle = false;
             ToggleViveController(false);
             if (Button != null)
+            {
                 Button.GetComponent<ButtonInteraction>().OffButton();
+                Button = null;
+            }
         }
     }   
 

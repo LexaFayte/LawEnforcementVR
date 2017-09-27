@@ -87,7 +87,7 @@ namespace Assets.Scripts
 
         //Office script range
         public const int office_firstDefuse = 8;
-        public const int office_secondDefuse = 11;
+        public const int office_secondDefuse = 12;
 
         //Outside script range
         public const int outside_firstDefuse = 7;
@@ -103,7 +103,7 @@ namespace Assets.Scripts
         public const int confide_count = 2;
 
         //Dismiss count
-        public const int dismiss_count = 5;
+        public const int dismiss_count = 4;
 
         //Focus count
         public const int focus_count = 9;
@@ -193,7 +193,7 @@ namespace Assets.Scripts
             { "Resist",   "Resist",   "Resist", "Resist", "Purpose", "Resist", "Dismiss", "AssureReprimand", "Confide", "NONE"},
             { "Title",    "CalmDown", "Resist", "Title", "Purpose", "Focus", "Dismiss", "AssureReprimand", "Confide", "NONE"},
             { "Purpose",  "CalmDown", "Resist", "Title", "Purpose", "Focus", "Dismiss", "AssureReprimand", "Confide", "NONE"},
-            { "Focus",    "CalmDown", "Resist", "Title", "Purpose", "Focus", "Focus", "AssureReprimand", "Confide", "NONE"},
+            { "Focus",    "CalmDown", "Resist", "Focus", "Purpose", "Focus", "Focus", "AssureReprimand", "Confide", "NONE"},
             { "Dismiss",  "CalmDown", "Resist", "Title", "Purpose", "Dismiss", "Focus", "AssureReprimand", "Confide", "NONE"},
             { "AssureReprimand",  "CalmDown", "Resist", "Title", "Purpose", "AssureReprimand", "AssureReprimand", "AssureReprimand", "Confide", "NONE"},
             { "Confide",  "CalmDown", "Resist", "Title", "Purpose", "Focus", "Dismiss", "AssureReprimand", "Confide", "NONE"},

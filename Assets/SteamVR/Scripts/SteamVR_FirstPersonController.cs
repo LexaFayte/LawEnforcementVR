@@ -193,20 +193,6 @@ public class SteamVR_FirstPersonController : MonoBehaviour
 
     void UpdatePointer()
     {
-        //if (device.GetPressDown(SteamVR_Controller.ButtonMask.Touchpad))
-        //{
-        //    TogglePointer(true);
-        //}
-
-        //if (device.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad))
-        //{
-        //    if (pointerContactTarget != null && teleportWithPointer)
-        //    {
-        //        Teleport();
-        //    }
-        //    TogglePointer(false);
-        //}
-
         if (pointer.gameObject.activeSelf)
         {
             Ray pointerRaycast = new Ray(transform.position, transform.forward);
@@ -215,7 +201,7 @@ public class SteamVR_FirstPersonController : MonoBehaviour
             float pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
             SetPointerTransform(pointerBeamLength, pointerThickness);
 
-            //check for buttons (deals with button targetting for menus)
+            //check for buttons (deals with button targeting for menus)
             if(rayHit)
             {
                 checkButton(pointerCollidedWith);

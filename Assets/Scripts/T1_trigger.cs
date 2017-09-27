@@ -9,9 +9,9 @@ public class T1_trigger : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Triggered!");
+        //Debug.Log("Triggered!");
         suspect.GetComponent<SuspectControllerFSM>().triggerHit(t);
-        Invoke("deactivate", 1);
+        Invoke("deactivate", 0.5f);
     }
 
     private void deactivate()

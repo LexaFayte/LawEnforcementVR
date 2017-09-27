@@ -161,7 +161,7 @@ public class SuspectControllerFSM : MonoBehaviour {
 					newScore *= 0.25f;
 				break;
 		}
-		Debug.Log("Modified score: " + newScore);
+		//Debug.Log("Modified score: " + newScore);
 		aggroScore += newScore;
 
 		if (aggroScore > 10)
@@ -207,16 +207,20 @@ public class SuspectControllerFSM : MonoBehaviour {
 
 	public void UpdateT2Suspect(float newDefuseScore, List<string> semantics)
 	{
-		setDefuseScore(newDefuseScore);
-		SC.Interrupt = true;
+        if (!kill)
+        {
+            setDefuseScore(newDefuseScore);
 
-		string Tag = "";
+            SC.Interrupt = true;
 
-		Tag = DM.semanticToAudio(semantics);
+            string Tag = "";
 
-		AudioClip[] audioClips = DM.getSingleClips(Tag);
+            Tag = DM.semanticToAudio(semantics);
 
-		PlaySuspectAudio(Tag, audioClips);
+            AudioClip[] audioClips = DM.getSingleClips(Tag);
+
+            PlaySuspectAudio(Tag, audioClips);
+        }
 	}
 
 	/// <summary>
@@ -268,9 +272,10 @@ public class SuspectControllerFSM : MonoBehaviour {
 				JimAC.triggerIntroCops();
 				//trigger audio
 				co_audio = StartCoroutine(PlaySingleAudio(DM.getSingleClips("CopsHere"), true));
-				break;
+                //start the grammar recognition
+                SC.startGrammar();
+                break;
 		}
-		
 	}
 
 	/// <summary>
@@ -285,14 +290,14 @@ public class SuspectControllerFSM : MonoBehaviour {
 			//transition to T2 Boss Office
 
 			SC.initializeT2(T2.OFFICE);
-			Debug.Log("Starting T2 Boss Office");
+			//Debug.Log("Starting T2 Boss Office");
 		}
 		else
 		{
 			//transition to T2 Outside
 
 			SC.initializeT2(T2.OUTSIDE);
-			Debug.Log("Starting T2 Outside");
+			//Debug.Log("Starting T2 Outside");
 		}
 
 	}
@@ -393,8 +398,8 @@ public class SuspectControllerFSM : MonoBehaviour {
                 JimAC.triggerAnswerT2(Tag, false);
                 break;
 			case "Title":
-				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.title_count)];
-                //JimAC.triggerAnswerT2("Interrupt", false);
+                if(!kill)
+				    dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.title_count)];
                 break;
 			case "CalmDown":
 				dialogueSource.clip = audioClips[UnityEngine.Random.Range(0, RangeConstants.calmDown_count)];

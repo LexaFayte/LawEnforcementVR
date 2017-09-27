@@ -41,6 +41,7 @@ public class ScenarioController : MonoBehaviour {
     public CanvasGroup results_cg;
     public Text results_text;
     public GameObject ResultsWaypoint;
+    
 	
 	//private objects and vars
 	private SuspectControllerFSM scFSM;
@@ -69,6 +70,14 @@ public class ScenarioController : MonoBehaviour {
     private Animator GuardAnim;
     private Animator BossAnim;
     private AnimController_Jim JimAC;
+    private bool exitScenario;
+    private VoiceRecognizer_Scenario VRS;
+
+    public bool ExitScenario
+    {
+        set { exitScenario = value; }
+        get { return exitScenario; }
+    }
 
 	public bool Interrupt
 	{
@@ -98,6 +107,7 @@ public class ScenarioController : MonoBehaviour {
         GuardAnim = guard.GetComponent<Animator>();
         BossAnim = boss.GetComponent<Animator>();
         JimAC = suspect.GetComponent<AnimController_Jim>();
+        VRS = CC.GetComponent<VoiceRecognizer_Scenario>();
 		currentScene = SCENE.INTRO;
 		interrupt = false;
         shot = new int[4];
@@ -140,6 +150,14 @@ public class ScenarioController : MonoBehaviour {
 		PlayIntroAudio = StartCoroutine(coDrivingIntro());
 	}
 
+    /// <summary>
+    /// start grammar recognizer
+    /// </summary>
+    public void startGrammar()
+    {
+        GRS.startGrammarRecognizer();
+    }
+
 	/// <summary>
 	/// set up T2
 	/// </summary>
@@ -180,18 +198,25 @@ public class ScenarioController : MonoBehaviour {
                     if (WaitShot != null)
                         StopCoroutine(WaitShot);
                     //wtf? don't shoot him
-                    scenarioResult = SCENARIO_RESULT.USER_KILL;
-                    StartCoroutine(scenarioEndingKill());
+                    
+                    if (T3Ending == null)
+                    {
+                        scenarioResult = SCENARIO_RESULT.USER_KILL;
+                        T3Ending = StartCoroutine(scenarioEndingKill());
+                    }
                 }
                 else
                 {
                     shot[(int)SHOT.JIM]++;
                     if (WaitShot != null)
                         StopCoroutine(WaitShot);
-                    
-                    scenarioResult = SCENARIO_RESULT.USER_KILL;
-                    StartCoroutine(scenarioEndingKill());
-                    
+
+                    if (T3Ending == null)
+                    {
+                        scenarioResult = SCENARIO_RESULT.USER_KILL;
+                        T3Ending = StartCoroutine(scenarioEndingKill());
+                    }
+
                 }
                 break;
             case "Boss":
@@ -199,8 +224,11 @@ public class ScenarioController : MonoBehaviour {
                 if (WaitShot != null)
                     StopCoroutine(WaitShot);
 
-                scenarioResult = SCENARIO_RESULT.USER_KILL;
-                StartCoroutine(scenarioEndingKill());
+                if (T3Ending == null)
+                {
+                    scenarioResult = SCENARIO_RESULT.USER_KILL;
+                    T3Ending = StartCoroutine(scenarioEndingKill());
+                }
                 //wtf? don't shoot him
                 break;
             case "SecuirtyGuard":
@@ -208,8 +236,11 @@ public class ScenarioController : MonoBehaviour {
                 if (WaitShot != null)
                     StopCoroutine(WaitShot);
 
-                scenarioResult = SCENARIO_RESULT.USER_KILL;
-                StartCoroutine(scenarioEndingKill());
+                if (T3Ending == null)
+                {
+                    scenarioResult = SCENARIO_RESULT.USER_KILL;
+                    T3Ending = StartCoroutine(scenarioEndingKill());
+                }
                 //wtf? don't shoot him
                 break;
             default:
@@ -240,9 +271,12 @@ public class ScenarioController : MonoBehaviour {
 
         if(shot[(int)SHOT.NOTHING] == shot.Sum())
         {
-            //user only shot at nothing; illegal discharge of weapon
-            scenarioResult = SCENARIO_RESULT.DISCHARGE;
-            StartCoroutine(scenarioEndingKill());
+            if (T3Ending == null)
+            {
+                //user only shot at nothing; illegal discharge of weapon
+                scenarioResult = SCENARIO_RESULT.DISCHARGE;
+                StartCoroutine(scenarioEndingKill());
+            }
         }
     }
 
@@ -552,38 +586,40 @@ public class ScenarioController : MonoBehaviour {
             //JIM has one line that is back to back (special case)
             if (i == RangeConstants.office_firstDefuse - 1)
             {
+                scFSM.triggerKill();
                 Audio1.clip = OfficeScriptClips[i];
                 Audio1.Play();
                 JimAnim.SetInteger("Scripted Index", i);
                 JimAnim.SetTrigger("PlayScripted");
                 while (Audio1.isPlaying)
                 {
-                    if (interrupt)
-                    {
-                        interruptCount++;
-                        goto interrupted;
-                    }
-                    else
                         yield return 0;
                 }
 
-                scFSM.triggerKill();
-                suspectGun.SetActive(true);
+
                 while (coTimer < 2.5f)
                 {
                     coTimer += Time.deltaTime;
+                    if(coTimer >= 1.5f)
+                    {
+                        if(!suspectGun.activeSelf)
+                            suspectGun.SetActive(true);
+                    }
+                        
                     yield return 0;
                 }
 
                 Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
                 Audio1.Play();
+                BossAnim.SetTrigger("death");
 
                 while (Audio1.isPlaying)
                     yield return 0;
-
+                
                 scFSM.Grumble = false;
                 scenarioResult = SCENARIO_RESULT.SUSPECT_KILL;
-                T3Ending = StartCoroutine(scenarioEndingKill());
+                if (T3Ending == null)
+                    T3Ending = StartCoroutine(scenarioEndingKill());
                 break;
             }
 
@@ -625,8 +661,11 @@ public class ScenarioController : MonoBehaviour {
 		}
 
         interrupted:
-        JimAC.turnToCamera();
-        JimAnim.SetTrigger("interrupt");
+        if (interrupt)
+        {
+            JimAC.turnToCamera();
+            JimAnim.SetTrigger("interrupt");
+        }
 
         //let lines finish
         while (Audio1.isPlaying)
@@ -639,83 +678,121 @@ public class ScenarioController : MonoBehaviour {
             yield return 0;
         }
 
-        //interrupt = false;
-        //coTimer = 0f;
+        interrupt = false;
+        coTimer = 0f;
 
         //=============================
         //SECOND DEFUSE SITUATION
         //=============================
-        //if (interruptCount > 0)
-        //{
-        //    while (coTimer < 2f)
-        //    {
-        //        coTimer += Time.deltaTime;
-        //        yield return 0;
-        //    }
+        if (interruptCount > 0)
+        {
+            while (coTimer < 2f)
+            {
+                coTimer += Time.deltaTime;
+                yield return 0;
+            }
 
-        //    scFSM.setDefuseScore(2);
+            scFSM.setDefuseScore(2);
 
-        //    for (int j = RangeConstants.office_firstDefuse; j < RangeConstants.office_secondDefuse; ++j)
-        //    {
-        //        if (interrupt)
-        //        {
-        //            JimAC.turnToCamera();
-        //            JimAnim.SetTrigger("interrupt");
-        //            interruptCount++;
-        //            break;
-        //        }
+            for (int j = RangeConstants.office_firstDefuse; j < RangeConstants.office_secondDefuse; ++j)
+            { 
+                if (j % 2 == 0)//BOSS
+                {
+                    Audio2.clip = OfficeScriptClips[j];
+                    Audio2.Play();
+                    BossAnim.SetInteger("Scripted Index", j);
+                    BossAnim.SetTrigger("PlayScripted");
 
-        //        if (j % 2 == 0)//BOSS
-        //        {
-        //            Audio2.clip = OfficeScriptClips[j];
-        //            Audio2.Play();
-        //            //BossAnim.SetInteger("Scripted Index", i);
-        //            //BossAnim.SetTrigger("PlayScripted");
-        //            if (j == RangeConstants.office_firstDefuse)
-        //                JimAC.turnToBoss();
+                    while (Audio2.isPlaying)
+                    {
+                        if (interrupt)
+                        {
+                            interruptCount++;
+                            goto interrupted2;
+                        }
+                        yield return 0;
+                    }
+                }
+                else//JIM
+                {
+                    if (j == RangeConstants.office_secondDefuse - 1)
+                    {
+                        scFSM.triggerKill();
+                        Audio1.clip = OfficeScriptClips[j];
+                        Audio1.Play();
+                        JimAnim.SetInteger("Scripted Index", j);
+                        JimAnim.SetTrigger("PlayScripted");
+                        while (Audio1.isPlaying)
+                        {
+                               yield return 0;
+                        }
 
-        //            while (Audio2.isPlaying)
-        //            {
-        //                yield return 0;
-        //            }
-        //        }
-        //        else//JIM
-        //        {
+                        
+                        suspectGun.SetActive(true);
+                        while (coTimer < 3.5f)
+                        {
+                            coTimer += Time.deltaTime;
+                            yield return 0;
+                        }
 
-        //            Audio1.clip = OfficeScriptClips[j];
-        //            Audio1.Play();
-        //            JimAnim.SetInteger("Scripted Index", j);
-        //            JimAnim.SetTrigger("PlayScripted");
-        //            while (Audio1.isPlaying)
-        //            {
-        //                yield return 0;
-        //            }
+                        Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
+                        Audio1.Play();
+                        BossAnim.SetTrigger("death");
+                        while (Audio1.isPlaying)
+                            yield return 0;
 
-        //            if (j == RangeConstants.office_firstDefuse - 1)
-        //            {
-        //                suspectGun.SetActive(true);
-        //                while (coTimer < 2.5f)
-        //                {
-        //                    coTimer += Time.deltaTime;
-        //                    yield return 0;
-        //                }
+                        scFSM.Grumble = false;
+                        scenarioResult = SCENARIO_RESULT.SUSPECT_KILL;
+                        if (T3Ending == null)
+                            T3Ending = StartCoroutine(scenarioEndingKill());
+                        break;
+                    }
 
-        //                Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
-        //                Audio1.Play();
-        //                scFSM.Grumble = false;
-        //                break;
-        //            }
+                    if (j == RangeConstants.office_firstDefuse + 1)
+                        JimAC.turnToBoss();
 
-        //        }
+                    Audio1.clip = OfficeScriptClips[j];
+                    Audio1.Play();
+                    JimAnim.SetInteger("Scripted Index", j);
+                    JimAnim.SetTrigger("PlayScripted");
+                    while (Audio1.isPlaying)
+                    {
+                        if (interrupt)
+                        {
+                            interruptCount++;
+                            goto interrupted2;
+                        }
+                        else
+                            yield return 0;
+                    }
 
-        //    }
 
-        //    interrupt = false;
-        //}
 
-        //went too far; trigger suspect shooting boss
-        //if(!scFSM.Defused)
-        //    scFSM.triggerKill();
+                }
+
+            }
+
+            interrupted2:
+            if (interrupt)
+            {
+                JimAC.turnToCamera();
+                JimAnim.SetTrigger("interrupt");
+            }
+
+            //let lines finish
+            while (Audio1.isPlaying)
+            {
+                yield return 0;
+            }
+
+            while (Audio2.isPlaying)
+            {
+                yield return 0;
+            }
+
+            interrupt = false;
+        }
+
     }
 
 	/// <summary>
@@ -744,7 +821,42 @@ public class ScenarioController : MonoBehaviour {
 		{
 			if (i % 2 == 0)//JIM
 			{
-				Audio1.clip = OutsideScriptClips[i];
+
+                if (i == RangeConstants.outside_firstDefuse - 1)
+                {
+                    scFSM.triggerKill();
+                    Audio1.clip = OutsideScriptClips[i];
+                    Audio1.Play();
+                    JimAnim.SetInteger("Scripted Index", i);
+                    JimAnim.SetTrigger("PlayScripted");
+                    while (Audio1.isPlaying)
+                    {
+                        yield return 0;
+                    }
+
+                    suspectGun.SetActive(true);
+
+                    while (coTimer < 1f)
+                    {
+                        coTimer += Time.deltaTime;
+                        yield return 0;
+                    }
+
+                    Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
+                    Audio1.Play();
+                    GuardAnim.SetTrigger("death");
+                    while (Audio1.isPlaying)
+                        yield return 0;
+                    //Audio1.PlayOneShot(ExtraSFX[RangeConstants.gunShot_index]);
+                    scFSM.Grumble = false;
+                    scenarioResult = SCENARIO_RESULT.SUSPECT_KILL;
+
+                    if (T3Ending == null)
+                        T3Ending = StartCoroutine(scenarioEndingKill());
+                    break;
+                }
+
+                Audio1.clip = OutsideScriptClips[i];
 				Audio1.Play();
 
                 if (i > 0)
@@ -764,29 +876,6 @@ public class ScenarioController : MonoBehaviour {
 					    yield return 0;
 				}
 
-                if(i == RangeConstants.outside_firstDefuse-1)
-                {
-                    scFSM.triggerKill();
-                    suspectGun.SetActive(true);
-                    
-                    while (coTimer < 1.25f)
-                    {
-                        coTimer += Time.deltaTime;
-                        yield return 0;
-                    }
-
-                    Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
-                    Audio1.Play();
-
-                    while (Audio1.isPlaying)
-                        yield return 0;
-                    //Audio1.PlayOneShot(ExtraSFX[RangeConstants.gunShot_index]);
-                    scFSM.Grumble = false;
-                    scenarioResult = SCENARIO_RESULT.SUSPECT_KILL;
-
-                    T3Ending = StartCoroutine(scenarioEndingKill());
-                    break;
-                }
 			}
 			else//GUARD
 			{
@@ -808,9 +897,11 @@ public class ScenarioController : MonoBehaviour {
 		}
 
         interrupted:
-        JimAC.turnToCamera();
-        JimAnim.SetTrigger("interrupt");
-
+        if (interrupt)
+        {
+            JimAC.turnToCamera();
+            JimAnim.SetTrigger("interrupt");
+        }
         //let lines finish
         while (Audio1.isPlaying)
         {
@@ -843,6 +934,48 @@ public class ScenarioController : MonoBehaviour {
             {
                 if (j % 2 == 0)//JIM
                 {
+                    if (j == RangeConstants.outside_secondDefuse - 1)
+                    {
+                        coTimer = 0;
+                        scFSM.triggerKill();
+
+                        Audio1.clip = OutsideScriptClips[j];
+                        Audio1.Play();
+                        JimAnim.SetInteger("Scripted Index", j);
+                        JimAnim.SetTrigger("PlayScripted");
+                        while (Audio1.isPlaying)
+                        {
+                            yield return 0;
+                        }
+
+                        while (coTimer < 1f)
+                        {
+                            coTimer += Time.deltaTime;
+                            yield return 0;
+                        }
+
+
+                        suspectGun.SetActive(true);
+
+                        while (coTimer < 1.75f)
+                        {
+                            coTimer += Time.deltaTime;
+                            yield return 0;
+                        }
+
+                        Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
+                        Audio1.Play();
+                        GuardAnim.SetTrigger("death");
+                        while (Audio1.isPlaying)
+                            yield return 0;
+
+                        scFSM.Grumble = false;
+                        scenarioResult = SCENARIO_RESULT.SUSPECT_KILL;
+                        if (T3Ending == null)
+                            T3Ending = StartCoroutine(scenarioEndingKill());
+                        break;
+                    }
+
                     Audio1.clip = OutsideScriptClips[j];
                     Audio1.Play();
                     JimAnim.SetInteger("Scripted Index", j);
@@ -856,28 +989,7 @@ public class ScenarioController : MonoBehaviour {
                             yield return 0;
                     }
 
-                    if (j == RangeConstants.outside_firstDefuse - 1)
-                    {
-                        scFSM.triggerKill();
-                        suspectGun.SetActive(true);
-
-                        while (coTimer < 2f)
-                        {
-                            coTimer += Time.deltaTime;
-                            yield return 0;
-                        }
-
-                        Audio1.clip = ExtraSFX[RangeConstants.gunShot_index];
-                        Audio1.Play();
-
-                        while (Audio1.isPlaying)
-                            yield return 0;
-
-                        scFSM.Grumble = false;
-                        scenarioResult = SCENARIO_RESULT.SUSPECT_KILL;
-                        T3Ending = StartCoroutine(scenarioEndingKill());
-                        break;
-                    }
+                  
                 }
                 else//GUARD
                 {
@@ -898,8 +1010,11 @@ public class ScenarioController : MonoBehaviour {
             }
             
             interrupted2:
-            JimAC.turnToCamera();
-            JimAnim.SetTrigger("interrupt");
+            if (interrupt)
+            {
+                JimAC.turnToCamera();
+                JimAnim.SetTrigger("interrupt");
+            }
 
             //let lines finish
             while (Audio1.isPlaying)
@@ -914,10 +1029,6 @@ public class ScenarioController : MonoBehaviour {
 
             interrupt = false;
         }
-
-        //went too far; trigger suspect shooting guard
-        //if (!scFSM.Defused)
-			//scFSM.triggerKill();
 	}
 
     //
@@ -937,6 +1048,8 @@ public class ScenarioController : MonoBehaviour {
     IEnumerator scenarioEndingTalk()
     {
         float timer_ = 2;
+
+        CM.stopMovement();
 
         //stop the grammar recognizer
         GRS.scenarioCleanUp();
@@ -997,15 +1110,31 @@ public class ScenarioController : MonoBehaviour {
         CC.transform.position = new Vector3(ResultsWaypoint.transform.position.x, CC.transform.position.y, ResultsWaypoint.transform.position.z);
         CC.transform.rotation = new Quaternion(0, 0, 0, 1);
 
+        suspect.SetActive(false);
+        if(boss.activeSelf)
+            boss.SetActive(false);
+        if (guard.activeSelf)
+            guard.SetActive(false);
 
-        if(currentScene == SCENE.T2_OUTSIDE)
+        Officer.SetActive(false);
+        car.SetActive(false);
+
+        if (BGChars.activeSelf)
+            BGChars.SetActive(false);
+
+
+        if (currentScene == SCENE.T2_OUTSIDE)
         {
-            results_text.text = "Result: PASS\n\nThe situation was resolved successfully; the suspect was isolated and controlled without the need to use force.\n\n\nYou will be returned to the Main Menu shortly.";//PASS
+            results_text.text = "Result: PASS\n\nThe situation was resolved successfully; the suspect was isolated and controlled without the need to use force.";//PASS
+            BuildingOutside.SetActive(false);
         }
         else if (currentScene == SCENE.T2_OFFICE)
         {
-            results_text.text = "Result: PASS\n\nThe situation was resolved successfully, but not optimally; the situation escalated unnecessarily into a confrontation with between the suspect and his boss.\n\n\nYou will be returned to the Main Menu shortly.";//PASS
+            results_text.text = "Result: PASS\n\nThe situation was resolved successfully, but not optimally; the situation escalated unnecessarily into a confrontation between the suspect and his boss.";//PASS
+            BuildingInside.SetActive(false);
         }
+
+        VRS.startKeyWordRecognition();
 
         //fade to clear
         fadetoClear(1f);
@@ -1013,18 +1142,24 @@ public class ScenarioController : MonoBehaviour {
         //show results screen (outcome; pass/fail; reason for pass/fail; accuracy?)
         results_cg.alpha = 1;
 
+        while (!exitScenario)
+        {
+            yield return 0;
+        }
+
+        fadetoBlack(1);
+
         //Count Down
-        timer_ = 8;
+        timer_ = 2;
 
         //wait a few second
         while (timer_ > 0)
         {
             timer_ -= Time.deltaTime;
-            if(timer_ <= 3f)
-                fadetoBlack(1f);
             yield return 0;
         }
-                
+
+        VRS.stopKeyWordRecognition();
         //return back to Main Menu
         SceneManager.LoadScene(0);
     }
@@ -1039,6 +1174,7 @@ public class ScenarioController : MonoBehaviour {
         suspect.GetComponent<AudioSource>().Stop();
 
         //stop all co-routines except this one
+        CM.stopMovement();
         if (escalateT2 != null)
             StopCoroutine(escalateT2);
         if (WaitShot != null)
@@ -1081,27 +1217,52 @@ public class ScenarioController : MonoBehaviour {
         CC.transform.position = new Vector3(ResultsWaypoint.transform.position.x, CC.transform.position.y, ResultsWaypoint.transform.position.z);
         CC.transform.rotation = new Quaternion(0, 0, 0, 1);
 
+        suspect.SetActive(false);
+        if (boss.activeSelf)
+            boss.SetActive(false);
+        if (guard.activeSelf)
+            guard.SetActive(false);
+
+        Officer.SetActive(false);
+        car.SetActive(false);
+
+        if (BuildingInside.activeSelf)
+            BuildingInside.SetActive(false);
+
+        if (BuildingOutside.activeSelf)
+            BuildingOutside.SetActive(false);
+
+        if (BGChars.activeSelf)
+            BGChars.SetActive(false);
+
         //calculate results
         results_text.text = calculateFinalResult();
 
+        VRS.startKeyWordRecognition();
         //fade to clear
         fadetoClear(1f);
         
         //show results screen (outcome; pass/fail; reason for pass/fail; accuracy?)
         results_cg.alpha = 1;
 
+        while(!exitScenario)
+        {
+            yield return 0;
+        }
+
+        fadetoBlack(1);
 
         //Count Down
-        timer_ = 8;
+        timer_ = 2;
 
         //wait a few second
         while (timer_ > 0)
         {
             timer_ -= Time.deltaTime;
-            if (timer_ <= 3f)
-                fadetoBlack(1f);
             yield return 0;
         }
+
+        VRS.stopKeyWordRecognition();
 
         //return back to Main Menu
         SceneManager.LoadScene(0);
@@ -1117,7 +1278,7 @@ public class ScenarioController : MonoBehaviour {
         //what scene is it?
         if (currentScene == SCENE.INTRO)
         {
-            result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
+            result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.";//FAIL
         }
         else if (currentScene == SCENE.T1)
         {
@@ -1136,65 +1297,64 @@ public class ScenarioController : MonoBehaviour {
                     }
                 }
 
-                result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
+                result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.";//FAIL
             }
             else if (victim == SHOT.JIM)
             {
-                result = "Result: FAIL\n\nThe suspect was not an immediate danger to anyone's life.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
+                result = "Result: FAIL\n\nThe suspect was not an immediate danger to anyone's life.";//FAIL
             }
-            
         }
         else
         {
             //T2; who did the shooting?
-            if (scFSM.Kill)
+            if (scenarioResult == SCENARIO_RESULT.USER_KILL)
             {
+                //check accuracy
+                //user did the shooting and it was a person; who was shot?
+                SHOT victim = (SHOT)Enumerable.Range(0, shot.Count()).Aggregate((a, b) => (shot[a] > shot[b]) ? a : b);
+                checkVictim:
+                switch (victim)
+                {
+                    case SHOT.NOTHING:
+                        shot[(int)SHOT.NOTHING] = 0;
+                        victim = (SHOT)Enumerable.Range(0, shot.Count()).Aggregate((a, b) => (shot[a] > shot[b]) ? a : b);
+                        goto checkVictim;
+                    case SHOT.JIM:
+                        //was kill triggered?
+                        if (scFSM.Kill)
+                        {
+                            result = "Result: PASS\n\nThe suspect was an immediate danger.";
+                        }
+                        else
+                        {
+                            result = "Result: FAIL\n\nThe suspect was not an immediate danger to anyone's life.";//FAIL
+                        }
+                        break;
+                    case SHOT.GUARD:
+                        //no reason for this
+                        result = "Result: FAIL\n\nThe guard was not a threat.";
+                        break;
+                    case SHOT.BOSS:
+                        //no reason for this
+                        result = "Result: FAIL\n\nThe boss was not a threat.";
+                        break;
+                }
+                
+            }
+            else if (scenarioResult == SCENARIO_RESULT.DISCHARGE)
+            {
+                //Illegal discharge of weapon
+                result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.";//FAIL
+            }
+            else if(scenarioResult == SCENARIO_RESULT.SUSPECT_KILL)
+            {
+
                 //suspect did the killing
-                if(currentScene == SCENE.T2_OUTSIDE)
+                if (currentScene == SCENE.T2_OUTSIDE)
                     result = "Result: FAIL\n\nThe situation was not defused resulting in the suspect shooting the security guard.";//FAIL
                 else
                     result = "Result: FAIL\n\nThe situation was not defused resulting in the suspect shooting the boss.";//FAIL
-            }
-            else
-            {
-                if (scenarioResult == SCENARIO_RESULT.DISCHARGE)
-                {
-                    //Illegal discharge of weapon
-                    result = "Result: FAIL\n\nThere was no threat; discharge of a firearm without reasonable grounds for believing it necessary is illegal.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
-                }
-                else
-                {   
-                    //check accuracy
-                    //user did the shooting and it was a person; who was shot?
-                    SHOT victim = (SHOT)Enumerable.Range(0, shot.Count()).Aggregate((a, b) => (shot[a] > shot[b]) ? a : b);
-                    checkVictim:
-                    switch (victim)
-                    {
-                        case SHOT.NOTHING:
-                            shot[(int)SHOT.NOTHING] = 0;
-                            victim = (SHOT)Enumerable.Range(0, shot.Count()).Aggregate((a, b) => (shot[a] > shot[b]) ? a : b);
-                            goto checkVictim;
-                        case SHOT.JIM:
-                            //was kill triggered?
-                            if(scFSM.Kill)
-                            {
-                                result = "Result: PASS\n\nThe suspect was an immediate danger.\n\n\nYou will be returned to the Main Menu shortly.";
-                            }
-                            else
-                            {
-                                result = "Result: FAIL\n\nThe suspect was not an immediate danger to anyone's life.\n\n\nYou will be returned to the Main Menu shortly.";//FAIL
-                            }
-                            break;
-                        case SHOT.GUARD:
-                            //no reason for this
-                            result = "Result: FAIL\n\nThe guard was not a threat.\n\n\nYou will be returned to the Main Menu shortly.";
-                            break;
-                        case SHOT.BOSS:
-                            //no reason for this
-                            result = "Result: FAIL\n\nThe boss was not a threat.\n\n\nYou will be returned to the Main Menu shortly.";
-                            break;
-                    }
-                }
+                
             }
         }
 

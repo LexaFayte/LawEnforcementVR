@@ -6,8 +6,8 @@
 		{"key":"escalate--insult","value":"5"},
 		{"key":"escalate--curse","value":"5"},
 		
-		{"key":"warning--repeatThreat","value":"1.5"},
-		{"key":"warning--noRepeatThreat","value":"1.5"},
+		{"key":"warning--repeatThreat","value":"1.75"},
+		{"key":"warning--noRepeatThreat","value":"1.75"},
 		
 		{"key":"aggressive--handsUp","value":"0.5"},
 		{"key":"aggressive--handsLOS","value":"0.25"},
