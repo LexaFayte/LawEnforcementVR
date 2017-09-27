@@ -105,6 +105,8 @@ public class DialogueManager : MonoBehaviour {
 				clips.Value[i].UnloadAudioData();
 			}
 		}
+
+        suspectDialogue = null;
 	}
 
 	/// <summary>
@@ -220,5 +222,10 @@ public class DialogueManager : MonoBehaviour {
 		return suspectDialogue[Tag];
 	}
 
+    public void cleanup()
+    {
+        unloadResponseAudio();
+        Resources.UnloadUnusedAssets();
+    }
 
 }

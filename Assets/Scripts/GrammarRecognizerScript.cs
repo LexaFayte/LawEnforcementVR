@@ -105,5 +105,6 @@ public class GrammarRecognizerScript : MonoBehaviour {
     {
         grammarRec.Stop();
         grammarRec.Dispose();
+        DM.cleanup();
     }
 }
